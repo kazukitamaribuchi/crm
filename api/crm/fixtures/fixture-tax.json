@@ -1,0 +1,30 @@
+[
+  {
+    "model": "crm.mtax",
+    "pk": 1,
+    "fields": {
+      "tax_rate": 0
+    }
+  },
+  {
+    "model": "crm.mtax",
+    "pk": 2,
+    "fields": {
+      "tax_rate": 8
+    }
+  },
+  {
+    "model": "crm.mtax",
+    "pk": 3,
+    "fields": {
+      "tax_rate": 10
+    }
+  },
+  {
+    "model": "crm.mtax",
+    "pk": 4,
+    "fields": {
+      "tax_rate": 15
+    }
+  }
+]

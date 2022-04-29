@@ -1,10 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from .core.models import (
+from .core import (
     TimeStampModel
-)
-
-from .sub_models import (
 )
 
 
@@ -65,3 +62,6 @@ class AbstractServiceModel(AbstractBaseModel):
     price = models.IntegerField(
         _('Price'),
     )
+
+    class Meta:
+        abstract = True

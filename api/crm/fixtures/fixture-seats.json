@@ -1,0 +1,65 @@
+[
+  {
+    "model": "crm.mseat",
+    "pk": 1,
+    "fields": {
+      "seat_type": 0,
+      "seat_no": 1,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 2,
+    "fields": {
+      "seat_type": 0,
+      "seat_no": 2,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 3,
+    "fields": {
+      "seat_type": 1,
+      "seat_no": 1,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 4,
+    "fields": {
+      "seat_type": 1,
+      "seat_no": 2,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 5,
+    "fields": {
+      "seat_type": 1,
+      "seat_no": 3,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 6,
+    "fields": {
+      "seat_type": 1,
+      "seat_no": 4,
+      "limit": 5
+    }
+  },
+  {
+    "model": "crm.mseat",
+    "pk": 7,
+    "fields": {
+      "seat_type": 1,
+      "seat_no": 5,
+      "limit": 5
+    }
+  }
+]
