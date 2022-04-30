@@ -62,7 +62,7 @@ class BottleManagement(AbstractBaseModel):
         on_delete=models.PROTECT,
     )
     # リレーション大丈夫か
-    product = models.OneToOneField(
+    product = models.ForeignKey(
         'crm.MProduct',
         on_delete=models.PROTECT,
     )
@@ -104,7 +104,7 @@ class SalesHeader(AbstractBaseModel):
     )
 
     def __str__(self):
-        return str(self.id)
+        return '売上No.' + str(self.id)
 
     class Meta:
         verbose_name_plural = '売上ヘッダ'
@@ -147,7 +147,7 @@ class SalesDetail(AbstractBaseModel):
     )
 
     def __str__(self):
-        return str(self.header.id)
+        return '売上No.' + str(self.header.id)
 
     class Meta:
         verbose_name_plural = '売上明細'
@@ -203,7 +203,9 @@ class BookingManagement(AbstractBaseModel):
     )
 
     def __str__(self):
-        return str(self.id)
+        start = self.booking_start.strftime('%Y年%m月%d日 %H時%M分')
+        end = self.booking_end.strftime('%H時%M分')
+        return self.customer.name + '様 ' + start + '~' + end
 
     class Meta:
         verbose_name_plural = '予約管理テーブル'
@@ -245,7 +247,8 @@ class AttendanceManagement(AbstractBaseModel):
     )
 
     def __str__(self):
-        return self.cast.name + 'の勤怠'
+        attend = '〇' if self.attend_flg else '×'
+        return self.cast.name + ' ' + self.date.strftime('%Y年%m月%d日') + '→' + attend
 
     class Meta:
         verbose_name_plural = '勤怠管理テーブル'
