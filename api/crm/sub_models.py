@@ -104,7 +104,7 @@ class SalesHeader(AbstractBaseModel):
     )
 
     def __str__(self):
-        return '売上No.' + str(self.id)
+        return '売上No.' + str(self.id) + ' ' + str(self.total_tax_sales) + '円'
 
     class Meta:
         verbose_name_plural = '売上ヘッダ'
@@ -147,7 +147,9 @@ class SalesDetail(AbstractBaseModel):
     )
 
     def __str__(self):
-        return '売上No.' + str(self.header.id)
+        product_name = self.product.name
+        price = str(self.fixed_tax_price)
+        return '売上No.' + str(self.header.id) + ' ' + product_name + ' ' + price + '円'
 
     class Meta:
         verbose_name_plural = '売上明細'
