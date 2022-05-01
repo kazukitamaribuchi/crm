@@ -83,7 +83,7 @@ class CardSerializer(DynamicFieldsModelSerializer):
     class Meta:
         model = CardManagement
         fields = [
-            'customer_id',
+            'customer_no',
             'total_point',
             'lost_flg',
             'created_at',
@@ -297,7 +297,7 @@ class SalesDetailSerializer(DynamicFieldsModelSerializer):
 class SalesSerializer(DynamicFieldsModelSerializer):
 
     customer = CustomerSerializer()
-    cast = CastSerializer()
+    cast = CastSerializer(many=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
     sales_detail = serializers.SerializerMethodField()
@@ -330,6 +330,9 @@ class SalesSerializer(DynamicFieldsModelSerializer):
 class AttendanceSerializer(DynamicFieldsModelSerializer):
 
     cast = CastSerializer()
+    date = serializers.SerializerMethodField()
+    start = serializers.SerializerMethodField()
+    end = serializers.SerializerMethodField()
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
 
@@ -346,10 +349,20 @@ class AttendanceSerializer(DynamicFieldsModelSerializer):
             'start',
             'end',
             'absent_flg',
+            'late_flg',
             'created_at',
             'updated_at',
             'delete_flg',
         ]
+
+    def get_date(self, obj):
+        return utc_to_jst(obj.date).strftime('%Y年%m月%d日')
+
+    def get_start(self, obj):
+        return utc_to_jst(obj.start).strftime('%Y年%m月%d日 %H時%M分')
+
+    def get_end(self, obj):
+        return utc_to_jst(obj.end).strftime('%Y年%m月%d日 %H時%M分')
 
 
 class BookingSerializer(DynamicFieldsModelSerializer):

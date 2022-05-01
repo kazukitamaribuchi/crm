@@ -26,5 +26,19 @@
     "fields": {
       "tax_rate": 15
     }
+  },
+  {
+    "model": "crm.mtax",
+    "pk": 5,
+    "fields": {
+      "tax_rate": 20
+    }
+  },
+  {
+    "model": "crm.mtax",
+    "pk": 6,
+    "fields": {
+      "tax_rate": 30
+    }
   }
 ]

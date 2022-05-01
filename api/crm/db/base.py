@@ -10,11 +10,11 @@ class AbstractBaseModel(TimeStampModel):
     全てのベースとなる基本モデル
     """
     delete_flg = models.BooleanField(
-        _('Delete Flg'),
+        _('削除フラグ'),
         default=False,
     )
     remarks = models.TextField(
-        _('Remarks Columns'),
+        _('備考'),
         null=True,
         blank=True,
     )
@@ -26,22 +26,22 @@ class AbstractHumanModel(AbstractBaseModel):
     顧客、キャストの基となる抽象クラス
     """
     name = models.CharField(
-        _('NickName'),
+        _('名前'),
         max_length=100,
     )
     age = models.SmallIntegerField(
-        _('Age for Profile'),
+        _('年齢'),
         null=True,
         blank=True,
     )
     address = models.CharField(
-        _('Address'),
+        _('住所'),
         null=True,
         blank=True,
         max_length=200,
     )
     birthday = models.DateField(
-        _('Birthday'),
+        _('誕生日'),
         null=True,
         blank=True,
     )
@@ -55,12 +55,12 @@ class AbstractServiceModel(AbstractBaseModel):
     サービスの基となる抽象クラス
     """
     name = models.CharField(
-        _('Service Name'),
+        _('サービス名'),
         max_length=200,
     )
 
     price = models.IntegerField(
-        _('Price'),
+        _('価格'),
     )
 
     class Meta:

@@ -136,12 +136,14 @@ class MTax(models.Model):
         (8, _('8%')),
         (10, _('10%')),
         (15, _('15%')),
+        (20, _('20%')),
+        (30, _('30%')),
     )
 
     tax_rate = models.SmallIntegerField(
         _('Price included Tax'),
         choices=TAX_CHOICES,
-        default=15,
+        default=30,
     )
 
     def __str__(self):
@@ -159,27 +161,27 @@ class MCustomer(AbstractHumanModel):
         所属
     """
     job = models.CharField(
-        _('Job'),
+        _('職業'),
         null=True,
         blank=True,
         max_length=100,
     )
     company = models.CharField(
-        _('Company'),
+        _('会社'),
         null=True,
         blank=True,
         max_length=100,
     )
     total_visit = models.IntegerField(
-        _('Total Visit'),
+        _('総来店回数'),
         default=0,
     )
     total_sales = models.BigIntegerField(
-        _('Total Sales'),
+        _('総売上'),
         default=0,
     )
     first_visit = models.DateField(
-        _('First Visit'),
+        _('初来店日'),
         null=True,
         blank=True,
     )
@@ -192,7 +194,7 @@ class MCustomer(AbstractHumanModel):
         on_delete=models.PROTECT,
     )
     caution_flg = models.BooleanField(
-        _('Caution Flg'),
+        _('要注意人物フラグ'),
         default=False,
     )
 
@@ -208,43 +210,43 @@ class MCast(AbstractHumanModel):
     キャストマスタ
     """
     icon = models.ImageField(
-        _('Cast Image'),
+        _('顔写真'),
         upload_to='upload/',
         null=True,
         blank=True,
     )
     real_name = models.CharField(
-        _('Real Name'),
+        _('本名'),
         max_length=100,
         null=True,
         blank=True,
     )
     real_age = models.SmallIntegerField(
-        _('Real Age'),
+        _('実年齢'),
         null=True,
         blank=True,
     )
     start_working_date = models.DateField(
-        _('Start Working Date'),
+        _('勤務開始日'),
         null=True,
         blank=True,
     )
     total_appoint = models.IntegerField(
-        _('Total appoint'),
+        _('総指名数'),
         default=0,
     )
     resign_flg = models.BooleanField(
-        _('Delete Flg'),
+        _('退職フラグ'),
         default=False,
     )
     resign_date = models.DateTimeField(
-        _('Resign Date'),
+        _('退職日時'),
         null=True,
         blank=True,
     )
     # 今後考える？・・・
     salary = models.IntegerField(
-        _('Salary'),
+        _('時給'),
         default=0,
         null=True,
         blank=True,
@@ -267,14 +269,15 @@ class MProduct(AbstractServiceModel):
 
     PRODUCT_CATEGORIES = (
         (0, _('飲食')),
-        (1, _('指名料（同伴含む）')),
+        (1, _('指名料')),
         (2, _('基本料金')),
-        (3, _('席料金')),
-        (4, _('他')),
+        (3, _('VIP料金')),
+        (4, _('同伴料金')),
+        (5, _('他')),
     )
 
     category = models.SmallIntegerField(
-        _('Category'),
+        _('カテゴリ'),
         choices=PRODUCT_CATEGORIES,
         default=0,
     )
@@ -285,7 +288,7 @@ class MProduct(AbstractServiceModel):
     )
 
     tax_price = models.IntegerField(
-        _('Price included Tax'),
+        _('税込価格'),
     )
 
     def __str__(self):
@@ -308,16 +311,16 @@ class MSeat(models.Model):
     )
 
     seat_type = models.SmallIntegerField(
-        _('Seat Type'),
+        _('座席種別'),
         choices=SEAT_TYPE_CHOICES,
     )
 
     seat_no = models.SmallIntegerField(
-        _('Seat No'),
+        _('席No'),
     )
 
     limit = models.SmallIntegerField(
-        _('Limit'),
+        _('上限人数'),
         default=1,
     )
 

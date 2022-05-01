@@ -10,26 +10,28 @@ class CardManagement(AbstractBaseModel):
     """
     カード管理テーブル
         顧客:カード=1:1
+        　カード紛失もあり得るため、カードで会員Noは管理。
+          連番でカード上は0埋めで8桁とか？
     """
 
-    customer_id = models.AutoField(
-        _('Customer Id'),
+    customer_no = models.AutoField(
+        _('会員No'),
         primary_key=True,
         editable=False,
     )
 
     total_point = models.IntegerField(
-        _('Total Point'),
+        _('ポイント総数'),
         default=0,
     )
 
     lost_flg = models.BooleanField(
-        _('Lost Flg'),
+        _('紛失フラグ'),
         default=False,
     )
 
     def __str__(self):
-        return str(self.customer_id)
+        return str(self.customer_no)
 
     class Meta:
         verbose_name_plural = 'カード管理テーブル'
@@ -44,17 +46,17 @@ class BottleManagement(AbstractBaseModel):
     """
 
     deadline = models.DateTimeField(
-        _('DeadLine'),
+        _('賞味期限'),
     )
     open_date = models.DateTimeField(
-        _('OpenDate'),
+        _('開封日'),
     )
     end_flg = models.BooleanField(
-        _('End Flg'),
+        _('飲み終わったかフラグ'),
         default=False,
     )
     waste_flg = models.BooleanField(
-        _('Wasted or not'),
+        _('廃棄フラグ'),
         default=False
     )
     customer = models.OneToOneField(
@@ -90,17 +92,16 @@ class SalesHeader(AbstractBaseModel):
     )
 
     # on_delete要検討
-    cast = models.OneToOneField(
-        'crm.MCast',
-        on_delete=models.DO_NOTHING,
+    cast = models.ManyToManyField(
+        'crm.MCast'
     )
 
     total_sales = models.IntegerField(
-        _('Total Sales'),
+        _('総計（税抜）'),
     )
 
     total_tax_sales = models.IntegerField(
-        _('Total Sales included Tax'),
+        _('総計（税込）'),
     )
 
     def __str__(self):
@@ -127,7 +128,7 @@ class SalesDetail(AbstractBaseModel):
     )
 
     discount_flg = models.BooleanField(
-        _('Discount Flg'),
+        _('値引きフラグ'),
         default=False,
     )
 
@@ -139,11 +140,11 @@ class SalesDetail(AbstractBaseModel):
     )
 
     fixed_price = models.IntegerField(
-        _('Fixed Price'),
+        _('実価格（税抜）'),
     )
 
     fixed_tax_price = models.IntegerField(
-        _('Fixed Price included Tax'),
+        _('実価格（税込）'),
     )
 
     def __str__(self):
@@ -168,15 +169,17 @@ class BookingManagement(AbstractBaseModel):
     """
 
     booking_date = models.DateTimeField(
-        _('Booking Date')
+        _('予約登録日')
     )
 
     booking_start = models.DateTimeField(
-        _('Booking Start Time')
+        _('予約開始時間')
     )
 
     booking_end = models.DateTimeField(
-        _('Booking End Time')
+        _('予約終了時間'),
+        null=True,
+        blank=True,
     )
 
     customer = models.ForeignKey(
@@ -190,12 +193,12 @@ class BookingManagement(AbstractBaseModel):
     )
 
     total_person = models.SmallIntegerField(
-        _('Total Person'),
+        _('予約人数'),
         default=1,
     )
 
     cancel_flg = models.BooleanField(
-        _('Cancel Flg'),
+        _('キャンセルフラグ'),
         default=False,
     )
 
@@ -222,29 +225,34 @@ class AttendanceManagement(AbstractBaseModel):
         on_delete=models.CASCADE,
     )
 
-    date = models.DateField(
-        _('Work Date'),
-    )
-
-    attend_flg = models.BooleanField(
-        _('Attend Flg'),
-        default=False,
+    date = models.DateTimeField(
+        _('勤務日'),
     )
 
     start = models.DateTimeField(
-        _('Start Time'),
+        _('勤務開始時間'),
         null=True,
         blank=True,
     )
 
     end = models.DateTimeField(
-        _('End Time'),
+        _('勤務終了時間'),
         null=True,
         blank=True,
     )
 
+    late_flg = models.BooleanField(
+        _('遅刻フラグ'),
+        default=False,
+    )
+
+    attend_flg = models.BooleanField(
+        _('出勤フラグ'),
+        default=False,
+    )
+
     absent_flg = models.BooleanField(
-        _('Absent Flg'),
+        _('欠勤フラグ'),
         default=False,
     )
 
