@@ -2,6 +2,7 @@ from pathlib import Path
 import os
 import logging
 import environ
+import datetime
 
 
 logging.basicConfig(
@@ -67,6 +68,17 @@ REST_FRAMEWORK = {
         'user': '5/sec',
     }
 }
+
+
+JWT_AUTH = {
+    'JWT_VERIFY': True,
+    'JWT_VERIFY_EXPIRATION': True,
+    'JWT_LEEWAY': 0,
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=86400), # Sessionの保存期間を設定(24時間)
+    'JWT_ALLOW_REFRESH': True,
+    'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -165,3 +177,7 @@ CORS_ALLOW_HEADERS = default_headers + (
 )
 
 CORS_ALLOW_CREDENTIALS = True
+
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:8080',
+)

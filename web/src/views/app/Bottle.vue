@@ -1,6 +1,6 @@
 <template>
     <v-container
-        id="home-wrap"
+        id="bottle-wrap"
         fluid
     >
         <vs-row vs-w="12">
@@ -11,7 +11,7 @@
                 <Sidebar/>
             </vs-col>
             <vs-col vs-w="10">
-                <Top/>
+                <router-view/>
             </vs-col>
         </vs-row>
     </v-container>
@@ -20,20 +20,20 @@
 <script>
 import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
-import Top from '@/components/page/Top'
 
 export default {
-    name: 'HomeItem',
+    name: 'BottleItem',
+    data: () => ({
+    }),
     components: {
         Header,
         Sidebar,
-        Top
     }
 }
 </script>
 
 <style lang="scss" scoped>
-#home-wrap {
+#bottle-wrap {
     padding: 0;
 }
 </style>

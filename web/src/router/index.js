@@ -1,11 +1,24 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import pages from './pages'
-import HomeView from '../views/HomeView.vue'
+import customer from './customer'
+import cast from './cast'
+import sales from './sales'
+import attendance from './attendance'
+import booking from './booking'
+import bottle from './bottle'
 
 Vue.use(VueRouter)
 
-const routes = [...pages]
+const routes = [
+    ...pages,
+    {...customer},
+    {...cast},
+    {...sales},
+    {...attendance},
+    {...bottle},
+    {...booking},
+]
 
 const router = new VueRouter({
   mode: 'history',
@@ -14,14 +27,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
-    next()
-})
-
-router.beforeResolve((to, from, next) => {
-    next()
-})
-
-router.afterEach((to, from) => {
+	next()
 })
 
 export default router

@@ -1,8 +1,15 @@
 <template>
-    <v-app>
+    <!-- <v-app> -->
         <router-view/>
-    </v-app>
+    <!-- </v-app> -->
 </template>
+
+export default {
+    name: 'App',
+    data: () => ({
+
+    })
+}
 
 <style lang="scss">
 </style>
