@@ -2,12 +2,19 @@ import Vue from 'vue'
 import Vuex from 'vuex'
 import VuexPersistedstate from 'vuex-persistedstate'
 
-import customerActions from './customer'
-import castActions from './cast'
-import bottleActions from './bottle'
-import bookingActions from './booking'
-import salesActions from './sales'
-import attendanceActions from './attendance'
+import customerMutations from './mutations/customer'
+import castMutations from './mutations/cast'
+import bottleMutations from './mutations/bottle'
+import bookingMutations from './mutations/booking'
+import salesMutations from './mutations/sales'
+import attendanceMutations from './mutations/attendance'
+
+import customerActions from './actions/customer'
+import castActions from './actions/cast'
+import bottleActions from './actions/bottle'
+import bookingActions from './actions/booking'
+import salesActions from './actions/sales'
+import attendanceActions from './actions/attendance'
 
 Vue.use(Vuex)
 
@@ -42,6 +49,13 @@ export default new Vuex.Store({
         bottle: state => state.bottle,
     },
     mutations: {
+        ...customerMutations,
+        ...castMutations,
+        ...bottleMutations,
+        ...bookingMutations,
+        ...salesMutations,
+        ...attendanceMutations,
+
         setAuthToken (state, payload) {
             state.isAuth = true
             state.token = payload.data.token
