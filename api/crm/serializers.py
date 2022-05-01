@@ -359,9 +359,13 @@ class AttendanceSerializer(DynamicFieldsModelSerializer):
         return utc_to_jst(obj.date).strftime('%Y年%m月%d日')
 
     def get_start(self, obj):
+        if obj.start == None:
+            return ''
         return utc_to_jst(obj.start).strftime('%Y年%m月%d日 %H時%M分')
 
     def get_end(self, obj):
+        if obj.end == None:
+            return ''
         return utc_to_jst(obj.end).strftime('%Y年%m月%d日 %H時%M分')
 
 
@@ -400,7 +404,11 @@ class BookingSerializer(DynamicFieldsModelSerializer):
         return utc_to_jst(obj.booking_date).strftime('%Y年%m月%d日')
 
     def get_booking_start(self, obj):
+        if obj.booking_start == None:
+            return ''
         return utc_to_jst(obj.booking_start).strftime('%Y年%m月%d日 %H時%M分')
 
     def get_booking_end(self, obj):
+        if obj.booking_end == None:
+            return ''
         return utc_to_jst(obj.booking_end).strftime('%Y年%m月%d日 %H時%M分')

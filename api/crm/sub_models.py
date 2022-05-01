@@ -209,7 +209,7 @@ class BookingManagement(AbstractBaseModel):
 
     def __str__(self):
         start = self.booking_start.strftime('%Y年%m月%d日 %H時%M分')
-        end = self.booking_end.strftime('%H時%M分')
+        end = self.booking_end.strftime('%H時%M分') if self.booking_end != None else ''
         return self.customer.name + '様 ' + start + '~' + end
 
     class Meta:
