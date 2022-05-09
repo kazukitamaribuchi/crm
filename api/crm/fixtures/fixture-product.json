@@ -1,0 +1,90 @@
+[
+  {
+    "model": "crm.mproduct",
+    "pk": 1,
+    "fields": {
+      "name": "基本料金",
+      "price": 2000,
+      "category": 1,
+      "tax": 6,
+      "tax_price": 2600
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 2,
+    "fields": {
+      "name": "指名料",
+      "price": 2000,
+      "category": 2,
+      "tax": 6,
+      "tax_price": 2600
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 3,
+    "fields": {
+      "name": "場内指名料",
+      "price": 2000,
+      "category": 3,
+      "tax": 6,
+      "tax_price": 2600
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 4,
+    "fields": {
+      "name": "VIP料金",
+      "price": 5000,
+      "category": 4,
+      "tax": 6,
+      "tax_price": 6500
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 5,
+    "fields": {
+      "name": "同伴料金",
+      "price": 2000,
+      "category": 5,
+      "tax": 6,
+      "tax_price": 2600
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 6,
+    "fields": {
+      "name": "酒A",
+      "price": 500,
+      "category": 6,
+      "tax": 6,
+      "tax_price": 650
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 7,
+    "fields": {
+      "name": "酒B",
+      "price": 500,
+      "category": 7,
+      "tax": 6,
+      "tax_price": 650
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 8,
+    "fields": {
+      "name": "酒C",
+      "price": 1000,
+      "category": 8,
+      "tax": 6,
+      "tax_price": 1300
+    }
+  }
+]

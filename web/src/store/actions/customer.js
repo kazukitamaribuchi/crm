@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 const customerActions = {
     getCustomerList (ctx, kwargs) {
-        console.log('getCustomerList')
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',

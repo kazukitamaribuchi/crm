@@ -3,7 +3,6 @@ import { AttendanceList } from '@/components/index'
 
 const routes = {
     path: '/attendance',
-    name: 'Attendance',
     component: Attendance,
     children: [
         {

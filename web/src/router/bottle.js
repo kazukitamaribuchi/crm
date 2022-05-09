@@ -3,7 +3,6 @@ import { BottleList } from '@/components/index'
 
 const routes = {
     path: '/bottle',
-    name: 'Bottle',
     component: Bottle,
     children: [
         {

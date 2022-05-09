@@ -9,3 +9,5 @@ export { default as BookingList } from './page/booking/BookingList'
 export { default as BottleList } from './page/bottle/BottleList'
 export { default as CastList } from './page/cast/CastList'
 export { default as SalesList } from './page/sales/SalesList'
+
+export { default as CustomerDetail } from './page/customer/CustomerDetail'

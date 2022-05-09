@@ -6,6 +6,7 @@ import store from '@/store'
 import http from '@/plugins/http'
 import Vuesax from 'vuesax'
 import VueSession from 'vue-session'
+import 'material-icons/iconfont/material-icons.css';
 
 import 'vuesax/dist/vuesax.css'
 import 'boxicons/css/boxicons.min.css'

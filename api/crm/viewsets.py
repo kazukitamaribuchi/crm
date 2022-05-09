@@ -1,6 +1,18 @@
 from rest_framework import (
+    generics,
     permissions,
+    authentication,
+    status,
     viewsets,
+    filters,
+)
+
+from rest_framework.decorators import action
+from rest_framework.response import Response
+from django.db.models import Sum, Q
+
+from datetime import (
+    datetime,
 )
 
 from .serializers import (
@@ -35,6 +47,14 @@ from .sub_models import (
     BookingManagement,
 )
 
+from .exceptions import (
+    WrongUserException
+)
+
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     """
@@ -47,6 +67,90 @@ class CustomerViewSet(BaseModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = MCustomer.objects.all()
     serializer_class = CustomerSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        顧客作成
+        　・必須項目
+            custoner_no(CardManagement) => カードNoは渡したカードのNo
+
+            name
+            name_kana
+            age
+            birthday
+            job
+            company
+
+            ※後は要望に応じて
+        """
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(self.get_serializer(serializer.instance).data,
+                status=status.HTTP_201_CREATED)
+
+        logger.debug(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def update(self, request, pk=None):
+        logger.debug("★UPDATE")
+        logger.debug(request.data)
+        logger.debug(request.data['id'])
+
+        queryset = self.queryset.get(pk=pk)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+        # try:
+        #     customer = MCustomer.objects.get(pk=request.data['id'])
+        # except MCustomer.DoesNotExist:
+        #     return
+        #
+        # # 会員Noが正しいか
+        # # ・誰とも紐づいていない会員NoだったらOK。自分だったらそのまま
+        #
+        # customer_no = request.data['customer_no']
+        #
+        # try:
+        #     card_user = MCustomer.objects.get(card__customer_no=customer_no)
+        #     if card_user != customer:
+        #         raise WrongUserException
+        # except WrongUserException:
+        #     logger.error('既に他のユーザーと紐づいているカードなのでNG')
+        # except MCustomer.DoesNotExist:
+        #     logger.debug('顧客情報が見つからないので新たに紐づけ直す')
+        # else:
+        #     logger.debug('会員Noはそのまま')
+        #
+        #
+        #
+        # # 該当会員Noを持った顧客の取得
+        # #  MCustomer.objects.get(card__customer_no=1)
+        # # 該当会員Noのカードを取得
+        # #  CardManagement.objects.get(customer_no=1).customer
+        #
+        # # ★変わった項目のみ更新したい・・・
+        # customer.name = request.data['name']
+        # customer.name_kana = request.data['name_kana']
+        # customer.age = request.data['age']
+        # customer.birthday = datetime.strptime(request.data['birthday'], '%Y-%m-%d')
+        # customer.job = request.data['job']
+        # customer.company = request.data['company']
+        # customer.age = request.data['age']
+        # customer.age = request.data['age']
+        # customer.save()
+        #
+        # return Response(self.get_serializer(customer).data, status=status.HTTP_200_OK)
 
 
 class RankViewSet(BaseModelViewSet):

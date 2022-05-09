@@ -3,7 +3,6 @@ import { BookingList } from '@/components/index'
 
 const routes = {
     path: '/booking',
-    name: 'Booking',
     component: Booking,
     children: [
         {

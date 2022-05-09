@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 const bottleActions = {
     getBottleList (ctx, kwargs) {
-        console.log('getBottleList')
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',

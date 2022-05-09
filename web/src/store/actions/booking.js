@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 const bookingActions = {
     getBookingList (ctx, kwargs) {
-        console.log('getBookingList')
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',

@@ -18,7 +18,6 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-
 class UserManager(BaseUserManager):
 
     use_in_migrations = True
@@ -104,22 +103,18 @@ class MRank(models.Model):
         5:ブラック
         ※将来的な拡張性も考えてテーブルで管理する
     """
-    RANK_CHOICES = (
-        (1, _('Normal')),
-        (2, _('Silver')),
-        (3, _('Gold')),
-        (4, _('Platinum')),
-        (5, _('Black')),
+
+    rank_id = models.SmallIntegerField(
+        _('ランクid'),
     )
 
-    rank = models.SmallIntegerField(
-        _('Rank'),
-        choices=RANK_CHOICES,
-        default=1,
+    rank_name = models.CharField(
+        _('ランク名称'),
+        max_length=20,
     )
 
     def __str__(self):
-        return str(self.rank)
+        return self.rank_name
 
     class Meta:
         verbose_name_plural = 'ランクマスタ'
@@ -188,10 +183,12 @@ class MCustomer(AbstractHumanModel):
     rank = models.ForeignKey(
         MRank,
         on_delete=models.PROTECT,
+        related_name='customer',
     )
     card = models.OneToOneField(
         'crm.CardManagement',
         on_delete=models.PROTECT,
+        related_name='customer',
     )
     caution_flg = models.BooleanField(
         _('要注意人物フラグ'),
@@ -203,6 +200,11 @@ class MCustomer(AbstractHumanModel):
 
     class Meta:
         verbose_name_plural = '顧客マスタ'
+        indexes = [
+            models.Index(fields=['name'], name='mcustomer_name_idx'),
+            models.Index(fields=['total_sales'], name='mcustomer_total_sales_idx'),
+            models.Index(fields=['rank'], name='mcustomer_rank_idx'),
+        ]
 
 
 class MCast(AbstractHumanModel):
@@ -218,6 +220,12 @@ class MCast(AbstractHumanModel):
     real_name = models.CharField(
         _('本名'),
         max_length=100,
+        null=True,
+        blank=True,
+    )
+    real_name_kana = models.CharField(
+        _('本名(フリガナ)'),
+        max_length=150,
         null=True,
         blank=True,
     )
@@ -247,9 +255,9 @@ class MCast(AbstractHumanModel):
     # 今後考える？・・・
     salary = models.IntegerField(
         _('時給'),
-        default=0,
         null=True,
         blank=True,
+        default=0,
     )
 
     def __str__(self):
@@ -257,7 +265,62 @@ class MCast(AbstractHumanModel):
 
     class Meta:
         verbose_name_plural = 'キャストマスタ'
+        indexes = [
+            models.Index(fields=['name'], name='mcast_name_idx')
+        ]
 
+class MProductCategory(AbstractBaseModel):
+    """
+    商品のカテゴリ
+    　大カテゴリ
+        0: 基本料金
+        1: 飲料
+        2: フード
+    　中カテゴリ
+        【0】
+            0:基本料金・・・1
+            1:指名料・・・2
+            2:場内指名料・・・3
+            3:VIP料金・・・4
+            4:同伴料金・・・5
+        【1】
+            0:シャンパン・・・6
+            1:ワイン・・・7
+            2:焼酎・・・8
+            3:サワー・・・9
+            4:カクテル・・・10
+            5:
+            6:
+            7:
+        【2】
+            0:メイン・・・11
+            1:おかず・・・12
+            2:おつまみ・・・13
+            3:デザート・・・14
+            4:
+            5:
+    　小カテゴリ
+            →必要？？
+    """
+
+    large_category = models.SmallIntegerField(
+        _('大カテゴリー'),
+    )
+
+    middle_category = models.SmallIntegerField(
+        _('中カテゴリー'),
+    )
+
+    small_category = models.SmallIntegerField(
+        _('小カテゴリー'),
+        default=0,
+    )
+
+    def __str__(self):
+        return self.large_category + '-' + self.middle_category
+
+    class Meta:
+        verbose_name_plural = '商品カテゴリ'
 
 class MProduct(AbstractServiceModel):
     """
@@ -267,24 +330,23 @@ class MProduct(AbstractServiceModel):
         金額（税区分によって
     """
 
-    PRODUCT_CATEGORIES = (
-        (0, _('飲食')),
-        (1, _('指名料')),
-        (2, _('基本料金')),
-        (3, _('VIP料金')),
-        (4, _('同伴料金')),
-        (5, _('他')),
+    thumbnail = models.ImageField(
+        _('サムネイル'),
+        upload_to='upload/',
+        null=True,
+        blank=True,
     )
 
-    category = models.SmallIntegerField(
-        _('カテゴリ'),
-        choices=PRODUCT_CATEGORIES,
-        default=0,
+    category = models.ForeignKey(
+        MProductCategory,
+        on_delete=models.PROTECT,
+        related_name='product'
     )
 
     tax = models.ForeignKey(
         MTax,
         on_delete=models.PROTECT,
+        related_name='product',
     )
 
     tax_price = models.IntegerField(
@@ -296,7 +358,6 @@ class MProduct(AbstractServiceModel):
 
     class Meta:
         verbose_name_plural = '商品マスタ'
-
 
 
 class MSeat(models.Model):

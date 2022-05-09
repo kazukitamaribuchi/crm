@@ -3,7 +3,6 @@ import { SalesList } from '@/components/index'
 
 const routes = {
     path: '/sales',
-    name: 'Sales',
     component: Sales,
     children: [
         {

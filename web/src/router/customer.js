@@ -1,9 +1,8 @@
 import { Customer } from '@/views/index'
-import { CustomerList } from '@/components/index'
+import { CustomerList, CustomerDetail } from '@/components/index'
 
 const routes = {
     path: '/customer',
-    name: 'Customer',
     component: Customer,
     children: [
         {
@@ -12,6 +11,14 @@ const routes = {
             component: CustomerList,
             meta: {
                 title: 'CustomerListDao'
+            }
+        },
+        {
+            path: ':id',
+            name: 'CustomerDetail',
+            component: CustomerDetail,
+            meta: {
+                title: 'CustomerDetailDao'
             }
         }
     ]

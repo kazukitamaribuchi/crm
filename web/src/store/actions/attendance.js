@@ -2,7 +2,6 @@ import Vue from 'vue'
 
 const attendanceActions = {
     getAttendanceList (ctx, kwargs) {
-        console.log('getAttendanceList')
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',

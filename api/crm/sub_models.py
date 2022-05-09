@@ -6,6 +6,7 @@ from .db.base import (
 )
 
 
+
 class CardManagement(AbstractBaseModel):
     """
     カード管理テーブル
@@ -45,11 +46,13 @@ class BottleManagement(AbstractBaseModel):
         開栓日
     """
 
-    deadline = models.DateTimeField(
-        _('賞味期限'),
-    )
     open_date = models.DateTimeField(
         _('開封日'),
+    )
+    deadline = models.DateTimeField(
+        _('賞味期限'),
+        null=True,
+        blank=True,
     )
     end_flg = models.BooleanField(
         _('飲み終わったかフラグ'),
@@ -62,11 +65,13 @@ class BottleManagement(AbstractBaseModel):
     customer = models.OneToOneField(
         'crm.MCustomer',
         on_delete=models.PROTECT,
+        related_name='bottle',
     )
     # リレーション大丈夫か
     product = models.ForeignKey(
         'crm.MProduct',
         on_delete=models.PROTECT,
+        related_name='product'
     )
 
     def __str__(self):
@@ -89,19 +94,23 @@ class SalesHeader(AbstractBaseModel):
     customer = models.OneToOneField(
         'crm.MCustomer',
         on_delete=models.DO_NOTHING,
+        related_name='sales_header'
     )
 
     # on_delete要検討
     cast = models.ManyToManyField(
-        'crm.MCast'
+        'crm.MCast',
+        related_name='sales_header',
     )
 
     total_sales = models.IntegerField(
         _('総計（税抜）'),
+        default=0,
     )
 
     total_tax_sales = models.IntegerField(
         _('総計（税込）'),
+        default=0,
     )
 
     def __str__(self):
@@ -109,6 +118,9 @@ class SalesHeader(AbstractBaseModel):
 
     class Meta:
         verbose_name_plural = '売上ヘッダ'
+        indexes = [
+            models.Index(fields=['customer'], name='sales_header_customer_idx'),
+        ]
 
 
 class SalesDetail(AbstractBaseModel):
@@ -120,11 +132,22 @@ class SalesDetail(AbstractBaseModel):
     header = models.ForeignKey(
         SalesHeader,
         on_delete=models.CASCADE,
+        related_name='sales_detail'
     )
 
     product = models.OneToOneField(
         'crm.MProduct',
         on_delete=models.CASCADE,
+        related_name='sales_detail',
+    )
+
+    # 指名の場合キャストと紐づける。
+    # 複数指名の場合、誰を指名したか判別できなくなるためここで明細単位で紐づけ。
+    appoint = models.ForeignKey(
+        'crm.MCast',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
     )
 
     discount_flg = models.BooleanField(
@@ -141,6 +164,8 @@ class SalesDetail(AbstractBaseModel):
 
     fixed_price = models.IntegerField(
         _('実価格（税抜）'),
+        null=True,
+        blank=True,
     )
 
     fixed_tax_price = models.IntegerField(
@@ -168,7 +193,7 @@ class BookingManagement(AbstractBaseModel):
         人数
     """
 
-    booking_date = models.DateTimeField(
+    register_date = models.DateTimeField(
         _('予約登録日')
     )
 
@@ -190,6 +215,7 @@ class BookingManagement(AbstractBaseModel):
     cast = models.ManyToManyField(
         'crm.MCast',
         blank=True,
+        related_name='booking',
     )
 
     total_person = models.SmallIntegerField(
@@ -202,9 +228,15 @@ class BookingManagement(AbstractBaseModel):
         default=False,
     )
 
+    calcel_date = models.DateTimeField(
+        null=True,
+        blank=True,
+    )
+
     seat = models.ForeignKey(
         'crm.MSeat',
         on_delete=models.CASCADE,
+        related_name='booking',
     )
 
     def __str__(self):
@@ -223,16 +255,11 @@ class AttendanceManagement(AbstractBaseModel):
     cast = models.ForeignKey(
         'crm.MCast',
         on_delete=models.CASCADE,
-    )
-
-    date = models.DateTimeField(
-        _('勤務日'),
+        related_name='attendance',
     )
 
     start = models.DateTimeField(
         _('勤務開始時間'),
-        null=True,
-        blank=True,
     )
 
     end = models.DateTimeField(
@@ -262,3 +289,6 @@ class AttendanceManagement(AbstractBaseModel):
 
     class Meta:
         verbose_name_plural = '勤怠管理テーブル'
+        indexes = [
+            models.Index(fields=['cast'], name='attendance_cast_idx'),
+        ]

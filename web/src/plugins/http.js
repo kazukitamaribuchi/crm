@@ -9,6 +9,15 @@ export default {
             xsrfCookieName:'csrftoken',
 			xsrfHeaderName: 'X-CSRFTOKEN',
 			timeout: 10000,
+            // headers: {
+			// 	common: {
+			// 		'Content-Type': 'application/json;charset=utf-8',
+			// 		'Access-Control-Allow-Origin': 'http://localhost:8000/',
+			// 		'X-Requested-With': 'XMLHttpRequest',
+			// 		'Access-Control-Allow-Headers': 'Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With, X-HTTP-Method-Override, Accept',
+			// 		'Access-Control-Allow-Methods': 'PUT, DELETE, OPTIONS, POST, GET'
+			// 	}
+			// }
         })
 
         http.interceptors.request.use((config) => {

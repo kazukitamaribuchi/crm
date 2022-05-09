@@ -1,7 +1,7 @@
 <template>
-    <!-- <v-app> -->
+    <v-app>
         <router-view/>
-    <!-- </v-app> -->
+    </v-app>
 </template>
 
 export default {
@@ -12,4 +12,7 @@ export default {
 }
 
 <style lang="scss">
+.vs-table--tbody {
+    z-index: 200 !important;
+}
 </style>

@@ -4,6 +4,7 @@ import Vuetify, {
     VContainer,
     VCard,
     VCardTitle,
+    VCardSubtitle,
     VCardText,
     VCardActions,
     VRow,
@@ -17,6 +18,11 @@ import Vuetify, {
     VIcon,
     VSpacer,
     VBtn,
+    VSimpleTable,
+    VDialog,
+    VSelect,
+    VListGroup,
+    VListItemContent,
 } from 'vuetify/lib'
 
 
@@ -40,6 +46,12 @@ Vue.use(Vuetify, {
         VIcon,
         VSpacer,
         VBtn,
+        VCardSubtitle,
+        VSimpleTable,
+        VDialog,
+        VSelect,
+        VListGroup,
+        VListItemContent,
     }
 })
 

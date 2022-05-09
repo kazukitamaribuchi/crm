@@ -3,7 +3,6 @@ import { CastList } from '@/components/index'
 
 const routes = {
     path: '/cast',
-    name: 'Cast',
     component: Cast,
     children: [
         {

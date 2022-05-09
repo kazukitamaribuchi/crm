@@ -10,28 +10,36 @@
             </vs-col>
         </vs-row> -->
 
+        <v-row class="pl-7 pt-5">
+            <v-col cols="3">
+                <router-link to='/'>顧客管理システム</router-link>
+            </v-col>
+            <v-spacer/>
+            <v-col cols="2">
+                <!-- これらはコンポーネント化する -->
+                <v-btn
+                    text
+                >
+                    設定
+                </v-btn>
+                <LogoutBtn/>
+            </v-col>
+        </v-row>
 
-        <vs-navbar v-model="activeItem" class="nabarx">
-            <div slot="title">
-                <vs-navbar-title>
-                    <router-link to='/'>顧客管理システム</router-link></vs-navbar-title>
-            </div>
-            <vs-navbar-item index="1">
-                <a href="#">設定</a>
-            </vs-navbar-item>
-            <vs-navbar-item index="2">
-                <a href="#">ログアウト</a>
-            </vs-navbar-item>
-        </vs-navbar>
     </v-container>
 </template>
 
 <script>
+import LogoutBtn from '@/components/common/LogoutBtn'
+
 export default {
     name: 'HeaderItem',
     data: () => ({
         activeItem: {}
-    })
+    }),
+    components: {
+        LogoutBtn,
+    }
 }
 </script>
 
