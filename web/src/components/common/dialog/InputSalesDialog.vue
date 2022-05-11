@@ -22,16 +22,42 @@
                                 label="顧客No"
                             ></vs-input>
                         </v-col>
-                        <v-col cols="10">
-                            <v-card-text class="mt-0 pt-0 mb-0 pb-0">
-                                キャスト
-                            </v-card-text>
-                            <v-btn
-                                icon
-                                class="ml-4 mb-3 mt-0 pt-0"
+                    </v-row>
+
+                    <v-row>
+                        <v-col
+                            class="d-flex"
+                            cols="12"
+                            sm="1"
+                        >
+                            <v-select
+                                :items="items"
+                                outlined
+                                label="基本料金"
+                                dense
+                            ></v-select>
+                        </v-col>
+                            <!-- <vs-select
+                                v-model="inputSalesData.basic_service"
+                                label="基本料金"
                             >
-                                <i class='bx bxs-user-plus'></i>
-                            </v-btn>
+                                <vs-select-item
+                                    :key="index"
+                                    :value="item.value"
+                                    :text="item.text"
+                                    v-for="item, index in options1"
+                                    @click.stop="test"
+                                    @select="test"
+                                />
+                            </vs-select> -->
+                        <v-col cols="1">
+                            <vs-checkbox v-model="inputSalesData.vip">vip</vs-checkbox>
+                        </v-col>
+                    </v-row>
+
+                    <v-row>
+                        <v-col cols="12">
+                            <vs-button color="primary" type="gradient" icon="favorite">指名登録</vs-button>
                         </v-col>
                     </v-row>
 
@@ -167,6 +193,17 @@ export default {
         inputSalesDetailDialog: false,
         totalSales: 0,
         totalTaxSales: 0,
+        options1: [
+            {text:'0.5',value:0.5},
+            {text:'1',value:1},
+            {text:'1.5',value:1.5},
+            {text:'2',value:2},
+            {text:'2.5',value:2.5},
+            {text:'3',value:3},
+            {text:'3.5',value:3.5},
+            {text:'4',value:4},
+        ],
+        items: [0.5, 1, 1.5, 2]
     }),
     computed: {
         localInputSalesDialog: {
@@ -200,6 +237,9 @@ export default {
         init () {
             this.inputSalesData = {}
             this.localInputSalesDialog = false
+        },
+        test () {
+            console.log('test')
         }
     }
 }
@@ -211,15 +251,15 @@ export default {
   padding: 0px 40px;
 }
 
-.vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-    width: 100%;
-}
-.vs-input-parent::v-deep {
-    width: 100%;
-    .vs-input {
-        width: 100%;
-    }
-}
+// .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
+//     width: 100%;
+// }
+// .vs-input-parent::v-deep {
+//     width: 100%;
+//     .vs-input {
+//         width: 100%;
+//     }
+// }
 
 // .sales_dialog_footer {
 //     position: fixed;

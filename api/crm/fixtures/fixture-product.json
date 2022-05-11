@@ -58,7 +58,7 @@
     "model": "crm.mproduct",
     "pk": 6,
     "fields": {
-      "name": "酒A",
+      "name": "シャンパンA",
       "price": 500,
       "category": 6,
       "tax": 6,
@@ -69,7 +69,7 @@
     "model": "crm.mproduct",
     "pk": 7,
     "fields": {
-      "name": "酒B",
+      "name": "ワインA",
       "price": 500,
       "category": 7,
       "tax": 6,
@@ -80,11 +80,33 @@
     "model": "crm.mproduct",
     "pk": 8,
     "fields": {
-      "name": "酒C",
+      "name": "焼酎A",
       "price": 1000,
       "category": 8,
       "tax": 6,
       "tax_price": 1300
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 9,
+    "fields": {
+      "name": "サワーA",
+      "price": 500,
+      "category": 9,
+      "tax": 6,
+      "tax_price": 650
+    }
+  },
+  {
+    "model": "crm.mproduct",
+    "pk": 10,
+    "fields": {
+      "name": "カクテルA",
+      "price": 500,
+      "category": 10,
+      "tax": 6,
+      "tax_price": 650
     }
   }
 ]

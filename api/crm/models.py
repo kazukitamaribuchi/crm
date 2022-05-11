@@ -278,29 +278,36 @@ class MProductCategory(AbstractBaseModel):
         2: フード
     　中カテゴリ
         【0】
-            0:基本料金・・・1
-            1:指名料・・・2
-            2:場内指名料・・・3
-            3:VIP料金・・・4
-            4:同伴料金・・・5
+            「0」:基本料金・・・pk:1
+            「1」:指名料・・・pk:2
+            「2」:場内指名料・・・pk:3
+            「3」:VIP料金・・・pk:4
+            「4」:同伴料金・・・pk:5
         【1】
-            0:シャンパン・・・6
-            1:ワイン・・・7
-            2:焼酎・・・8
-            3:サワー・・・9
-            4:カクテル・・・10
-            5:
-            6:
-            7:
+            「0」:アルコール・・・
+            「1」:ノンアルコール・・・pk:13
+            「2」:ソフトドリンク・・・pk:14
         【2】
-            0:メイン・・・11
-            1:おかず・・・12
-            2:おつまみ・・・13
-            3:デザート・・・14
-            4:
-            5:
+            「0」:メイン・・・pk:15
+            「1」:サラダ・・・pk:16
+            「2」:おかず・・・pk:17
+            「3」:おつまみ・・・pk:18
+            「4」:デザート・・・pk:19
+            「5」:
+
     　小カテゴリ
-            →必要？？
+        →飲料[0]アルコール[0]のみ。
+
+        【1】【0】
+            「0」:シャンパン・・・pk:6
+            「1」:ワイン・・・pk:7
+            「2」:焼酎・・・pk:8
+            「3」:サワー・・・pk:9
+            「4」:カクテル・・・pk:10
+            「5」:日本酒・・・pk:11
+            「6」:ビール・・・pk:12
+            「7」:
+
     """
 
     large_category = models.SmallIntegerField(
@@ -317,7 +324,7 @@ class MProductCategory(AbstractBaseModel):
     )
 
     def __str__(self):
-        return self.large_category + '-' + self.middle_category
+        return str(self.large_category) + '-' + str(self.middle_category) + '-' + str(self.small_category)
 
     class Meta:
         verbose_name_plural = '商品カテゴリ'

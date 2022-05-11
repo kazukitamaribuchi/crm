@@ -44,7 +44,8 @@
     "pk": 6,
     "fields": {
       "large_category": 1,
-      "middle_category": 0
+      "middle_category": 0,
+      "small_category": 0
     }
   },
   {
@@ -52,7 +53,8 @@
     "pk": 7,
     "fields": {
       "large_category": 1,
-      "middle_category": 1
+      "middle_category": 0,
+      "small_category": 1
     }
   },
   {
@@ -60,7 +62,8 @@
     "pk": 8,
     "fields": {
       "large_category": 1,
-      "middle_category": 2
+      "middle_category": 0,
+      "small_category": 2
     }
   },
   {
@@ -68,7 +71,8 @@
     "pk": 9,
     "fields": {
       "large_category": 1,
-      "middle_category": 3
+      "middle_category": 0,
+      "small_category": 3
     }
   },
   {
@@ -76,12 +80,47 @@
     "pk": 10,
     "fields": {
       "large_category": 1,
-      "middle_category": 4
+      "middle_category": 0,
+      "small_category": 4
     }
   },
   {
     "model": "crm.mproductcategory",
     "pk": 11,
+    "fields": {
+      "large_category": 1,
+      "middle_category": 0,
+      "small_category": 5
+    }
+  },
+  {
+    "model": "crm.mproductcategory",
+    "pk": 12,
+    "fields": {
+      "large_category": 1,
+      "middle_category": 0,
+      "small_category": 6
+    }
+  },
+  {
+    "model": "crm.mproductcategory",
+    "pk": 13,
+    "fields": {
+      "large_category": 1,
+      "middle_category": 1
+    }
+  },
+  {
+    "model": "crm.mproductcategory",
+    "pk": 14,
+    "fields": {
+      "large_category": 1,
+      "middle_category": 2
+    }
+  },
+  {
+    "model": "crm.mproductcategory",
+    "pk": 15,
     "fields": {
       "large_category": 2,
       "middle_category": 0
@@ -89,7 +128,7 @@
   },
   {
     "model": "crm.mproductcategory",
-    "pk": 12,
+    "pk": 16,
     "fields": {
       "large_category": 2,
       "middle_category": 1
@@ -97,7 +136,7 @@
   },
   {
     "model": "crm.mproductcategory",
-    "pk": 13,
+    "pk": 17,
     "fields": {
       "large_category": 2,
       "middle_category": 2
@@ -105,10 +144,18 @@
   },
   {
     "model": "crm.mproductcategory",
-    "pk": 14,
+    "pk": 18,
     "fields": {
       "large_category": 2,
       "middle_category": 3
+    }
+  },
+  {
+    "model": "crm.mproductcategory",
+    "pk": 19,
+    "fields": {
+      "large_category": 2,
+      "middle_category": 4
     }
   }
 ]

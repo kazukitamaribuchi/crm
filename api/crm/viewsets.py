@@ -55,6 +55,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+PRODUCT_CATEGORY = {
+    0: [0,1,2,3,4],
+    1: {
+        0: [0,1,2,3,4,5,6],
+        1: [],
+        2: [],
+    },
+    2: [0,1,2,3,4],
+}
+
+
+
 
 class BaseModelViewSet(viewsets.ModelViewSet):
     """
@@ -183,6 +195,54 @@ class ProductViewSet(BaseModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = MProduct.objects.all()
     serializer_class = ProductSerializer
+
+    @action(methods=['get'], detail=False)
+    def get_product_by_category(self, request):
+        """
+        カテゴリ毎の商品を取得。
+        マスタデータになるため、画面側のlocalStorageに持つ。
+        """
+
+        res = {
+            0: {},
+            1: {
+                0: {},
+                1: [],
+                2: [],
+            },
+            2: {},
+        }
+
+        for large, items in PRODUCT_CATEGORY.items():
+            for middle in items:
+                if large == 0:
+                    q = MProduct.objects.get(Q(category__large_category=large), \
+                            Q(category__middle_category=middle))
+                    data = ProductSerializer(q).data
+                    logger.debug(data)
+
+                    res[large][middle] = data
+
+                if large == 1:
+                    if middle == 0:
+                        for key in items:
+                            for small in items[key]:
+                                # logger.debug(str(large) + str(middle) + str(small))
+                                q = MProduct.objects.filter(Q(category__large_category=large), \
+                                        Q(category__middle_category=middle), \
+                                        Q(category__small_category=small))
+                                data = ProductSerializer(q, many=True).data
+                                res[large][middle][small] = data
+
+                if large == 2:
+                    q = MProduct.objects.filter(Q(category__large_category=large), \
+                            Q(category__middle_category=middle))
+                    data = ProductSerializer(q, many=True).data
+                    res[large][middle] = data
+
+
+        return Response(res, status=status.HTTP_200_OK)
+
 
 
 class SeatViewSet(BaseModelViewSet):

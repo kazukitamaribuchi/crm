@@ -81,14 +81,14 @@ export default {
 #login-wrap {
     font-family: Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro,Yu Gothic Medium,游ゴシック Medium,YuGothic,游ゴシック体,メイリオ,sans-serif;
 
-    .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-        width: 100%;
-    }
-    .vs-input-parent::v-deep {
-        width: 100%;
-        .vs-input {
-            width: 100%;
-        }
-    }
+    // .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
+    //     width: 100%;
+    // }
+    // .vs-input-parent::v-deep {
+    //     width: 100%;
+    //     .vs-input {
+    //         width: 100%;
+    //     }
+    // }
 }
 </style>

@@ -156,7 +156,7 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 // .con-slot-tabs {
 //     margin-bottom: 4px;
 //     background: white !important;

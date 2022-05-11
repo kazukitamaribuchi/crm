@@ -8,6 +8,7 @@ from .models import (
     MRank,
     MTax,
     MProduct,
+    MProductCategory,
     MSeat,
 )
 
@@ -339,10 +340,84 @@ class TaxSerializer(DynamicFieldsModelSerializer):
         ]
 
 
+class ProductCategorySerializer(DynamicFieldsModelSerializer):
+
+    LARGE_CATEGORIES = {
+        0: '基本料金',
+        1: '飲料',
+        2: 'フード'
+    }
+
+    CATEGORIES = {
+        0: {
+            0: '基本料金',
+            1: '指名料',
+            2: '場内指名料',
+            3: 'VIP料金',
+            4: '同伴料金',
+        },
+        1: {
+            0: [
+                'アルコール',
+                {
+                    0: 'シャンパン',
+                    1: 'ワイン',
+                    2: '焼酎',
+                    3: 'サワー',
+                    4: 'カクテル'
+                },
+            ],
+            1: 'ノンアルコール',
+            2: 'ソフトドリンク',
+        },
+        2: {
+            0: 'メイン',
+            1: 'サラダ',
+            2: 'おかず',
+            3: 'おつまみ',
+            4: 'デザート',
+        }
+    }
+
+    large_category_label = serializers.SerializerMethodField()
+    middle_category_label = serializers.SerializerMethodField()
+    small_category_label = serializers.SerializerMethodField()
+
+    class Meta:
+        model = MProductCategory
+        fields = [
+            'id',
+            'large_category',
+            'middle_category',
+            'small_category',
+            'large_category_label',
+            'middle_category_label',
+            'small_category_label',
+        ]
+
+    def get_large_category_label(self, obj):
+        return self.LARGE_CATEGORIES[obj.large_category]
+
+    def get_middle_category_label(self, obj):
+        # logger.debug('large' + str(obj.large_category))
+        # logger.debug('middle' + str(obj.middle_category))
+        # logger.debug('small' + str(obj.small_category))
+        if obj.large_category == 1 and obj.middle_category == 0:
+            return self.CATEGORIES[obj.large_category][obj.middle_category][0]
+        return self.CATEGORIES[obj.large_category][obj.middle_category]
+
+    def get_small_category_label(self, obj):
+        if obj.large_category == 1 and obj.middle_category == 0:
+            return self.CATEGORIES[obj.large_category][obj.middle_category][1][obj.small_category]
+        return 'なし'
+
+
 class ProductSerializer(DynamicFieldsModelSerializer):
 
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
+    category = ProductCategorySerializer()
+    tax = TaxSerializer(fields=['id', 'tax_rate'])
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

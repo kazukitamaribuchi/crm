@@ -16,7 +16,7 @@
                 <v-row>
                     <v-col cols="2">
                         <v-list>
-                            <v-list-item
+                            <!-- <v-list-item
                                 class="base_service"
                                 @click="showBaseService"
                             >
@@ -30,7 +30,7 @@
                                         基本料金
                                     </v-list-item-title>
                                 </v-list-item-content>
-                            </v-list-item>
+                            </v-list-item> -->
                             <v-list-group
                                 v-for="item in items"
                                 :key="item.title"
@@ -48,6 +48,7 @@
                                     v-for="child in item.items"
                                     :key="child.title"
                                     :class="`service_${child.category}_${child.id}`"
+                                    @click="showProductByCategory(child)"
                                 >
                                     <v-list-item-content>
                                         <v-list-item-title v-text="child.title"></v-list-item-title>
@@ -84,7 +85,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
 
@@ -96,6 +97,8 @@ export default {
             required: true,
         },
     },
+    created () {
+    },
     data: () => ({
         inputSalesDetailData: {},
         items: [
@@ -106,16 +109,22 @@ export default {
                     {
                         id: 1,
                         category: 'drink',
+                        large_category: 1,
+                        middle_category: 0,
                         title: 'アルコール',
                     },
                     {
                         id: 2,
                         category: 'drink',
+                        large_category: 1,
+                        middle_category: 1,
                         title: 'ノンアルコール'
                     },
                     {
                         id: 3,
                         category: 'drink',
+                        large_category: 1,
+                        middle_category: 2,
                         title: 'ソフトドリンク'
                     },
                 ],
@@ -127,11 +136,36 @@ export default {
                     {
                         id: 1,
                         category: 'food',
-                        title: 'おつまみ'
+                        large_category: 2,
+                        middle_category: 0,
+                        title: 'メイン'
                     },
                     {
                         id: 2,
                         category: 'food',
+                        large_category: 2,
+                        middle_category: 1,
+                        title: 'サラダ'
+                    },
+                    {
+                        id: 3,
+                        category: 'food',
+                        large_category: 2,
+                        middle_category: 2,
+                        title: 'おかず'
+                    },
+                    {
+                        id: 4,
+                        category: 'food',
+                        large_category: 2,
+                        middle_category: 3,
+                        title: 'おつまみ'
+                    },
+                    {
+                        id: 5,
+                        category: 'food',
+                        large_category: 2,
+                        middle_category: 4,
                         title: 'デザート'
                     },
                 ],
@@ -140,6 +174,9 @@ export default {
         ]
     }),
     computed: {
+        ...mapGetters([
+            'product',
+        ]),
         localInputSalesDetailDialog: {
             get: function () {
                 return this.inputSalesDetailDialog
@@ -160,8 +197,14 @@ export default {
             this.inputSalesDetailData = {}
             this.localInputSalesDetailDialog = false
         },
-        showBaseService () {
-            console.log('showBase')
+        showProductByCategory (val) {
+            const l = val.large_category
+            const m = val.middle_category
+            if (l == 1 && m == 0) {
+                console.log(this.product[l][m])
+            } else {
+                console.log(this.product[l][m])
+            }
         }
     }
 }

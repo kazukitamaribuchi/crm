@@ -8,6 +8,7 @@ import bottleMutations from './mutations/bottle'
 import bookingMutations from './mutations/booking'
 import salesMutations from './mutations/sales'
 import attendanceMutations from './mutations/attendance'
+import productMutations from './mutations/product'
 
 import customerActions from './actions/customer'
 import castActions from './actions/cast'
@@ -15,6 +16,7 @@ import bottleActions from './actions/bottle'
 import bookingActions from './actions/booking'
 import salesActions from './actions/sales'
 import attendanceActions from './actions/attendance'
+import productActions from './actions/product'
 
 Vue.use(Vuex)
 
@@ -28,6 +30,7 @@ const initialState = {
     cast: [],
     booking: [],
     bottle: [],
+    product: [],
 }
 
 
@@ -47,6 +50,7 @@ export default new Vuex.Store({
         cast: state => state.cast,
         booking: state => state.booking,
         bottle: state => state.bottle,
+        product: state => state.product,
     },
     mutations: {
         ...customerMutations,
@@ -55,6 +59,7 @@ export default new Vuex.Store({
         ...bookingMutations,
         ...salesMutations,
         ...attendanceMutations,
+        ...productMutations,
 
         setAuthToken (state, payload) {
             state.isAuth = true
@@ -74,6 +79,7 @@ export default new Vuex.Store({
         ...bottleActions,
         ...salesActions,
         ...attendanceActions,
+        ...productActions,
 
         checkAuthToken (ctx, kwargs) {
             return new Promise((resolve, reject) => {
@@ -89,6 +95,7 @@ export default new Vuex.Store({
                 })
                 .catch(e => {
                     console.log(e)
+                    this.commit('initAuthToken')
                     reject(e)
                 })
             })
