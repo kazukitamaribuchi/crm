@@ -1,20 +1,16 @@
 <template>
-    <v-container
-        id="home-wrap"
+    <b-container
+        id="home_wrap"
         fluid
     >
-        <vs-row vs-w="12">
-            <Header/>
-        </vs-row>
-        <vs-row vs-w="12">
-            <vs-col vs-w="2">
-                <Sidebar/>
-            </vs-col>
-            <vs-col vs-w="10">
+        <Header/>
+        <b-row class="content_wrap">
+            <Sidebar/>
+            <div class="content">
                 <Top/>
-            </vs-col>
-        </vs-row>
-    </v-container>
+            </div>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -40,14 +36,14 @@ export default {
         //     console.log(e)
         // })
 
-        this.getProductByCategory()
-        .then(res => {
-            console.log(res)
-            this.setProductList(res)
-        })
-        .catch(e => {
-            console.log(e)
-        })
+        // this.getProductByCategory()
+        // .then(res => {
+        //     console.log(res)
+        //     this.setProductList(res)
+        // })
+        // .catch(e => {
+        //     console.log(e)
+        // })
     },
     computed: {
         ...mapGetters([
@@ -67,7 +63,20 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#home-wrap {
-    padding: 0;
-}
+    #home_wrap {
+        height: $home-height;
+        .content_wrap {
+
+            background-color: $theme-color2;
+
+            height: calc( #{$content-height} - #{$header-height} );
+
+            display: flex;
+            display: -webkit-flex;
+
+            .content {
+                width: $content-width;
+            }
+        }
+    }
 </style>

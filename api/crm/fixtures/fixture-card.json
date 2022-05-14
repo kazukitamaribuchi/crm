@@ -68,5 +68,12 @@
     "fields": {
       "customer_no": 10
     }
+  },
+  {
+    "model": "crm.cardmanagement",
+    "pk": 11,
+    "fields": {
+      "customer_no": 11
+    }
   }
 ]

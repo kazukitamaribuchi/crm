@@ -1,28 +1,11 @@
 <template>
-    <v-dialog
+    <b-modal
         v-model="dialog"
-        max-width="300px"
+        hide-header
+        @ok="logout"
     >
-        <v-card>
-            <v-card-subtitle>
-                ログアウトしますか？
-            </v-card-subtitle>
-            <v-card-actions>
-                <vs-button
-                    color="primary"
-                    type="filled"
-                    icon="done"
-                    @click="logout"
-                >はい</vs-button>
-                <vs-button
-                    color="primary"
-                    type="border"
-                    icon="done"
-                    @click="close"
-                >いいえ</vs-button>
-            </v-card-actions>
-        </v-card>
-    </v-dialog>
+        ログアウトしますか？
+    </b-modal>
 </template>
 
 <script>
@@ -58,5 +41,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
 </style>

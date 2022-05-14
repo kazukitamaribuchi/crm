@@ -12,4 +12,4 @@ RUN apk add \
 	git \
 	vim
 
-RUN yarn global add @vue/cli
+RUN yarn global add @vue/cli@5.0.4

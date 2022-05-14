@@ -1,36 +1,23 @@
 <template>
-    <v-container fluid id="header_wrap">
-        <!-- <vs-row>
-            <vs-col vs-w="3">
-                <h1 class="header_title">顧客管理システム（仮）</h1>
-            </vs-col>
-            <v-spacer/>
-            <vs-col vs-w="3">
-                menu
-            </vs-col>
-        </vs-row> -->
-
-        <v-row class="pl-7 pt-5">
-            <v-col cols="3">
-                <router-link to='/'>顧客管理システム</router-link>
-            </v-col>
-            <v-spacer/>
-            <v-col cols="2">
-                <!-- これらはコンポーネント化する -->
-                <v-btn
-                    text
-                >
-                    設定
-                </v-btn>
-                <LogoutBtn/>
-            </v-col>
-        </v-row>
-
-    </v-container>
+    <b-row id="header_wrap" class="pt-2">
+        <b-col cols="6">
+            <router-link
+                to='/'
+                class="header_title"
+            >Customer Management System</router-link>
+        </b-col>
+        <b-col cols="6">
+            <b-nav align="right">
+                <Settings/>
+                <Logout/>
+            </b-nav>
+        </b-col>
+    </b-row>
 </template>
 
 <script>
-import LogoutBtn from '@/components/common/LogoutBtn'
+import Logout from '@/components/common/Logout'
+import Settings from '@/components/common/Settings'
 
 export default {
     name: 'HeaderItem',
@@ -38,26 +25,28 @@ export default {
         activeItem: {}
     }),
     components: {
-        LogoutBtn,
+        Logout,
+        Settings,
     }
 }
 </script>
 
 <style lang="scss" scoped>
 #header_wrap {
-    padding: 0;
-    margin-bottom: 20px;
-
-    .vs-navbar {
-        padding: 14px 30px 10px 20px;
-        box-shadow: none !important;
-        -webkit-box-shadow: none !important;
-    }
+    height: $header-height;
+    background-color: $theme-color;
+    color: white;
 
     .header_title {
-        font-size: 24px;
-        font-weight: 100;
-        margin: 4px 0 5px 20px;
+        padding-left: 1rem;
+        color: $menu-text-color;
+        text-decoration: none;
+        // font-family: 'Anton', sans-serif;
+        // font-family: 'Roboto Condensed', sans-serif;
+        position: relative;
+        top: 2px;
+        font-weight: bold;
+        font-size: 22px;
     }
 }
 

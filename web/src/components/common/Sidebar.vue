@@ -1,5 +1,43 @@
 <template>
-    <v-container id="sidebar-wrap">
+    <div id="sidebar_wrap" class="pt-5">
+        <div
+            v-for="(item, id) in items"
+            :key="id"
+            class="siderbar_item"
+        >
+            <b-icon
+                :icon=item.icon
+                aria-hidden="true"
+                class="siderbar_icon"
+                @click="toPage(item)"
+            ></b-icon>
+        </div>
+        <!-- <b-icon icon="people" aria-hidden="true"></b-icon>
+        <b-icon icon="people-fill" aria-hidden="true"></b-icon>
+        <b-icon icon="people-filcircles" aria-hidden="true"></b-icon>
+        <b-icon icon="person-fill" aria-hidden="true"></b-icon>
+        <b-icon icon="person-plus" aria-hidden="true"></b-icon>
+        <b-icon icon="person-plus-fill" aria-hidden="true"></b-icon>
+        <b-icon icon="person-square" aria-hidden="true"></b/</b-icon>
+        <b-icon icon="clipboard-check" aria-hidden="true"></b-icon>
+        <b-icon icon="clipboard-data" aria-hidden="true"></b-icon>
+        <b-icon icon="plus-circle-fill" aria-hidden="true"></b-icon>
+        <b-icon icon="plus-lg" aria-hidden="true"></b-icon>
+        <b-icon icon="plus-square" aria-hidden="true"></b-icon>
+        <b-icon icon="receipt" aria-hidden="true"></b-icon>
+        <b-icon icon="search" aria-hidden="true"></b-icon>
+        <b-icon icon="calendar" aria-hidden="true"></b-icon>
+        <b-icon icon="calendar2" aria-hidden="true"></b-icon>
+        <b-icon icon="calendar2-check" aria-hidden="true"></b-icon>
+        <b-icon icon="calendar2-date" aria-hidden="true"></b-icon> -->
+
+        <SearchCustomerNoDialog
+            ref="searchCustomerNo"
+        />
+    </div>
+
+
+    <!-- <v-container id="sidebar-wrap">
         <v-list>
             <v-list-item
                 v-for="(menu, i) in menus"
@@ -20,7 +58,7 @@
         <SearchCustomerNoDialog
             ref="searchCustomerNo"
         />
-    </v-container>
+    </v-container> -->
 </template>
 
 <script>
@@ -33,58 +71,94 @@ export default {
     },
     data: () => ({
         active: false,
-        menus: [
+        items: [
             {
-                title: '顧客管理',
-                icon: 'bx bxs-user-badge',
-                // icon: 'bx bxs-user',
-                style: 'color:#914240',
+                icon: 'people-fill',
                 link: 'CustomerList',
                 type: 'Page'
             },
             {
-                title: '売上管理',
-                icon: 'bx bx-calculator',
-                style: 'color:#757733',
+                icon: 'credit-card',
                 link: 'SalesList',
                 type: 'Page'
             },
             {
-                title: '勤怠管理',
-                icon: 'bx bxs-calendar',
-                style: 'color:#657733',
-                link: 'AttendanceList',
-                type: 'Page'
-            },
-            {
-                title: 'キャスト管理',
-                icon: 'bx bx-user',
-                style: 'color:#657733',
+                icon: 'person-square',
                 link: 'CastList',
                 type: 'Page'
             },
             {
-                title: '予約管理',
-                icon: 'bx bxs-book',
-                style: 'color:#657733',
+                icon: 'calendar2-date',
+                link: 'AttendanceList',
+                type: 'Page'
+            },
+            {
+                icon: 'clipboard-check',
                 link: 'BookingList',
                 type: 'Page'
             },
+            // ボトルのアイコンどうするか・・・
+            // {
+            //     icon: 'calendar2-date',
+            // },
             {
-                title: 'ボトル管理',
-                icon: 'bx bxs-drink',
-                style: 'color:#657733',
-                link: 'BottleList',
-                type: 'Page'
-            },
-            {
-                title: '顧客No検索',
-                icon: 'bx bx-search-alt-2',
-                style: 'color:#914240',
+                icon: 'search',
                 ref: 'searchCustomerNo',
                 type: 'Dialog'
-            }
-        ]
+            },
+        ],
+        // menus: [
+        //     {
+        //         title: '顧客管理',
+        //         icon: 'bx bxs-user-badge',
+        //         // icon: 'bx bxs-user',
+        //         style: 'color:#914240',
+        //         link: 'CustomerList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: '売上管理',
+        //         icon: 'bx bx-calculator',
+        //         style: 'color:#757733',
+        //         link: 'SalesList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: '勤怠管理',
+        //         icon: 'bx bxs-calendar',
+        //         style: 'color:#657733',
+        //         link: 'AttendanceList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: 'キャスト管理',
+        //         icon: 'bx bx-user',
+        //         style: 'color:#657733',
+        //         link: 'CastList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: '予約管理',
+        //         icon: 'bx bxs-book',
+        //         style: 'color:#657733',
+        //         link: 'BookingList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: 'ボトル管理',
+        //         icon: 'bx bxs-drink',
+        //         style: 'color:#657733',
+        //         link: 'BottleList',
+        //         type: 'Page'
+        //     },
+        //     {
+        //         title: '顧客No検索',
+        //         icon: 'bx bx-search-alt-2',
+        //         style: 'color:#914240',
+        //         ref: 'searchCustomerNo',
+        //         type: 'Dialog'
+        //     }
+        // ]
     }),
     methods: {
         toPage (item) {
@@ -97,3 +171,25 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+    #sidebar_wrap {
+        width: $siderbar-width;
+        background-color: $theme-color;
+
+        // height: calc( #{$sidebar-height} - #{$header-height} );
+        // margin-top: 1rem;
+        color: white;
+
+        .siderbar_item {
+            height: 80px;
+            font-size: 1.5rem;
+
+            .siderbar_icon {
+                display: block;
+                margin: 0 auto;
+                cursor: pointer;
+            }
+        }
+    }
+</style>

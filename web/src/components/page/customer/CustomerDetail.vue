@@ -1,125 +1,155 @@
 <template>
-    <div>
-        <v-card
-            flat
+    <div id="customer_detail_wrap">
+        <b-card
+            class="customer_detail"
+            text-variant="white"
         >
-            <v-card-title>
-                顧客詳細
-                <v-btn
-                    icon
-                    @click="showEditCustomerDialog"
-                ><i class='bx bxs-edit'></i></v-btn>
-            </v-card-title>
-            <vs-tabs :color="colorx" alignment="fixed">
-                <vs-tab label="基本情報" @click="colorx = 'rgb(16, 16, 179)'">
-                    <v-card-title>
-                        {{ customerData.name }} ({{ customerData.age }})
-                    </v-card-title>
-                    <v-row>
-                        <v-col cols="4">
-                            <!-- <v-card-subtitle>
-                                年齢
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.age }}
-                            </v-card-text> -->
-                            <v-card-subtitle>
-                                誕生日
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.birthday }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                職業
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.job }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                会社
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.company }}
-                            </v-card-text>
-                            <!-- <v-card-subtitle>
-                                住所
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.address }}
-                            </v-card-text> -->
-                        </v-col>
-                        <v-col cols="4">
-                            <v-card-subtitle>
-                                初回来店日
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.first_visit }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                総来店回数
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.total_visit }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                総売上
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.total_sales }}
-                            </v-card-text>
-                        </v-col>
-                        <v-col cols="4">
-                            <v-card-subtitle>
-                                ランク
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.rank_id }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                会員No
-                            </v-card-subtitle>
-                            <v-card-text>
-                                {{ customerData.customer_no }}
-                            </v-card-text>
-                            <v-card-subtitle>
-                                担当
-                            </v-card-subtitle>
-                            <v-card-text>
-                                エミ
-                            </v-card-text>
-                        </v-col>
-                    </v-row>
-                </vs-tab>
-                <vs-tab label="売上情報" @click="colorx = 'rgb(244, 10, 10)'">
-                    <div class="con-tab-ejemplo">
-                        売上情報
-                    </div>
-                </vs-tab>
-                <vs-tab label="その他" @click="colorx = 'rgb(16, 243, 249)'">
-                    <div class="con-tab-ejemplo">
-                        login
-                    </div>
-                </vs-tab>
-            </vs-tabs>
-        </v-card>
+            <b-card-title
+                :title="customerData.name"
+            >
+            </b-card-title>
+            <b-card-sub-title
+                :sub-title=customerData.name_kana
+            >
+            </b-card-sub-title>
 
-        <EditCustomerDialog
+            <b-row>
+                <b-col cols="4">
+                    <b-card
+                        header="顧客ランク"
+                        class="mb-2"
+                        header-text-variant="white"
+                        :header-bg-variant=backColorHeaderRank
+                        border-variant="secondary"
+                        :text-variant=textColorRank
+                        :bg-variant=backColorRank
+                    >
+                        <b-card-body class="customer_detail_card_body">
+                            <div>
+                                <label for="rating-inline">
+                                    <b-icon
+                                        :icon=cardType
+                                        :style=cardColor
+                                    ></b-icon>
+                                    {{ customerData.rank_name }}
+                                </label>
+                                <b-form-rating
+                                    id="rating-inline"
+                                    inline no-border
+                                    :value=customerData.rank_id
+                                    readonly
+                                ></b-form-rating>
+                            </div>
+                            <small>
+                                初回来店日 2022年6月15日
+                                <!-- 初回来店日 {{ customerData.first_visit }} -->
+                            </small>
+                        </b-card-body>
+                    </b-card>
+                    <b-card
+                        header="基本情報"
+                        :text-variant=textColorBasis
+                        :bg-variant=backColorBasis
+                    >
+                        <b-card-body class="customer_detail_card_body">
+                            <b-card-text>
+                                <b-form-group
+                                    label="年齢"
+                                    class="customer_detail_age"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            disabled
+                                            v-model="customerData.age"
+                                            type="text"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+
+                                <b-form-group
+                                    label="誕生日"
+                                    class="customer_detail_birthday"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            disabled
+                                            v-model="customerData.birthday"
+                                            type="text"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+
+                                <b-form-group
+                                    label="職業"
+                                    class="customer_detail_job"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            disabled
+                                            v-model="customerData.job"
+                                            type="text"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+
+                                <b-form-group
+                                    label="会社"
+                                    class="customer_detail_company"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            disabled
+                                            v-model="customerData.company"
+                                            type="text"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+
+                            </b-card-text>
+                        </b-card-body>
+                    </b-card>
+                </b-col>
+                <b-col cols="3">
+                    <b-card
+                        title="トータル売上などグラフで"
+                        text-variant="black"
+                    >
+
+                    </b-card>
+                </b-col>
+                <b-col>
+                    <b-card
+                        title="グラフとかで傾向とか"
+                        text-variant="black"
+                    >
+
+                    </b-card>
+                </b-col>
+            </b-row>
+        </b-card>
+
+
+        <!-- <EditCustomerDialog
             ref="editCustomer"
             @update="customerData = $event"
-        />
+        /> -->
+
     </div>
 </template>
 
 <script>
 import EditCustomerDialog from '@/components/common/dialog/EditCustomerDialog'
 import { mapGetters } from 'vuex'
+import _ from 'lodash'
 
 export default {
     name: 'CustomerDetailItem',
     data: () => ({
         customerData: {},
+        editCustomerData: {},
         colorx: 'rgb(16, 16, 179)',
         editCustomerDialog: false,
+        isDanger: false,
     }),
     props: {
     },
@@ -130,6 +160,51 @@ export default {
         ...mapGetters([
             'customer',
         ]),
+        cardColor () {
+            let cardColor = 'rgb(116, 116, 116)'
+            switch (this.customerData.rank_id) {
+                case 1:
+                    cardColor = 'rgb(116, 116, 116)'
+                    break;
+                case 2:
+                    cardColor = 'rgb(192, 192, 192)'
+                    break;
+                case 3:
+                    cardColor = 'rgb(185, 199, 19)'
+                    break;
+                case 4:
+                    cardColor = 'rgb(98, 98, 98)'
+                    break;
+                case 5:
+                    cardColor ='rgb(0, 0, 0)'
+                    break;
+            }
+            return `color: ${cardColor};`
+        },
+        cardType () {
+            if (this.customerData.rank_id == 1) return 'credit-card2-front'
+            return 'credit-card2-front-fill'
+        },
+        backColorBasis () {
+            if (this.isDanger) return 'danger'
+            return 'light'
+        },
+        textColorBasis () {
+            if (this.isDanger) return 'white'
+            return 'black'
+        },
+        backColorHeaderRank () {
+            if (this.isDanger) return 'danger'
+            return 'dark'
+        },
+        backColorRank () {
+            if (this.isDanger) return 'danger'
+            return 'light'
+        },
+        textColorRank () {
+            if (this.isDanger) return 'white'
+            return 'black'
+        },
     },
     created () {
         this.$axios({
@@ -138,7 +213,8 @@ export default {
         })
         .then(res => {
             console.log(res)
-            this.customerData = res.data
+            this.customerData = _.cloneDeep(res.data)
+            this.isDanger = this.customerData.caution_flg
         })
         .catch(e => {
             console.log(e)
@@ -157,6 +233,48 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    #customer_detail_wrap {
+        background-color: $theme-color;
+        // background-color: white;
+        margin-top: $main-top-margin;
+        margin-left: $main-top-side-margin;
+        margin-right: $main-top-side-margin;
+        height: $main-height;
+        padding: 20px;
+
+        .customer_detail {
+            background-color: $theme-color;
+            height: 100%;
+
+            .customer_detail_card_body {
+                padding: 0 1.5rem;
+
+
+                .input-group-text {
+                    height: 100%;
+                    border-radius: 5px 0 0 5px !important;
+                }
+
+                .customer_detail_age {
+                    width: 6rem;
+                }
+
+                .customer_detail_birthday {
+                    width: 8rem;
+                }
+
+                .customer_detail_job {
+                    width: 12rem;
+                }
+
+            }
+
+        }
+
+    }
+
+
+
 // .con-slot-tabs {
 //     margin-bottom: 4px;
 //     background: white !important;

@@ -1,20 +1,16 @@
 <template>
-    <v-container
+    <b-container
         id="sales-wrap"
         fluid
     >
-        <vs-row vs-w="12">
-            <Header/>
-        </vs-row>
-        <vs-row vs-w="12">
-            <vs-col vs-w="2">
-                <Sidebar/>
-            </vs-col>
-            <vs-col vs-w="10">
+        <Header/>
+        <b-row class="content_wrap">
+            <Sidebar/>
+            <div class="content">
                 <router-view/>
-            </vs-col>
-        </vs-row>
-    </v-container>
+            </div>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -33,7 +29,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#sales-wrap {
-    padding: 0;
-}
+    #sales_wrap {
+        height: $home-height;
+        .content_wrap {
+
+            background-color: $theme-color2;
+
+            height: calc( #{$content-height} - #{$header-height} );
+
+            display: flex;
+            display: -webkit-flex;
+
+            .content {
+                width: $content-width;
+                height: $content-height;
+            }
+        }
+    }
 </style>

@@ -1,5 +1,36 @@
 <template>
-    <v-dialog
+    <b-modal
+        v-model="dialog"
+        title="顧客No検索"
+        ok-title="search"
+        @ok="search"
+    >
+        <b-form class="mt-3">
+            <b-form-group
+                class="search_customer_no"
+            >
+                <b-input-group>
+                    <b-input-group-prepend is-text>
+                        <b-icon icon="person-fill"></b-icon>
+                    </b-input-group-prepend>
+                    <b-form-input
+                        v-model="customerNo"
+                        type="text"
+                        placeholder="顧客No"
+                        required
+                    ></b-form-input>
+                </b-input-group>
+            </b-form-group>
+
+            <!-- <b-button
+                block
+                variant="primary"
+                class="search_btn"
+                @click="search"
+            >検索</b-button> -->
+        </b-form>
+    </b-modal>
+    <!-- <v-dialog
         v-model="dialog"
         max-width="400px"
     >
@@ -38,7 +69,7 @@
                 </v-row>
             </v-container>
         </v-card>
-    </v-dialog>
+    </v-dialog> -->
 </template>
 
 <script>
@@ -53,7 +84,7 @@ export default {
     },
     data: () => ({
         dialog: false,
-        customer_no: '',
+        customerNo: '',
     }),
     computed: {
     },
@@ -66,12 +97,12 @@ export default {
             this.customer_no = ''
         },
         search () {
-            if (this.customer_no != '') {
+            if (this.customerNo != '') {
                 // 正しいcustoner_noであれば
                 this.$router.push({
                     name: 'CustomerDetail',
                     params: {
-                        id: this.customer_no
+                        id: this.customerNo
                     }
                 })
                 this.$router.go({
@@ -87,22 +118,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container.form-wrap {
-  padding: 0px 40px;
+
+.input-group-text {
+    height: 100%;
+    border-radius: 5px 0 0 5px !important;
 }
 
-.vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-    width: 100%;
-}
-.vs-input-parent::v-deep {
-    width: 100%;
-    .vs-input {
-        width: 100%;
-    }
-}
 
-.edit-customer-dialog-right {
-    padding-top: 86px;
-}
+
+// .container.form-wrap {
+//   padding: 0px 40px;
+// }
+//
+// .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
+//     width: 100%;
+// }
+// .vs-input-parent::v-deep {
+//     width: 100%;
+//     .vs-input {
+//         width: 100%;
+//     }
+// }
+//
+// .edit-customer-dialog-right {
+//     padding-top: 86px;
+// }
 
 </style>
