@@ -40,9 +40,17 @@
                                     readonly
                                 ></b-form-rating>
                             </div>
-                            <small>
-                                初回来店日 2022年6月15日
+                            <small class="customer_detail_rank_detail">
+                                【初回来店日】  2022年6月15日
                                 <!-- 初回来店日 {{ customerData.first_visit }} -->
+                            </small>
+                            <small class="customer_detail_rank_detail">
+                                【総来店数】  110 回
+                                <!-- 総来店数 {{ customerData.total_visit }} -->
+                            </small>
+                            <small class="customer_detail_rank_detail">
+                                【総売上】  ￥100,000,000
+                                <!-- 総来店数 {{ customerData.total_sales }} -->
                             </small>
                         </b-card-body>
                     </b-card>
@@ -50,6 +58,9 @@
                         header="基本情報"
                         :text-variant=textColorBasis
                         :bg-variant=backColorBasis
+                        header-text-variant="white"
+                        border-variant="secondary"
+                        :header-bg-variant=backColorHeaderBasis
                     >
                         <b-card-body class="customer_detail_card_body">
                             <b-card-text>
@@ -111,7 +122,7 @@
                 </b-col>
                 <b-col cols="3">
                     <b-card
-                        title="トータル売上などグラフで"
+                        title="予約状況、ボトルとか"
                         text-variant="black"
                     >
 
@@ -119,7 +130,7 @@
                 </b-col>
                 <b-col>
                     <b-card
-                        title="グラフとかで傾向とか"
+                        title="グラフとかテーブルで指名、売上の傾向とか"
                         text-variant="black"
                     >
 
@@ -192,6 +203,10 @@ export default {
         textColorBasis () {
             if (this.isDanger) return 'white'
             return 'black'
+        },
+        backColorHeaderBasis () {
+            if (this.isDanger) return 'danger'
+            return 'dark'
         },
         backColorHeaderRank () {
             if (this.isDanger) return 'danger'
@@ -267,13 +282,15 @@ export default {
                     width: 12rem;
                 }
 
+                .customer_detail_rank_detail {
+                    display: block;
+                }
+
             }
 
         }
 
     }
-
-
 
 // .con-slot-tabs {
 //     margin-bottom: 4px;

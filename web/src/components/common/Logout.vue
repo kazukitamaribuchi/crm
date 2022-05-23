@@ -5,7 +5,10 @@
                 size="sm"
                 @click="showLogoutConfirm"
             >
-                <b-icon icon="gear-fill" aria-hidden="true"></b-icon> Logout
+                <b-icon
+                    icon="box-arrow-right"
+                    aria-hidden="true"
+                ></b-icon> ログアウト
             </b-button>
         </b-nav-item>
         <LogoutConfirm

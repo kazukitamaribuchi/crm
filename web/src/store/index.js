@@ -31,6 +31,8 @@ const initialState = {
     booking: [],
     bottle: [],
     product: [],
+    popularProduct: [],
+    productByCategory: [],
 }
 
 
@@ -51,6 +53,8 @@ export default new Vuex.Store({
         booking: state => state.booking,
         bottle: state => state.bottle,
         product: state => state.product,
+        popularProduct: state => state.popularProduct,
+        productByCategory: state => state.productByCategory,
     },
     mutations: {
         ...customerMutations,

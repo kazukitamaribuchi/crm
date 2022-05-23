@@ -1,53 +1,21 @@
 <template>
-    <div>
-        <vs-table
-            :data="booking"
-        >
-            <template slot="header">
-                <h3>
-                    予約一覧
-                </h3>
-            </template>
-            <template slot="thead">
-                <vs-th>
-                    顧客名
-                </vs-th>
-                <vs-th>
-                    予約人数
-                </vs-th>
-                <vs-th>
-                    時間
-                </vs-th>
-                <vs-th>
-                    座席
-                </vs-th>
-                <vs-th>
-                    担当
-                </vs-th>
-            </template>
-            <template slot-scope="{data}">
-                <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
-                    <vs-td>
-                        {{ tr.customer.name }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.total_person }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.booking_start }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.seat.seat_type }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.cast[0].name }}
-                    </vs-td>
-                </vs-tr>
-            </template>
-            <template slot="expand">
-
-            </template>
-        </vs-table>
+    <div id="booking_list_wrap">
+        <b-row>
+            <b-col cols="9">
+                <b-card class="booking_list_1">
+                </b-card>
+            </b-col>
+            <b-col cols="3">
+                <b-card class="booking_list_1">
+                </b-card>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="12">
+                <b-card class="booking_list_3">
+                </b-card>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -82,3 +50,35 @@ export default {
     }
 }
 </script>
+<style lang="scss" scoped>
+    #booking_list_wrap {
+        // background-color: $theme-color;
+        // background-color: white;
+        margin-top: $main-top-margin;
+        margin-left: $main-top-side-margin;
+        margin-right: $main-top-side-margin;
+        height: $main-height;
+        padding: 20px;
+
+        .booking_list_1 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .booking_list_2 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .booking_list_3 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .booking_list_4 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .booking_list_5 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+    }
+</style>

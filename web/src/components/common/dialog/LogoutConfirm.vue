@@ -3,6 +3,8 @@
         v-model="dialog"
         hide-header
         @ok="logout"
+        ok-title="ログアウト"
+        cancel-title="閉じる"
     >
         ログアウトしますか？
     </b-modal>

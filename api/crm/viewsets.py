@@ -56,13 +56,30 @@ import logging
 logger = logging.getLogger(__name__)
 
 PRODUCT_CATEGORY = {
-    0: [0,1,2,3,4],
+    # 基本料金は別で管理
+    # 0: [0,1,2,3,4],
+
     1: {
+        # アルコール
         0: [0,1,2,3,4,5,6],
-        1: [],
-        2: [],
+
+        # ノンアル
+        1: [0],
+
+        # ソフトドリンク
+        2: [0],
     },
-    2: [0,1,2,3,4],
+    # 2: [0,1,2,3,4],
+    2: {
+        # メイン => 和食、洋食、ファーストフード的な?
+        0: [0],
+        # おつまみ
+        1: [0],
+        # サラダ
+        2: [0],
+        # デザート
+        3: [0],
+    }
 }
 
 
@@ -204,44 +221,45 @@ class ProductViewSet(BaseModelViewSet):
         """
 
         res = {
-            0: {},
             1: {
                 0: {},
-                1: [],
-                2: [],
+                1: {},
+                2: {},
             },
-            2: {},
+            2: {
+                0: {},
+                1: {},
+                2: {},
+                3: {},
+            },
         }
 
         for large, items in PRODUCT_CATEGORY.items():
             for middle in items:
-                if large == 0:
-                    q = MProduct.objects.get(Q(category__large_category=large), \
-                            Q(category__middle_category=middle))
-                    data = ProductSerializer(q).data
-                    logger.debug(data)
-
-                    res[large][middle] = data
-
-                if large == 1:
-                    if middle == 0:
-                        for key in items:
-                            for small in items[key]:
-                                # logger.debug(str(large) + str(middle) + str(small))
-                                q = MProduct.objects.filter(Q(category__large_category=large), \
-                                        Q(category__middle_category=middle), \
-                                        Q(category__small_category=small))
-                                data = ProductSerializer(q, many=True).data
-                                res[large][middle][small] = data
-
-                if large == 2:
+                for small in items[middle]:
                     q = MProduct.objects.filter(Q(category__large_category=large), \
-                            Q(category__middle_category=middle))
+                        Q(category__middle_category=middle), \
+                        Q(category__small_category=small)
+                    )
                     data = ProductSerializer(q, many=True).data
-                    res[large][middle] = data
-
+                    # logger.debug('large=> ' + str(large) + ' middle=> ' + str(middle) + ' small=> ' + str(small))
+                    res[large][middle][small] = data
 
         return Response(res, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def get_popular_product(self, request):
+        """
+        人気商品を取得
+        　・明細追加時のトップに表示
+            それぞれのタブ毎に表示するためなど
+
+            トップ
+            アルコール、ノンアルコール、ソフトドリンク
+            メイン、サラダ、おかず、おつまみ、デザート
+        """
+
+
 
 
 
@@ -283,6 +301,9 @@ class BookingViewSet(BaseModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = BookingManagement.objects.all()
     serializer_class = BookingSerializer
+
+    # def list(self, request):
+    #     queryset =
 
 
 class AttendanceViewSet(BaseModelViewSet):

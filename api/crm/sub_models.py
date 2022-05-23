@@ -7,6 +7,32 @@ from .db.base import (
 
 
 
+
+class QuestionAnswer(AbstractBaseModel):
+    """
+    Q&A管理テーブル
+    """
+
+    question = models.ForeignKey(
+        'crm.MQuestion',
+        on_delete=models.CASCADE,
+    )
+
+    cast = models.ForeignKey(
+        'crm.MCast',
+        on_delete=models.CASCADE,
+    )
+
+    answer = models.TextField(
+        _('Q&A Answer')
+    )
+
+    def __str__(self):
+        return str(self.question.question) + ' 回答者:' + self.cast.name
+
+    class Meta:
+        verbose_name_plural = 'Q&A管理テーブル'
+
 class CardManagement(AbstractBaseModel):
     """
     カード管理テーブル
@@ -94,13 +120,29 @@ class SalesHeader(AbstractBaseModel):
     customer = models.OneToOneField(
         'crm.MCustomer',
         on_delete=models.DO_NOTHING,
-        related_name='sales_header'
+        related_name='sales_header',
+        null=True,
+        blank=True,
     )
 
+    # 5/14 => 指名管理の中間テーブルに変更
     # on_delete要検討
-    cast = models.ManyToManyField(
-        'crm.MCast',
-        related_name='sales_header',
+    # cast = models.ManyToManyField(
+    #     'crm.MCast',
+    #     related_name='sales_header',
+    # )
+    # 5/17 => basic_service（基本料金や指名料、延長料、同伴料）と結び付けるようにする。
+    # appoint = models.ManyToManyField(
+    #     'crm.MCast',
+    #     blank=True,
+    #     through='AppointManagement',
+    #     related_name='appoint'
+    # )
+
+    payment = models.ForeignKey(
+        'crm.MPayment',
+        on_delete=models.CASCADE,
+        related_name='sales_header'
     )
 
     total_sales = models.IntegerField(
@@ -123,9 +165,46 @@ class SalesHeader(AbstractBaseModel):
         ]
 
 
+class SalesServiceDetail(AbstractBaseModel):
+    """
+    売上明細
+        基本料金
+    """
+
+    header = models.ForeignKey(
+        SalesHeader,
+        on_delete=models.CASCADE,
+        related_name='sales_service_detail'
+    )
+
+    service = models.ForeignKey(
+        'crm.MService',
+        on_delete=models.CASCADE,
+        related_name="sales_service_detail"
+    )
+
+    cast = models.ForeignKey(
+        'crm.MCast',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
+    fixed_price = models.IntegerField(
+        _('実価格（税抜）'),
+        null=True,
+        blank=True,
+    )
+
+    fixed_tax_price = models.IntegerField(
+        _('実価格（税込）'),
+    )
+
+
 class SalesDetail(AbstractBaseModel):
     """
     売上明細
+        商品の売上
     """
 
     # CASCADEの認識正しいか？
@@ -135,15 +214,15 @@ class SalesDetail(AbstractBaseModel):
         related_name='sales_detail'
     )
 
-    product = models.OneToOneField(
+    product = models.ForeignKey(
         'crm.MProduct',
         on_delete=models.CASCADE,
         related_name='sales_detail',
     )
 
-    # 指名の場合キャストと紐づける。
-    # 複数指名の場合、誰を指名したか判別できなくなるためここで明細単位で紐づけ。
-    appoint = models.ForeignKey(
+    # これは誰のキャストの売上か
+    # 　☞将来的にはキャストに対するバックを換算するため商品1つ1つに紐づけが必要なため。
+    cast = models.ForeignKey(
         'crm.MCast',
         on_delete=models.PROTECT,
         null=True,
@@ -179,6 +258,34 @@ class SalesDetail(AbstractBaseModel):
 
     class Meta:
         verbose_name_plural = '売上明細'
+
+
+
+
+# class AppointManagement(AbstractBaseModel):
+#     """
+#     """
+#     sales_header = models.ForeignKey(
+#         SalesHeader,
+#         on_delete=models.PROTECT,
+#         related_name='sales_header',
+#     )
+#
+#     cast = models.ForeignKey(
+#         'crm.MCast',
+#         on_delete=models.PROTECT,
+#         related_name='cast',
+#     )
+#
+#     appoint = models.ForeignKey(
+#         'crm.MAppointService',
+#         on_delete=models.PROTECT,
+#         related_name='appoint',
+#     )
+#
+#     appoint_time = models.IntegerField(
+#         _('指名時間'),
+#     )
 
 
 class BookingManagement(AbstractBaseModel):
@@ -228,15 +335,23 @@ class BookingManagement(AbstractBaseModel):
         default=False,
     )
 
-    calcel_date = models.DateTimeField(
+    # キャンセル時刻
+    cancel_date = models.DateTimeField(
         null=True,
         blank=True,
+    )
+
+    penalty = models.BooleanField(
+        _('キャンセルによるペナルティ'),
+        default=False,
     )
 
     seat = models.ForeignKey(
         'crm.MSeat',
         on_delete=models.CASCADE,
         related_name='booking',
+        null=True,
+        blank=True,
     )
 
     def __str__(self):
@@ -272,6 +387,9 @@ class AttendanceManagement(AbstractBaseModel):
         _('遅刻フラグ'),
         default=False,
     )
+
+    # 4桁文字数
+    late_time = models.CharField(_('遅刻時間'), max_length=10, null=True, blank=True)
 
     attend_flg = models.BooleanField(
         _('出勤フラグ'),

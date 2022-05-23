@@ -2,8 +2,10 @@
     <b-modal
         v-model="dialog"
         title="顧客No検索"
-        ok-title="search"
         @ok="search"
+        centered
+        ok-title="検索"
+        cancel-title="閉じる"
     >
         <b-form class="mt-3">
             <b-form-group

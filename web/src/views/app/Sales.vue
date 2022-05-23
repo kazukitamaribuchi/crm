@@ -1,6 +1,6 @@
 <template>
     <b-container
-        id="sales-wrap"
+        id="sales_wrap"
         fluid
     >
         <Header/>
@@ -35,7 +35,7 @@ export default {
 
             background-color: $theme-color2;
 
-            height: calc( #{$content-height} - #{$header-height} );
+            min-height: calc( #{$content-height} - #{$header-height} );
 
             display: flex;
             display: -webkit-flex;

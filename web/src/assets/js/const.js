@@ -24,6 +24,10 @@ class Const {
         {value: 1960},
         {value: 1961},
     ]
+    BASIC_PLAN_PRICE = {
+        0: 2000,
+        1: 5000,
+    }
 }
 
 export { Const }

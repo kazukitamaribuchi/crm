@@ -1,13 +1,18 @@
 <template>
     <b-row id="header_wrap" class="pt-2">
-        <b-col cols="6">
+        <b-col cols="4">
             <router-link
                 to='/'
                 class="header_title"
             >Customer Management System</router-link>
         </b-col>
-        <b-col cols="6">
+        <b-col cols="8">
             <b-nav align="right">
+                <InputSales/>
+                <InputBooking/>
+                <InputCustomer/>
+                <InputCast/>
+                <InputAttendance/>
                 <Settings/>
                 <Logout/>
             </b-nav>
@@ -16,6 +21,11 @@
 </template>
 
 <script>
+import InputSales from '@/components/common/InputSales'
+import InputBooking from '@/components/common/InputBooking'
+import InputCustomer from '@/components/common/InputCustomer'
+import InputCast from '@/components/common/InputCast'
+import InputAttendance from '@/components/common/InputAttendance'
 import Logout from '@/components/common/Logout'
 import Settings from '@/components/common/Settings'
 
@@ -25,6 +35,11 @@ export default {
         activeItem: {}
     }),
     components: {
+        InputSales,
+        InputBooking,
+        InputCustomer,
+        InputCast,
+        InputAttendance,
         Logout,
         Settings,
     }

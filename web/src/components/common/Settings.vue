@@ -8,7 +8,7 @@
                 <b-icon
                     icon="gear-fill"
                     aria-hidden="true"
-                ></b-icon> Settings
+                ></b-icon> 設定
             </b-button>
         </b-nav-item>
     </div>

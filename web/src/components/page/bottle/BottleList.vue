@@ -1,47 +1,29 @@
 <template>
-    <div>
-        <vs-table
-            :data="bottle"
-        >
-            <template slot="header">
-                <h3>
-                    ボトル一覧
-                </h3>
-            </template>
-            <template slot="thead">
-                <vs-th>
-                    顧客名
-                </vs-th>
-                <vs-th>
-                    ボトル名
-                </vs-th>
-                <vs-th>
-                    開封日
-                </vs-th>
-                <vs-th>
-                    期限
-                </vs-th>
-            </template>
-            <template slot-scope="{data}">
-                <vs-tr :data="tr" :key="indextr" v-for="(tr, indextr) in data">
-                    <vs-td>
-                        {{ tr.customer.name }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.product.name }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.open_date }}
-                    </vs-td>
-                    <vs-td>
-                        {{ tr.deadline }}
-                    </vs-td>
-                </vs-tr>
-            </template>
-            <template slot="expand">
-
-            </template>
-        </vs-table>
+    <div id="bottle_list_wrap">
+        <b-row>
+            <b-col cols="4">
+                <b-card class="bottle_list_1">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="bottle_list_2">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="bottle_list_2">
+                </b-card>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="8">
+                <b-card class="bottle_list_3">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="bottle_list_5">
+                </b-card>
+            </b-col>
+        </b-row>
     </div>
 </template>
 
@@ -76,3 +58,36 @@ export default {
     }
 }
 </script>
+
+<style lang="scss" scoped>
+    #bottle_list_wrap {
+        // background-color: $theme-color;
+        // background-color: white;
+        margin-top: $main-top-margin;
+        margin-left: $main-top-side-margin;
+        margin-right: $main-top-side-margin;
+        height: $main-height;
+        padding: 20px;
+
+        .bottle_list_1 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .bottle_list_2 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .bottle_list_3 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .bottle_list_4 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .bottle_list_5 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+    }
+</style>

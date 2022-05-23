@@ -1,20 +1,16 @@
 <template>
-    <v-container
-        id="bottle-wrap"
+    <b-container
+        id="bottle_wrap"
         fluid
     >
-        <vs-row vs-w="12">
-            <Header/>
-        </vs-row>
-        <vs-row vs-w="12">
-            <vs-col vs-w="2">
-                <Sidebar/>
-            </vs-col>
-            <vs-col vs-w="10">
+        <Header/>
+        <b-row class="content_wrap">
+            <Sidebar/>
+            <div class="content">
                 <router-view/>
-            </vs-col>
-        </vs-row>
-    </v-container>
+            </div>
+        </b-row>
+    </b-container>
 </template>
 
 <script>
@@ -33,7 +29,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-#bottle-wrap {
-    padding: 0;
-}
+    #bottle_wrap {
+        height: $home-height;
+        .content_wrap {
+
+            background-color: $theme-color2;
+
+            min-height: calc( #{$content-height} - #{$header-height} );
+
+            display: flex;
+            display: -webkit-flex;
+
+            .content {
+                width: $content-width;
+                height: $content-height;
+            }
+        }
+    }
 </style>

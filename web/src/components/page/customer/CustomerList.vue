@@ -1,11 +1,20 @@
 <template>
     <div id="customer_list_wrap">
-
+        <b-row>
+            <b-col cols="8">
+                <b-card class="customer_list_area1">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="customer_list_area2">
+                </b-card>
+            </b-col>
+        </b-row>
         <b-card
-            class="customer_list"
+            class="customer_list_area3"
             no-body
         >
-            <b-card-header header-tag="nav">
+            <!-- <b-card-header header-tag="nav">
                 <b-nav card-header tabs>
                     <b-nav-item
                         v-for="item in navHeader"
@@ -15,15 +24,11 @@
                     >
                         {{ item.title }}
                     </b-nav-item>
-
-                    <!-- <b-nav-item active @click="navClick()">Customer List</b-nav-item>
-                    <b-nav-item>Customer Sales</b-nav-item>
-                    <b-nav-item>Customer Ranking</b-nav-item> -->
                 </b-nav>
-            </b-card-header>
+            </b-card-header> -->
 
 
-            <b-card-body v-if="activeHeader == 1">
+            <!-- <b-card-body v-if="activeHeader == 1"> -->
                 <b-table
                     striped
                     hover
@@ -128,7 +133,7 @@
                     </template>
 
                 </b-table>
-            </b-card-body>
+            <!-- </b-card-body>
 
             <b-card-body v-else-if="activeHeader == 2">
                 <b style="color: white;">Customer Sales</b>
@@ -136,7 +141,7 @@
 
             <b-card-body v-else-if="activeHeader == 3">
                 <b style="color: white;">Customer Ranking</b>
-            </b-card-body>
+            </b-card-body> -->
 
         </b-card>
 
@@ -228,20 +233,10 @@ export default {
         ]),
     },
     created () {
-        this.getCustomerList()
-        .then(res => {
-            this.setCustomerList(res)
-        })
     },
     mounted () {
     },
     methods: {
-        ...mapMutations([
-            'setCustomerList',
-        ]),
-        ...mapActions([
-            'getCustomerList',
-        ]),
         showCustomerDetail (data) {
             // 1回クリック時
         },
@@ -275,7 +270,7 @@ export default {
 
 <style lang="scss" scoped>
     #customer_list_wrap {
-        background-color: $theme-color;
+        // background-color: $theme-color;
         // background-color: white;
         margin-top: $main-top-margin;
         margin-left: $main-top-side-margin;
@@ -283,9 +278,20 @@ export default {
         height: $main-height;
         padding: 20px;
 
-        .customer_list {
+        .customer_list_area1 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .customer_list_area2 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+
+        .customer_list_area3 {
+            padding: 1.7rem;
             background-color: $theme-color;
             height: 100%;
+            margin-top: 1rem;
         }
     }
 

@@ -1,7 +1,40 @@
 <template>
-    <div>
+    <div id="sales_list_wrap">
+        <b-row>
+            <b-col cols="4">
+                <b-card class="sales_list_1">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="sales_list_2">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="sales_list_2">
+                </b-card>
+            </b-col>
+        </b-row>
+        <b-row>
+            <b-col cols="3">
+                <b-card class="sales_list_3">
+                </b-card>
+            </b-col>
+            <b-col cols="6">
+                <b-card class="sales_list_4">
+                </b-card>
+            </b-col>
+            <b-col>
+                <b-card class="sales_list_5">
+                </b-card>
+            </b-col>
+        </b-row>
+        <!-- <b-card
+            class="customer_list"
+            no-body
+        >
 
-        <v-row>
+        </b-card> -->
+        <!-- <v-row>
             <v-col cols="6">
                 <v-card-title>
                     売上一覧
@@ -57,12 +90,12 @@
             <template slot="expand">
 
             </template>
-        </vs-table>
+        </vs-table> -->
 
-        <InputSalesDialog
+        <!-- <InputSalesDialog
             @update="inputSalesDialog = $event"
             :inputSalesDialog="inputSalesDialog"
-        />
+        /> -->
     </div>
 </template>
 
@@ -84,33 +117,43 @@ export default {
         ]),
     },
     created () {
-        this.getSalesList()
-        .then(res => {
-            this.setSalesList(res)
-        })
     },
     mounted () {
-        console.log('this.sales', this.sales)
     },
     methods: {
-        ...mapMutations([
-            'setSalesList',
-        ]),
-        ...mapActions([
-            'getSalesList',
-        ])
     }
 }
 </script>
 
 <style lang="scss" scoped>
-.vs-con-table {
-    background: white;
-}
+    #sales_list_wrap {
+        // background-color: $theme-color;
+        // background-color: white;
+        margin-top: $main-top-margin;
+        margin-left: $main-top-side-margin;
+        margin-right: $main-top-side-margin;
+        height: $main-height;
+        padding: 20px;
 
-.header-table {
-  padding-right: 100px !important;
-  margin-bottom: 20px !important;
-}
-
+        .sales_list_1 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .sales_list_2 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .sales_list_3 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .sales_list_4 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+        .sales_list_5 {
+            background-color: $theme-color;
+            height: 25rem;
+        }
+    }
 </style>

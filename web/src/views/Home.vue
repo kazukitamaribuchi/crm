@@ -27,36 +27,51 @@ export default {
         Top
     },
     created () {
-        // this.getProductList()
-        // .then(res => {
-        //     console.log(res)
-        //     this.setProductList(res)
-        // })
-        // .catch(e => {
-        //     console.log(e)
-        // })
+        this.getCustomerList()
+        .then(res => {
+            this.setCustomerList(res)
+        })
 
-        // this.getProductByCategory()
-        // .then(res => {
-        //     console.log(res)
-        //     this.setProductList(res)
-        // })
-        // .catch(e => {
-        //     console.log(e)
-        // })
+        this.getProductList()
+        .then(res => {
+            console.log(res)
+            this.setProductList(res)
+            this.setPopularProductList(res)
+        })
+
+        this.getProductByCategoryList()
+        .then(res => {
+            // this.setProductList(res)
+            this.setProductByCategoryList(res)
+        })
+
+        this.getCastList()
+        .then(res => {
+            this.setCastList(res)
+        })
+
+        this.getSalesList()
+        .then(res => {
+            this.setSalesList(res)
+        })
     },
     computed: {
-        ...mapGetters([
-            'product',
-        ]),
     },
     methods: {
         ...mapMutations([
             'setProductList',
+            'setCustomerList',
+            'setCastList',
+            'setSalesList',
+            'setProductByCategoryList',
+            'setPopularProductList',
         ]),
         ...mapActions([
             'getProductList',
-            'getProductByCategory',
+            'getProductByCategoryList',
+            'getCustomerList',
+            'getCastList',
+            'getSalesList',
         ])
     }
 }

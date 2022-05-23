@@ -7,10 +7,12 @@ from .models import (
     MCustomer,
     MCast,
     MProduct,
-    MSeat
+    MSeat,
+    MQuestion
 )
 
 from .sub_models import (
+    QuestionAnswer,
     CardManagement,
     BottleManagement,
     SalesHeader,
@@ -26,6 +28,8 @@ admin.site.register(MCustomer)
 admin.site.register(MCast)
 admin.site.register(MProduct)
 admin.site.register(MSeat)
+admin.site.register(MQuestion)
+admin.site.register(QuestionAnswer)
 admin.site.register(CardManagement)
 admin.site.register(BottleManagement)
 admin.site.register(SalesHeader)

@@ -260,6 +260,11 @@ class MCast(AbstractHumanModel):
         default=0,
     )
 
+    # qa = models.ManyToManyField(
+    #     'crm.QuestionAnswer',
+    #     blank=True,
+    # )
+
     def __str__(self):
         return self.name
 
@@ -269,15 +274,25 @@ class MCast(AbstractHumanModel):
             models.Index(fields=['name'], name='mcast_name_idx')
         ]
 
+
+class MSetting(AbstractBaseModel):
+    """
+    設定情報マスタ
+        ・アラート系の制御
+        ・予約時間のペナルティ
+        ・予約上限（グループ換算☞1席何人か。何人で2席にするかなど）
+    """
+
+
 class MProductCategory(AbstractBaseModel):
     """
     商品のカテゴリ
     　大カテゴリ
-        0: 基本料金
+        0: 基本料金 #削除
         1: 飲料
         2: フード
     　中カテゴリ
-        【0】
+        【0】 #削除
             「0」:基本料金・・・pk:1
             「1」:指名料・・・pk:2
             「2」:場内指名料・・・pk:3
@@ -329,6 +344,109 @@ class MProductCategory(AbstractBaseModel):
     class Meta:
         verbose_name_plural = '商品カテゴリ'
 
+
+
+class MPayment(AbstractBaseModel):
+    """
+    支払い方法マスタ
+        現金:0
+        カード:1
+    """
+    type = models.IntegerField(_('支払いタイプ'), default=0)
+
+    tax = models.ForeignKey(
+        MTax,
+        on_delete=models.PROTECT,
+        related_name='payment',
+    )
+
+
+
+
+
+class MService(AbstractServiceModel):
+    """
+    サービス情報のマスタ
+        基本料金
+        指名料金
+        同伴料金
+        延長料金
+            type:
+                0(基本)
+                    0:A 時間分け
+                    1:B 時間分け
+                    2:C 時間分け
+                1(指名)
+                    0:指名
+                    1:本指名
+                    2:場内指名
+                2(同伴)
+                    0:同伴
+                3(延長)
+                    0:A 時間分け
+                    1:B 時間分け
+
+        start_tile, end_time = 21:00のようにコロン区切り4桁文字列
+
+    """
+    large_category = models.IntegerField(_('大カテゴリ'), default=0)
+    middle_category = models.IntegerField(_('中カテゴリ'), default=0)
+
+    start_time = models.CharField(_('開始時間'), max_length=10, null=True, blank=True)
+
+    end_time = models.CharField(_('開始時間'), max_length=10, null=True, blank=True)
+
+
+    description = models.TextField(
+        _('説明')
+    )
+
+    tax = models.ForeignKey(
+        MTax,
+        on_delete=models.PROTECT,
+        related_name='basic_service',
+    )
+
+    tax_price = models.IntegerField(
+        _('税込価格'),
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = '基本料金マスタ'
+
+class MAppointService(AbstractServiceModel):
+    """
+    指名料金マスタ
+    """
+
+    # 一応・・・
+    thumbnail = models.ImageField(
+        _('サムネイル'),
+        upload_to='upload/',
+        null=True,
+        blank=True,
+    )
+
+    tax = models.ForeignKey(
+        MTax,
+        on_delete=models.PROTECT,
+        related_name='appoint_service',
+    )
+
+    tax_price = models.IntegerField(
+        _('税込価格'),
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name_plural = '指名料金マスタ'
+
+
 class MProduct(AbstractServiceModel):
     """
     商品マスタ
@@ -365,6 +483,22 @@ class MProduct(AbstractServiceModel):
 
     class Meta:
         verbose_name_plural = '商品マスタ'
+
+
+class MQuestion(AbstractBaseModel):
+    """
+    Questionマスタ
+    """
+    question = models.CharField(
+        _('質問内容'),
+        max_length=200,
+    )
+
+    def __str__(self):
+        return str(self.question)
+
+    class Meta:
+        verbose_name_plural = '質問マスタ'
 
 
 class MSeat(models.Model):

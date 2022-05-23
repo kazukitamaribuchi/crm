@@ -16,21 +16,6 @@
                 <v-row>
                     <v-col cols="2">
                         <v-list>
-                            <!-- <v-list-item
-                                class="base_service"
-                                @click="showBaseService"
-                            >
-                                <v-list-item-icon>
-                                    <v-icon>
-                                        mdi-information-outline
-                                    </v-icon>
-                                </v-list-item-icon>
-                                <v-list-item-content>
-                                    <v-list-item-title>
-                                        基本料金
-                                    </v-list-item-title>
-                                </v-list-item-content>
-                            </v-list-item> -->
                             <v-list-group
                                 v-for="item in items"
                                 :key="item.title"

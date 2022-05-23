@@ -17,7 +17,7 @@ const productActions = {
             })
         })
     },
-    getProductByCategory (ctx, kwargs) {
+    getProductByCategoryList (ctx, kwargs) {
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',

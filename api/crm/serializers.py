@@ -343,19 +343,19 @@ class TaxSerializer(DynamicFieldsModelSerializer):
 class ProductCategorySerializer(DynamicFieldsModelSerializer):
 
     LARGE_CATEGORIES = {
-        0: '基本料金',
+        # 0: '基本料金',
         1: '飲料',
         2: 'フード'
     }
 
     CATEGORIES = {
-        0: {
-            0: '基本料金',
-            1: '指名料',
-            2: '場内指名料',
-            3: 'VIP料金',
-            4: '同伴料金',
-        },
+        # 0: {
+        #     0: '基本料金',
+        #     1: '指名料',
+        #     2: '場内指名料',
+        #     3: 'VIP料金',
+        #     4: '同伴料金',
+        # },
         1: {
             0: [
                 'アルコール',
@@ -364,7 +364,9 @@ class ProductCategorySerializer(DynamicFieldsModelSerializer):
                     1: 'ワイン',
                     2: '焼酎',
                     3: 'サワー',
-                    4: 'カクテル'
+                    4: 'カクテル',
+                    5: '日本酒',
+                    6: 'ビール',
                 },
             ],
             1: 'ノンアルコール',
@@ -434,6 +436,7 @@ class ProductSerializer(DynamicFieldsModelSerializer):
             'created_at',
             'updated_at',
             'delete_flg',
+            'thumbnail',
         ]
 
 

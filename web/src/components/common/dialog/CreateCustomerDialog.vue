@@ -1,146 +1,211 @@
 <template>
-    <v-dialog
-        v-model="localcreateCustomerDialog"
-        max-width="800px"
-        transition="dialog-bottom-transition"
-    >
-        <v-card>
-            <v-card-title
-                id="login-title"
-            >
-                顧客登録
-            </v-card-title>
-
-            <v-container fluid class="form-wrap">
-                <v-row>
-                    <v-col cols="4">
-                        <vs-input
-                            v-model="createCustomerData.customer_no"
-                            placeholder="会員No"
-                            label="会員No"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12">
-                        <vs-input
-                            v-model="createCustomerData.name"
-                            placeholder="お名前"
-                            label="お名前"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="12">
-                        <vs-input
-                            v-model="createCustomerData.name_kana"
-                            placeholder="お名前（フリガナ）"
-                            label="お名前（フリガナ）"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="4">
-                        <vs-input
-                            v-model="createCustomerData.birthday_year"
-                            placeholder="年"
-                            label="誕生日"
-                        ></vs-input>
-                    </v-col>
-                    <v-col cols="4" class="mt-6">
-                        <vs-input
-                            v-model="createCustomerData.birthday_month"
-                            placeholder="月"
-                        ></vs-input>
-                    </v-col>
-                    <v-col cols="4" class="mt-6">
-                        <vs-input
-                            v-model="createCustomerData.birthday_day"
-                            placeholder="日"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="3">
-                        <vs-input
-                            v-model="createCustomerData.age"
-                            placeholder="年齢"
-                            label="年齢"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="12">
-                        <vs-input
-                            v-model="createCustomerData.job"
-                            placeholder="職業"
-                            label="職業"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-col cols="12">
-                        <vs-input
-                            v-model="createCustomerData.company"
-                            placeholder="会社"
-                            label="会社"
-                        ></vs-input>
-                    </v-col>
-                </v-row>
-
-                <v-row>
-                    <v-spacer/>
-                    <v-card-actions>
-                        <vs-button
-                            color="success"
-                            type="filled"
-                            icon="done"
-                            @click="register"
-                        >登録</vs-button>
-                        <vs-button
-                            color="primary"
-                            type="border"
-                            icon="done"
-                            @click="localcreateCustomerDialog = false"
-                        >閉じる</vs-button>
-                    </v-card-actions>
-                </v-row>
-            </v-container>
-        </v-card>
-    </v-dialog>
+    <div>
+        <b-modal
+            v-model="dialog"
+            size="lg"
+            screenable
+            title="顧客入力"
+            header-bg-variant="dark"
+            header-text-variant="light"
+            ok-title="登録"
+            cancel-title="閉じる"
+            @ok="register"
+            :ok-disabled=isDisabled
+            @cancel="close"
+        >
+            <b-form class="create_customer_form">
+                <b-container fluid>
+                    <b-row>
+                        <b-col cols="3">
+                            <b-form-group
+                                label="会員No"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="createCustomerData.customer_no"
+                                        type="text"
+                                        placeholder="会員No"
+                                        required
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                        <b-col cols="5">
+                        </b-col>
+                        <b-col cols="4">
+                            <b-form-group
+                                label="来店日"
+                            >
+                                <b-form-datepicker
+                                    v-model="createCustomerData.first_visit"
+                                    placeholder="来店日を選択してください"
+                                ></b-form-datepicker>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-card class="mt-4" bg-variant="light">
+                        <b-card-title>
+                            顧客情報
+                        </b-card-title>
+                        <b-row class="mb-0 pb-0 mt-0 pt-0">
+                            <b-col cols="12" class="mb-1 pb-0">
+                                <b-form-group
+                                    label="名前"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.name"
+                                            type="text"
+                                            placeholder="名前"
+                                            required
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row class="mt-0 pt-0">
+                            <b-col cols="12" class="mt-0 pt-0">
+                                <b-form-group>
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.name_kana"
+                                            type="text"
+                                            placeholder="名前(カナ)"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="4">
+                                <b-form-group
+                                    label="年齢"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.age"
+                                            type="number"
+                                            placeholder="年齢"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="12">
+                                <b-form-group
+                                    label="誕生日"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.birthday_year"
+                                            type="text"
+                                            placeholder="YYYY"
+                                        ></b-form-input>
+                                        <b-form-input
+                                            v-model="createCustomerData.birthday_month"
+                                            type="text"
+                                            placeholder="MM"
+                                        ></b-form-input>
+                                        <b-form-input
+                                            v-model="createCustomerData.birthday_day"
+                                            type="text"
+                                            placeholder="DD"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="5">
+                                <b-form-group
+                                    label="職業"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.job"
+                                            type="text"
+                                            placeholder="職業"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="12">
+                                <b-form-group
+                                    label="会社"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.company"
+                                            type="text"
+                                            placeholder="会社"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-form-group
+                                label="要注意人物"
+                            >
+                                <b-form-checkbox
+                                    v-model="createCustomerData.caution_flg"
+                                ></b-form-checkbox>
+                            </b-form-group>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="12">
+                                <b-form-group
+                                    label="備考"
+                                >
+                                    <b-form-textarea
+                                        rows="2"
+                                        no-resize
+                                        v-model="createCustomerData.remark"
+                                    ></b-form-textarea>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                    </b-card>
+                </b-container>
+            </b-form>
+        </b-modal>
+    </div>
 </template>
 
 <script>
 import { mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
+import moment from 'moment'
 
 export default {
     name: 'CreateCustomerDialogItem',
     props: {
-        createCustomerDialog: {
-            type: Boolean,
-            required: true,
-        },
     },
     data: () => ({
-        createCustomerData: {},
+        createCustomerData: {
+        },
         year: Con.SELECT_BIRTHDAY_YEAR,
-
+        dialog: false,
     }),
     computed: {
-        localcreateCustomerDialog: {
-            get: function () {
-                return this.createCustomerDialog
-            },
-            set: function (value) {
-                this.$emit('update', value)
-            },
+        isDisabled () {
+            if (this.createCustomerData.name
+                && this.createCustomerData.customer_no) {
+                return false
+            }
+            return true
         },
+        today () {
+            const today = moment()
+            return today.format("YYYY-MM-DD")
+        }
+    },
+    created () {
+        this.createCustomerData.first_visit = this.today
     },
     methods: {
         ...mapMutations([
@@ -161,7 +226,7 @@ export default {
                     job: data.job,
                     company: data.company,
                     customer_no: data.customer_no,
-                    // ランクは最初から上位で作る事も許容させるか？
+                    // ランクは最初から上位で作る事も許容させるか? => マスタでやらせる。
                     rank_id: 1,
                 }
             })
@@ -175,8 +240,17 @@ export default {
             })
         },
         init () {
-            this.createCustomerData = {}
-            this.localcreateCustomerDialog = false
+            this.createCustomerData = {
+                first_visit: this.today
+            }
+            // this.createCustomerData.first_visit = this.today
+        },
+        close () {
+            this.init()
+            this.dialog = false
+        },
+        open () {
+            this.dialog = true
         }
     }
 }
@@ -184,18 +258,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container.form-wrap {
-  padding: 0px 40px;
-}
-
-.vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-    width: 100%;
-}
-.vs-input-parent::v-deep {
-    width: 100%;
-    .vs-input {
-        width: 100%;
+    .create_customer_form {
+        .input-group-text {
+            height: 100%;
+            border-radius: 5px 0 0 5px !important;
+        }
     }
-}
-
 </style>
