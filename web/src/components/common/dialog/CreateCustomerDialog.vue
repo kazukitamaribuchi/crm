@@ -16,7 +16,7 @@
             <b-form class="create_customer_form">
                 <b-container fluid>
                     <b-row>
-                        <b-col cols="3">
+                        <b-col cols="4">
                             <b-form-group
                                 label="会員No"
                             >
@@ -27,10 +27,13 @@
                                         placeholder="会員No"
                                         required
                                     ></b-form-input>
+                                    <b-form-invalid-feedback :state="customerNoError.length == 0">
+                                        {{ customerNoError }}
+                                    </b-form-invalid-feedback>
                                 </b-input-group>
                             </b-form-group>
                         </b-col>
-                        <b-col cols="5">
+                        <b-col cols="4">
                         </b-col>
                         <b-col cols="4">
                             <b-form-group
@@ -77,6 +80,17 @@
                             </b-col>
                         </b-row>
                         <b-row>
+                            <!-- <b-col>
+                                <b-form-group
+                                    label="誕生日"
+                                >
+                                    <BirthdaySelectForm
+                                        :year=createCustomerData.birthday_year
+                                        :month=createCustomerData.birthday_month
+                                        :day=createCustomerData.birthday_day
+                                    />
+                                </b-form-group>
+                            </b-col> -->
                             <b-col cols="4">
                                 <b-form-group
                                     label="年齢"
@@ -176,32 +190,60 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import { mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
 import moment from 'moment'
+import SelectForm from '@/components/common/parts/SelectForm'
+import BirthdaySelectForm from '@/components/common/parts/BirthdaySelectForm'
+import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+dayjs.extend(isSameOrAfter)
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isBetween)
 
 export default {
     name: 'CreateCustomerDialogItem',
     props: {
     },
+    components: {
+        SelectForm,
+        BirthdaySelectForm,
+    },
     data: () => ({
         createCustomerData: {
+            birthday_year: null,
+            birthday_month: null,
+            birthday_day: null,
+            customer_no: '',
         },
         year: Con.SELECT_BIRTHDAY_YEAR,
         dialog: false,
+        customerNoError: '',
     }),
     computed: {
         isDisabled () {
             if (this.createCustomerData.name
-                && this.createCustomerData.customer_no) {
+                && this.createCustomerData.customer_no
+                && this.customerNoError.length == 0 ) {
                 return false
             }
             return true
         },
         today () {
-            const today = moment()
-            return today.format("YYYY-MM-DD")
+            return dayjs().format("YYYY-MM-DD")
+        },
+    },
+    watch: {
+        "createCustomerData.customer_no": function (val) {
+            if (val.length > 0) {
+                this.checkCustomerNoDuplicate(val)
+            } else {
+                this.customerNoError = ''
+            }
         }
     },
     created () {
@@ -214,7 +256,12 @@ export default {
         register () {
             console.log('register', this.createCustomerData)
             const data = this.createCustomerData
-            const birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+
+            let birthday = ''
+            // 誕生日は後々セレクトに置き換える
+            if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
+                birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            }
             this.$axios({
                 method: 'POST',
                 url: '/api/customer/',
@@ -241,9 +288,12 @@ export default {
         },
         init () {
             this.createCustomerData = {
-                first_visit: this.today
+                birthday_year: null,
+                birthday_month: null,
+                birthday_day: null,
+                customer_no: '',
             }
-            // this.createCustomerData.first_visit = this.today
+            this.customerNoError = ''
         },
         close () {
             this.init()
@@ -251,7 +301,25 @@ export default {
         },
         open () {
             this.dialog = true
-        }
+        },
+        checkCustomerNoDuplicate: _.debounce(function checkCustomerNoDuplicate (customerNo) {
+            this.$axios({
+                method: 'POST',
+                url: '/api/customer/get_customer_no_duplicate/',
+                data: { customer_no: customerNo }
+            })
+            .then(res => {
+                console.log(res.data.result)
+                if (res.data.result) {
+                    this.customerNoError = ''
+                } else {
+                    this.customerNoError = res.data.msg
+                }
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        }, 500)
     }
 }
 

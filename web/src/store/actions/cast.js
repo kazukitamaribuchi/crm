@@ -8,7 +8,7 @@ const castActions = {
                 url: '/api/cast/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getCastList', res)
                 resolve(res)
             })
             .catch(e => {

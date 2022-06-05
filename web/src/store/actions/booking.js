@@ -8,7 +8,7 @@ const bookingActions = {
                 url: '/api/booking/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getBookingList', res)
                 resolve(res)
             })
             .catch(e => {

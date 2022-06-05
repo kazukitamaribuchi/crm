@@ -34,16 +34,19 @@ export default {
 
         this.getProductList()
         .then(res => {
-            console.log(res)
             this.setProductList(res)
-            this.setPopularProductList(res)
+        })
+
+        this.getPopularProductList()
+        .then(res => {
+            this.setPopularProductList(res.data)
         })
 
         this.getProductByCategoryList()
         .then(res => {
-            // this.setProductList(res)
             this.setProductByCategoryList(res)
         })
+
 
         this.getCastList()
         .then(res => {
@@ -54,6 +57,11 @@ export default {
         .then(res => {
             this.setSalesList(res)
         })
+
+        this.getQuestionList()
+        .then(res => {
+            this.setQuestionList(res)
+        })
     },
     computed: {
     },
@@ -62,6 +70,7 @@ export default {
             'setProductList',
             'setCustomerList',
             'setCastList',
+            'setQuestionList',
             'setSalesList',
             'setProductByCategoryList',
             'setPopularProductList',
@@ -69,8 +78,10 @@ export default {
         ...mapActions([
             'getProductList',
             'getProductByCategoryList',
+            'getPopularProductList',
             'getCustomerList',
             'getCastList',
+            'getQuestionList',
             'getSalesList',
         ])
     }

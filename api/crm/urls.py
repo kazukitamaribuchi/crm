@@ -14,6 +14,7 @@ router.register('bottle', viewsets.BottleViewSet)
 router.register('sales', viewsets.SalesViewSet)
 router.register('booking', viewsets.BookingViewSet)
 router.register('attendance', viewsets.AttendanceViewSet)
+router.register('question', viewsets.QuestionViewSet)
 
 
 app_name = 'crm'

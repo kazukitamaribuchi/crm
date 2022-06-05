@@ -5,7 +5,7 @@
             size="xl"
             screenable
             title="売上入力"
-            header-bg-variant="dark"
+            header-bg-variant="primary"
             header-text-variant="light"
         >
             <b-form class="input_sales_form">
@@ -20,12 +20,11 @@
                         <b-row>
                             <b-col cols="4">
                                 <b-form-group
-                                    class="input_sales_customer_no"
                                     label="会員No"
                                 >
                                     <b-input-group>
                                         <b-form-input
-                                            v-model="inputSalesData.customer_no"
+                                            v-model="inputSalesData.customerNo"
                                             type="number"
                                             placeholder="会員Noを入力してください"
                                             required
@@ -34,114 +33,469 @@
                                 </b-form-group>
                             </b-col>
                             <b-col cols="4"></b-col>
-                            <b-col cols="2">
+                            <b-col cols="4">
                                 <b-form-group
-                                    label="料金プラン"
-                                    class="mb-0 pb-0"
-                                    label-class="mb-0 pb-0"
+                                    class="input_sales_date"
+                                    label="来店日"
                                 >
-                                    <b-form-radio-group
-                                        class="pt-0"
-                                        :options="planOptions"
-                                        v-model="basicPlan"
-                                    ></b-form-radio-group>
-                                </b-form-group>
-                            </b-col>
-                            <b-col>
-                                <b-form-group
-                                    class="input_sales_stay_hour_wrap"
-                                    label="滞在時間"
-                                >
-                                    <b-form-select
-                                        v-model="selectedStayHour"
-                                        :options="stayHourOptions"
-                                        stayHourOptions
-                                        value-field="value"
-                                        text-field="text"
-                                        class="input_sales_stay_hour"
-                                    ></b-form-select>
-
-                                    <!-- <b-input-group>
-                                        <b-form-input
-                                            v-model="inputSalesData.stay_hour"
-                                            type="number"
-                                            placeholder="滞在時間を入力してください"
-                                            required
-                                        ></b-form-input>
-                                    </b-input-group> -->
+                                    <b-form-datepicker
+                                        v-model="inputSalesData.accountDate"
+                                        placeholder="来店日を入力してください"
+                                    ></b-form-datepicker>
                                 </b-form-group>
                             </b-col>
                         </b-row>
                         <b-row>
-                            <b-col cols="8">
-                                <label>担当キャスト</label>
-                                <div
-                                    class="mt-2"
-                                >
-                                    <table
-                                        v-if="appointedCastDataList.length > 0"
-                                        class="appointed_cast_area"
-                                    >
-                                        <tr>
-                                            <th
-                                                v-for="(castHeader, id) in appointedCastHeader"
-                                                :key=id
-                                            >{{ castHeader.text }}</th>
-                                        </tr>
-                                        <tr
-                                            v-for="(castData, idx) in appointedCastDataList"
-                                            :key=idx
-                                        >
-                                            <td>
-                                                <b-avatar
-                                                    :src="apiPath + castData.cast.icon"
-                                                    class="cast_icon"
-                                                    v-if="castData.cast.icon != null"
-                                                ></b-avatar>
-                                                <b-avatar
-                                                    :src="defaultCastIcon"
-                                                    class="cast_icon"
-                                                    v-else
-                                                ></b-avatar>
-                                            </td>
-                                            <td>{{ castData.cast.name }}</td>
-                                            <td>{{ getAppointStr(castData.appointType) }}</td>
-                                            <td>{{ getDouhanStr(castData.isDouhan) }}</td>
-                                            <td>{{ getStayHourStr(castData.stayHour) }}</td>
-                                            <td>
-                                                <b-icon
-                                                    icon="trash-fill"
-                                                    aria-hidden="true"
-                                                    @click="deleteCast(castData, idx)"
-                                                    variant="danger"
-                                                    class="trash_icon"
-                                                ></b-icon>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                    <b-button
-                                        size="sm"
-                                        @click="showAddCastDialog"
-                                        class="mt-3"
-                                        variant="primary"
-                                    >
-                                        <b-icon
-                                            icon="person-plus"
-                                            aria-hidden="true"
-                                        ></b-icon> キャストを追加...
-                                    </b-button>
-                                </div>
+                            <b-col cols="6">
+                                <b-card style="min-height: 475px;">
+                                    <label>
+                                        基本料金
+                                    </label>
+                                    <b-container>
+                                        <b-row style="min-height: 80px;" align-h="between">
+                                            <b-col>
+                                                <b-card-sub-title>料金タイプ</b-card-sub-title>
+                                                <b-form-group style="min-height: 40px;">
+                                                    <b-form-radio-group
+                                                        v-model="inputSalesData.basicPlanType"
+                                                        :options=basicPlanOptions
+                                                        button-variant="outline-primary"
+                                                        buttons
+                                                        style="min-height: 40px;"
+                                                    ></b-form-radio-group>
+                                                    <b-icon
+                                                        v-if="inputSalesData.basicPlanType == 1"
+                                                        font-scale="1.8"
+                                                        icon="bookmark-star-fill"
+                                                        variant="primary"
+                                                        class="ml-3 pl-3"
+                                                    ></b-icon>
+                                                </b-form-group>
+                                            </b-col>
+                                            <b-col style="text-align: right;">
+                                                <b-button
+                                                    size="sm"
+                                                    @click="showDiffBasicPlan = !showDiffBasicPlan"
+                                                    class="mt-3"
+                                                    pill
+                                                    variant="outline-success"
+                                                >
+                                                    <b-icon
+                                                        icon="arrow-left-right"
+                                                        aria-hidden="true"
+                                                    ></b-icon> 席移動
+                                                </b-button>
+                                            </b-col>
+                                            <!-- <b-col>
+                                                <b-button id="button-1" variant="outline-success">Live chat</b-button>
+                                            </b-col> -->
+                                        </b-row>
+                                        <b-row>
+                                            <b-col cols="6" class="input_sales_visit">
+                                                <div class="input_sales_visit_time_wrap">
+                                                    <div class="input_sales_visit_time">
+                                                        <b-card-sub-title class="input_sales_visit_time_title">入店時間</b-card-sub-title>
+                                                        <b-row>
+                                                            <b-form-group class="input_sales_visit_time_select_wrap">
+                                                                <b-form-group>
+                                                                    <SelectForm
+                                                                        :optionType=5
+                                                                        v-model="inputSalesData.visitTimeHour"
+                                                                    />
+                                                                    ：
+                                                                    <b v-if="inputSalesData.visitTimeHour != 20">
+                                                                        <SelectForm
+                                                                            :optionType=2
+                                                                            v-model="inputSalesData.visitTimeMinute"
+                                                                        />
+                                                                    </b>
+                                                                    <b v-else>
+                                                                        <SelectForm
+                                                                            :optionType=6
+                                                                            v-model="inputSalesData.visitTimeMinute"
+                                                                        />
+                                                                    </b>
+                                                                </b-form-group>
+                                                            </b-form-group>
+                                                        </b-row>
+                                                    </div>
+                                                </div>
+                                            </b-col>
+                                            <b-col cols="6" class="input_sales_leave">
+                                                <div class="input_sales_visit_time_wrap">
+                                                    <div class="input_sales_visit_time">
+                                                        <b-card-sub-title class="input_sales_visit_time_title">{{ moveSeatTimeText }}</b-card-sub-title>
+                                                        <b-form-group class="input_sales_visit_time_select_wrap">
+                                                            <b-form-group>
+                                                                <SelectForm
+                                                                    :optionType=5
+                                                                    v-model="inputSalesData.leaveTimeHour"
+                                                                />
+                                                                ：
+                                                                <SelectForm
+                                                                    :optionType=2
+                                                                    v-model="inputSalesData.leaveTimeMinute"
+                                                                />
+                                                            </b-form-group>
+                                                        </b-form-group>
+                                                    </div>
+                                                </div>
+                                            </b-col>
+                                            <b-col>
+                                                <label>
+                                                    滞在時間
+                                                </label>
+                                                <b-progress :max="maxHour" height="2rem">
+                                                    <b-progress-bar :value=inputSalesData.stayHour variant="success">
+                                                        <span><strong>{{ getStayHourStr(inputSalesData.stayHour) }}</strong></span>
+                                                    </b-progress-bar>
+                                                </b-progress>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row class="pl-3 pr-3">
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in basicPriceMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <SelectForm
+                                                            :optionType=4
+                                                            v-model="inputSalesData.selectedBasicPlan"
+                                                        />
+                                                    </td>
+                                                    <td class="width20">{{ basicPlanPrice }}</td>
+                                                    <td class="width30">
+                                                        <b-form-spinbutton
+                                                            v-model="inputSalesData.selectedBasicPlanNum"
+                                                            inline
+                                                            max=1
+                                                            min=0
+                                                            size="sm"
+                                                        ></b-form-spinbutton>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in extentionPriceMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>30分</td>
+                                                    <td class="width20">{{ extentionPrice }}</td>
+                                                    <td class="width20">
+                                                        <b-form-group
+                                                        >
+                                                            <SelectForm
+                                                                :optionType=99
+                                                                v-model="inputSalesData.extentionNum"
+                                                            />
+                                                        </b-form-group>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                        <b-row v-if="inputSalesData.basicPlanType == 1" class="pl-3 pr-3">
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in basicPriceVipSeatMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        VIP Seat
+                                                    </td>
+                                                    <td class="width20">
+                                                        {{ basicPriceVipSeat }}
+                                                    </td>
+                                                    <td class="width30">
+                                                        <b-form-spinbutton
+                                                            v-model="inputSalesData.vipSeatNum"
+                                                            inline
+                                                            max=1
+                                                            min=0
+                                                            size="sm"
+                                                        ></b-form-spinbutton>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                    </b-container>
+                                </b-card>
                             </b-col>
-                            <b-col cols="4">
-                                <b-form-group
-                                    class="input_sales_date"
-                                    label="会計日"
-                                >
-                                    <b-form-datepicker
-                                        v-model="inputSalesData.sales_date"
-                                        placeholder="会計日を入力してください"
-                                    ></b-form-datepicker>
-                                </b-form-group>
+                            <b-col cols="6">
+                                <b-card style="min-height: 475px;">
+                                    <label class="mt-1">
+                                        指名情報
+                                    </label>
+                                    <b-container fluid class="appoint_cast_area_wrap" style="min-height: 347px; max-height: 347px;">
+                                        <b-row align-h="between">
+                                            <b-col>
+                                                <b-card-sub-title>指名有無</b-card-sub-title>
+                                                <b-form-group>
+                                                    <b-form-radio-group
+                                                        v-model="inputSalesData.isAppointed"
+                                                        :options=appointOptions
+                                                        button-variant="outline-primary"
+                                                        buttons
+                                                    ></b-form-radio-group>
+                                                </b-form-group>
+                                            </b-col>
+
+                                            <b-col cols="4">
+                                                <b-button
+                                                    v-if="inputSalesData.isAppointed == 1"
+                                                    size="sm"
+                                                    @click="showAddCastDialog"
+                                                    class="mt-3"
+                                                    pill
+                                                    variant="outline-success"
+                                                >
+                                                    <b-icon
+                                                        icon="person-plus"
+                                                        aria-hidden="true"
+                                                    ></b-icon> キャスト追加
+                                                </b-button>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <table
+                                                v-if="appointedCastDataList.length > 0 && inputSalesData.isAppointed == 1"
+                                                class="appointed_cast_area"
+                                            >
+                                                <tr>
+                                                    <th
+                                                        v-for="(castHeader, id) in appointedCastHeader"
+                                                        :key=id
+                                                    >{{ castHeader.text }}</th>
+                                                </tr>
+                                                <tr
+                                                    v-for="(castData, idx) in appointedCastDataList"
+                                                    :key=idx
+                                                >
+                                                    <td>
+                                                        <b-avatar
+                                                            :src="apiPath + castData.cast.icon"
+                                                            class="cast_icon"
+                                                            v-if="castData.cast.icon != null"
+                                                        ></b-avatar>
+                                                        <b-avatar
+                                                            :src="defaultCastIcon"
+                                                            class="cast_icon"
+                                                            v-else
+                                                        ></b-avatar>
+                                                    </td>
+                                                    <td>{{ castData.cast.name }}</td>
+                                                    <td>{{ getAppointStr(castData.appointType) }}</td>
+                                                    <td>{{ castData.appointPrice }}</td>
+                                                    <td>{{ getDouhanStr(castData.isDouhan) }}</td>
+                                                    <td class="ml-0 pl-0">
+                                                        <b-form-group
+                                                        >
+                                                            <!-- <SelectForm
+                                                                :optionType=99
+                                                                v-model="appointedCastDataList[idx].num"
+                                                            /> -->
+                                                            <b-form-select
+                                                                v-model="appointedCastDataList[idx].quantity"
+                                                                :options="numOptions"
+                                                                value-field="value"
+                                                                text-field="text"
+                                                                class="input_sales_basic_price_select"
+                                                            ></b-form-select>
+                                                        </b-form-group>
+                                                    </td>
+
+                                                    <td>
+                                                        <b-icon
+                                                            icon="dash-square"
+                                                            aria-hidden="true"
+                                                            @click="deleteCast(castData, idx)"
+                                                            variant="danger"
+                                                            class="trash_icon"
+                                                        ></b-icon>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                    </b-container>
+                                </b-card>
+                            </b-col>
+
+                            <b-col v-if="showDiffBasicPlan">
+                                <b-card class="moveSeatCard">
+                                    <label>
+                                        基本料金（席移動後）
+                                    </label>
+                                    <b-container>
+                                        <b-row style="min-height: 80px;" align-h="between">
+                                            <b-col>
+                                                <b-card-sub-title>料金タイプ</b-card-sub-title>
+                                                <b-form-group style="min-height: 40px;">
+                                                    <b-form-radio-group
+                                                        v-model="inputSalesData.basicPlanTypeOther"
+                                                        :options=basicPlanOptions
+                                                        button-variant="outline-primary"
+                                                        buttons
+                                                        style="min-height: 40px;"
+                                                        disabled
+                                                    ></b-form-radio-group>
+                                                    <b-icon
+                                                        v-if="inputSalesData.basicPlanTypeOther == 1"
+                                                        font-scale="1.8"
+                                                        icon="bookmark-star-fill"
+                                                        variant="primary"
+                                                        class="ml-3 pl-3"
+                                                    ></b-icon>
+                                                </b-form-group>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col cols="6" class="input_sales_visit">
+                                                <div class="input_sales_visit_time_wrap">
+                                                    <div class="input_sales_visit_time">
+                                                        <b-card-sub-title class="input_sales_visit_time_title">席移動時間</b-card-sub-title>
+                                                        <b-row>
+                                                            <b-form-group class="input_sales_visit_time_select_wrap">
+                                                                <b-form-group>
+                                                                    <SelectForm
+                                                                        :optionType=5
+                                                                        v-model="inputSalesData.leaveTimeHour"
+                                                                    />
+                                                                    ：
+                                                                    <SelectForm
+                                                                        :optionType=2
+                                                                        v-model="inputSalesData.leaveTimeMinute"
+                                                                    />
+                                                                </b-form-group>
+                                                            </b-form-group>
+                                                        </b-row>
+                                                    </div>
+                                                </div>
+                                            </b-col>
+                                            <b-col cols="6" class="input_sales_leave">
+                                                <div class="input_sales_visit_time_wrap">
+                                                    <div class="input_sales_visit_time">
+                                                        <b-card-sub-title class="input_sales_visit_time_title">退店時間</b-card-sub-title>
+                                                        <b-form-group class="input_sales_visit_time_select_wrap">
+                                                            <b-form-group>
+                                                                <SelectForm
+                                                                    :optionType=5
+                                                                    v-model="inputSalesData.leaveTimeHourAfterMove"
+                                                                />
+                                                                ：
+                                                                <SelectForm
+                                                                    :optionType=2
+                                                                    v-model="inputSalesData.leaveTimeMinuteAfterMove"
+                                                                />
+                                                            </b-form-group>
+                                                        </b-form-group>
+                                                    </div>
+                                                </div>
+                                            </b-col>
+                                            <b-col>
+                                                <label>
+                                                    滞在時間
+                                                </label>
+                                                <b-progress :max="maxHour" height="2rem">
+                                                    <b-progress-bar :value=inputSalesData.stayHourOther variant="success">
+                                                        <span><strong>{{ getStayHourStr(inputSalesData.stayHourOther) }}</strong></span>
+                                                    </b-progress-bar>
+                                                </b-progress>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row class="pl-3 pr-3">
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in basicPriceMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <SelectForm
+                                                            :optionType=4
+                                                            v-model="inputSalesData.selectedBasicPlanOther"
+                                                        />
+                                                    </td>
+                                                    <td class="width20">{{ basicPlanPriceOther }}</td>
+                                                    <td class="width30">
+                                                        <b-form-spinbutton
+                                                            v-model="inputSalesData.selectedBasicPlanOtherNum"
+                                                            inline
+                                                            max=1
+                                                            min=0
+                                                            size="sm"
+                                                        ></b-form-spinbutton>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in extentionPriceMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>30分</td>
+                                                    <td class="width20">{{ extentionPriceOther }}</td>
+                                                    <td class="width20">
+                                                        <b-form-group
+                                                        >
+                                                            <SelectForm
+                                                                :optionType=99
+                                                                v-model="inputSalesData.extentionOtherNum"
+                                                            />
+                                                        </b-form-group>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                        <b-row v-if="inputSalesData.basicPlanTypeOther == 1" class="pl-3 pr-3">
+                                            <table class="mt-3">
+                                                <tr>
+                                                    <th
+                                                        v-for="(menuItem, id) in basicPriceVipSeatMenu"
+                                                        :key=id
+                                                        :class=menuItem.class
+                                                    >{{ menuItem.text }}</th>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        VIP Seat
+                                                    </td>
+                                                    <td class="width20">
+                                                        {{ basicPriceVipSeat }}
+                                                    </td>
+                                                    <td class="width30">
+                                                        <b-form-spinbutton
+                                                            v-model="inputSalesData.vipSeatNumOther"
+                                                            inline
+                                                            max=1
+                                                            min=0
+                                                            size="sm"
+                                                        ></b-form-spinbutton>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                    </b-container>
+                                </b-card>
                             </b-col>
                         </b-row>
 
@@ -172,48 +526,60 @@
                             </b-col>
                         </b-row>
                     </b-form-group>
-                    <b-table
-                        v-if="inputSalesDetailData.length > 0"
-                        :fields="inputSalesDetailFields"
-                        :items="inputSalesDetailData"
-                        hover
-                        table-variant="light"
-                    >
-                        <template #cell(actions)="data">
-                            <b-row>
-                                <b-col>
-                                    <b-button
-                                        size="sm"
-                                        variant="light"
-                                        @click="editSalesDetail(data)"
-                                    >
-                                        <b-icon
-                                            icon="pencil-square"
-                                            aria-hidden="true"
-                                            variant="primary"
-                                            class="trash_icon"
-                                        ></b-icon>
-                                    </b-button>
-                                </b-col>
-                                <b-col>
-                                    <b-button
-                                        size="sm"
-                                        variant="light"
-                                        @click="deleteSalesDetail(data)"
-                                    >
-                                        <b-icon
-                                            icon="trash-fill"
-                                            aria-hidden="true"
-                                            variant="danger"
-                                            class="trash_icon"
-                                        ></b-icon>
-                                    </b-button>
-                                </b-col>
-                            </b-row>
-                        </template>
-                    </b-table>
+                    <table>
+                        <tr>
+                            <th>商品名</th>
+                            <th>定価</th>
+                            <th>実価格</th>
+                            <th>数量</th>
+                            <th>課税対象</th>
+                            <th>総計(税抜)</th>
+                            <th>総計(税込)</th>
+                            <th>備考</th>
+                            <th></th>
+                        </tr>
+                        <tr
+                            v-for="(item, id) in inputSalesDetailData"
+                            :key=id
+                        >
+                            <td>
+                                <b-img
+                                    v-if="item.thumbnail != null"
+                                    :src="apiPath + item.thumbnail"
+                                    alt="Selected Product"
+                                    rounded
+                                    height="50"
+                                    width="50"
+                                ></b-img>
+                                <b-img
+                                    v-else
+                                    :src="defaultIcon"
+                                    alt="Selected Product"
+                                    rounded
+                                    height="50"
+                                    width="50"
+                                ></b-img>
+                                <span>{{ item.name }}</span>
+                            </td>
+                            <td>{{ item.price }}</td>
+                            <td>{{ item.actuallyPrice }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td>{{ item.taxation }}</td>
+                            <td>{{ item.totalPrice }}</td>
+                            <td>{{ item.totalTaxPrice }}</td>
+                            <td>{{ item.remark }}</td>
+                            <td>
+                                <b-icon
+                                    icon="dash-square"
+                                    font-scale="1.5"
+                                    variant="danger"
+                                    class="mt-2 input_sales_delete_product_btn"
+                                    @click="deleteSalesDetail(item)"
+                                ></b-icon>
+                            </td>
+                        </tr>
+                    </table>
                 </b-card>
-
             </b-form>
             <template #modal-footer>
                 <b-container fluid>
@@ -234,6 +600,33 @@
                                 ￥ {{ totalTaxPrice }}
                             </b-card-title>
                         </b-col>
+                        <b-col
+                            cols="2"
+                            class="mt-0 pt-0"
+                        >
+                            <b-form-group
+                                label="税率"
+                                class="mt-0 pt-0 mb-0 pb-0"
+                            >
+                                <SelectForm
+                                    :optionType=3
+                                    v-model="inputSalesData.totalSalesTax"
+                                />%
+                            </b-form-group>
+                        </b-col>
+                        <b-col
+                            cols="2"
+                            class="mt-0 pt-0"
+                        >
+                            <b-form-group
+                                label="カード会計"
+                                class="mt-0 pt-0 mb-0 pb-0"
+                            >
+                                <CheckboxForm
+                                    v-model=inputSalesData.cardPayment
+                                />
+                            </b-form-group>
+                        </b-col>
                         <b-col align="right" class="add_sales_detail_footer_col">
                             <b-button
                                 variant="secondary"
@@ -245,8 +638,8 @@
                             <b-button
                                 variant="primary"
                                 @click="register"
-                                :disabled=isDisabled
                             >
+                            <!-- :disabled=isDisabled -->
                                 登録
                             </b-button>
                         </b-col>
@@ -270,9 +663,21 @@
 import InputSalesDetailDialog from '@/components/common/dialog/InputSalesDetailDialog'
 import InputSalesAddDetailDialog from '@/components/common/dialog/InputSalesAddDetailDialog'
 import InputSalesAddCastDialog from '@/components/common/dialog/InputSalesAddCastDialog'
-import { mapMutations } from 'vuex'
+import SelectForm from '@/components/common/parts/SelectForm'
+import CheckboxForm from '@/components/common/parts/CheckboxForm'
+import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
+import dayjs from 'dayjs'
+import isBetween from 'dayjs/plugin/isBetween';
+import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
+import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
+dayjs.extend(isSameOrAfter)
+dayjs.extend(isSameOrBefore)
+dayjs.extend(isBetween)
+import Decimal from 'decimal.js'
+const now = dayjs().format('YYYY-MM-DD')
 const Con = new Const()
+import utilsMixin from '@/mixins/utils'
 
 export default {
     name: 'InputSalesDialogItem',
@@ -282,150 +687,93 @@ export default {
         InputSalesDetailDialog,
         InputSalesAddCastDialog,
         InputSalesAddDetailDialog,
+        SelectForm,
+        CheckboxForm,
     },
     data: () => ({
-        basicPlan: 0,
-        planOptions: [
-            {
-                text: 'Normal',
-                value: 0,
-            },
-            {
-                text: 'VIP',
-                value: 1,
-            }
-        ],
-        selectedStayHour: null,
         dialog: false,
         inputSalesData: {
-            sales_date: '2022-05-14'
+            basicPlanType: 0, // 選択されている料金タイプの種類
+            customerNo: null,
+            accountDate: now,
+            visitTimeHour: null, // 来店時間（時）
+            visitTimeMinute: null, // 来店時間（分）
+            leaveTimeHour: null, // 退店時間（時）=> 席移動の場合は席移動時間（時）
+            leaveTimeMinute: null, // 退店時間（分）=> 席移動の場合は席移動時間（分）
+            selectedBasicPlan: 0, // SET料金のどれを選択しているか
+            selectedBasicPlanNum: 0, // SET料金の数量 1 or 0。サービスも考慮
+            stayHour: 0, // 滞在時間
+
+            // 延長はcomputedでextention_price
+            extentionNum: 0, // 延長料金の数量 1 or 0。
+
+            // VIP_SEATはbasicPlanType == 1の時
+            vipSeatNum: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+
+            basicPlanTypeOther: 1, // 選択されている料金タイプの種類（席移動先）basicPlanTypeと逆（computedで）
+            leaveTimeHourAfterMove: null, // 席移動後の退店時間（時）
+            leaveTimeMinuteAfterMove: null, // 席移動後の退店時間（分）
+            stayHourOther: 0, // 滞在時間（席移動先）
+            selectedBasicPlanOther: 0, // SET料金のどれを選択しているか（席移動後）
+            selectedBasicPlanOtherNum: 1, // SET料金の数量 1 or 0。サービスも考慮（席移動後）
+            extentionOtherNum: 0, // 延長料金の数量 1 or 0。
+            vipSeatNumOther: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+
+            totalSalesTax: Con.TAX_DEFAULT,
+            cardPayment: false,
+            isAppointed: 0,
         },
-        inputSalesDetailTestData: [
-            {
-                product: {
-                    name: 'レモンサワー',
-                    price: '500',
-                    tax: {
-                        tax_rate: 30,
-                    },
-                },
-                quantity: 2.0,
-                actually_price: 400,
-            },
-        ],
-        inputSalesDetailTestData2: [
-            {
-                name: 'レモンサワー',
-                price: '1000',
-                actually_price: 500,
-                tax_rate: 30,
-                quantity: 2.0,
-                total_price: 500,
-            },
-            {
-                name: 'レモンサワー',
-                price: '500',
-                actually_price: 400,
-                tax_rate: 30,
-                quantity: 2.0,
-                total_price: 800,
-            },
-            {
-                name: 'レモンサワー',
-                price: '500',
-                actually_price: 400,
-                tax_rate: 30,
-                quantity: 2.0,
-                total_price: 800,
-            },
-            {
-                name: 'レモンサワー',
-                price: '500',
-                actually_price: 400,
-                tax_rate: 30,
-                quantity: 2.0,
-                total_price: 800,
-            },
-        ],
-        inputSalesDetailFields: [
-            {
-                key: 'name',
-                sortable: true,
-                headerTitle: '商品名'
-            },
-            {
-                key: 'price',
-                sortable: true,
-                headerTitle: '定価'
-            },
-            {
-                key: 'actually_price',
-                sortable: true,
-                headerTitle: '実価格'
-            },
-            {
-                key: 'tax_rate',
-                sortable: true,
-                headerTitle: '税率'
-            },
-            {
-                key: 'quantity',
-                sortable: true,
-                headerTitle: '個数'
-            },
-            {
-                key: 'total_price',
-                sortable: true,
-                headerTitle: '総計(税抜)'
-            },
-            {
-                key: 'total_tax_price',
-                sortable: true,
-                headerTitle: '総計(税込)'
-            },
-            {
-                key: 'Actions',
-                sortable: true,
-                headerTitle: 'Actions'
-            },
-        ],
+
+        showDiffBasicPlan: false, // 席移動入力状態。trueは席移動したと見なす
+
+
         inputSalesDetailData: [],
-        inputSalesDetailDialog: false,
-        totalSales: 0,
-        totalTaxSales: 0,
         appointedCastDataList: [],
-        stayHourOptions: [
-            { value: 0.5, text: '0.5' },
-            { value: 1.0, text: '1.0' },
-            { value: 1.5, text: '1.5' },
-            { value: 2.0, text: '2.0' },
-            { value: 2.5, text: '2.5' },
-            { value: 3.0, text: '3.0' },
-            { value: 3.5, text: '3.5' },
-            { value: 4.0, text: '4.0' },
-            { value: 4.5, text: '4.5' },
-            { value: 5.0, text: '5.0' },
-            { value: 5.5, text: '5.5' },
-            { value: 6.0, text: '6.0' },
-            { value: 6.5, text: '6.5' },
-            { value: 7.0, text: '7.0' },
-            { value: 7.5, text: '7.5' },
-            { value: 8.0, text: '8.0' },
-            { value: 8.5, text: '8.5' },
-            { value: 9.0, text: '9.0' },
-            { value: 9.5, text: '9.5' },
-            { value: 10.0, text: '10.0' },
-        ],
+
+        inputSalesDetailDialog: false,
+        basicPriceVipSeat: Con.BASIC_PRICE_VIP_SEAT, // VIPの席料金
+        taxOptions: Con.OPTIONS_TAX,
+        numOptions: Con.OPTIONS_NUM,
+        hourOptions: Con.OPTIONS_HOUR,
+        hourAllOptions: Con.OPTIONS_HOUR_ALL,
+        minuteOptions: Con.OPTIONS_MINUTE,
+
+        maxHour: 300, // 滞在時間のMAXとなる
+        apiPath: Con.API_PATH, // APIのURL
+        defaultCastIcon: 'http://localhost:8000/media/upload/女性1111.png',
+        defaultIcon: Con.DEFAULT_ALCOHOL_ICON, // デフォで酒の画像出しているが・・・
         appointedCastHeader: [
             { text: '' },
             { text: '名前' },
             { text: '指名' },
+            { text: '指名料' },
             { text: '同伴' },
-            { text: '時間' },
+            { text: '数量' },
             { text: '' },
         ],
-        apiPath: 'http://localhost:8000',
-        defaultCastIcon: 'http://localhost:8000/media/upload/女性1111.png',
+        basicPriceMenu: [
+            { text: 'SET料金', class: 'width50' },
+            { text: '金額', class: 'width20' },
+            { text: '数量', class: 'width30' },
+        ],
+        basicPriceVipSeatMenu: [
+            { text: '席料金', class: 'width50' },
+            { text: '金額', class: 'width20' },
+            { text: '数量', class: 'width30' }
+        ],
+        extentionPriceMenu: [
+            { text: '延長料金', class: 'width50' },
+            { text: '金額', class: 'width20' },
+            { text: '数量', class: 'width30' }
+        ],
+        basicPlanOptions: [
+            { text: 'Normal', value: 0 },
+            { text: 'VIP', value: 1 },
+        ],
+        appointOptions: [
+            { text: 'フリー', value: 0 },
+            { text: '指名', value: 1 },
+        ],
     }),
     created () {
         this.$eventHub.$off('addCast')
@@ -433,96 +781,649 @@ export default {
 
         this.$eventHub.$off('addSalesDetail')
         this.$eventHub.$on('addSalesDetail', this.addSalesDetail)
+        this.$eventHub.$off('addSalesDetailList')
+        this.$eventHub.$on('addSalesDetailList', this.addSalesDetailList)
+
+
+        const now = dayjs()
+        const one = dayjs('2022-01-01 23:00:00')
+        const two = dayjs('2022-01-01 23:51:00')
+        const res = two.diff(one, 'minute')
+        const h = Math.floor(res / 60)
+        const m = res % 60
     },
     computed: {
+        ...mapGetters([
+        ]),
         totalPrice () {
             let totalPrice = 0
-            // 明細部 そのうち計算量考慮
-            for (const item of this.inputSalesDetailData) {
-                totalPrice += item.total_price
-            }
 
-            // 滞在時間
-            if (this.selectedStayHour != null) {
-                let planPrice = Con.BASIC_PLAN_PRICE[this.basicPlan]
-                totalPrice += (planPrice * this.selectedStayHour)
-            }
-
-            // 指名料も画面側に落とすか画面で持つか
-            // 指名
-            const appointPrice = {
-                0: 2000,
-                1: 3000,
-                2: 2000,
-                3: 4000
-            }
-            for (const item of this.appointedCastDataList) {
-                console.log(item)
-                totalPrice += (item.isDouhan) ? appointPrice[3] : appointPrice[item.appointType]
-            }
+            totalPrice += this.culcBasicPlanPrice + this.culcBasicPlanPriceOther
+            totalPrice += this.culcExtentionPrice + this.culcExtentionOtherPrice
+            totalPrice += this.appointPrice + this.douhanPrice
+            totalPrice += this.salesDetailTotalPrice
 
             return totalPrice
         },
         totalTaxPrice () {
-            let totalTaxPrice = 0
-            // そのうち計算量考慮
-            for (const item of this.inputSalesDetailData) {
-                totalTaxPrice += item.total_tax_price
-            }
+            let totalPrice = 0
 
-            // 基本料金も画面側に落としてそこから取得
-            // 滞在時間
-            if (this.selectedStayHour != null) {
-                let planPrice = Con.BASIC_PLAN_PRICE[this.basicPlan]
-                let tax = planPrice * this.selectedStayHour * 0.3
-                totalTaxPrice += (planPrice * this.selectedStayHour + tax)
-            }
-
-            // 指名料も画面側に落とすか画面で持つか
-            // 指名
-            const appointPrice = {
-                0: 2000,
-                1: 3000,
-                2: 2000,
-                3: 4000
-            }
-            // 指名
-            for (const item of this.appointedCastDataList) {
-                console.log(item)
-                const apo = (item.isDouhan) ? appointPrice[3] : appointPrice[item.appointType]
-                let tax = apo * 0.3
-                totalTaxPrice += tax + apo
-            }
-
-
-
-            return totalTaxPrice
+            totalPrice += this.culcBasicPlanPrice + this.culcBasicPlanPriceOther
+            totalPrice += this.culcExtentionPrice + this.culcExtentionOtherPrice
+            totalPrice += this.appointPrice + this.douhanPrice
+            // 課税対象外の商品は外す
+            // totalPrice += this.salesDetailTotalPrice
+            let tax = (this.inputSalesData.cardPayment) ? this.inputSalesData.totalSalesTax + 10 : this.inputSalesData.totalSalesTax
+            totalPrice = this.roundDown(this.calcAddTaxPrice(totalPrice, tax))
+            return totalPrice + this.salesDetailTotalPrice
         },
         isDisabled () {
             return true
+        },
+        basicPlanPrice () {
+            if (this.inputSalesData.basicPlanType == 0) {
+                return Con.BASIC_PLAN_NORMAL_PRICE[this.inputSalesData.selectedBasicPlan]
+            }
+            return Con.BASIC_PLAN_VIP_PRICE[this.inputSalesData.selectedBasicPlan]
+        },
+        basicPlanPriceOther () {
+            if (this.inputSalesData.basicPlanTypeOther == 0) {
+                return Con.BASIC_PLAN_NORMAL_PRICE[this.inputSalesData.selectedBasicPlan]
+            }
+            return Con.BASIC_PLAN_VIP_PRICE[this.inputSalesData.selectedBasicPlan]
+        },
+        extentionPrice () {
+            return Con.BASIC_PLAN_EXTENTION[this.inputSalesData.basicPlanType]
+        },
+        extentionPriceOther () {
+            return Con.BASIC_PLAN_EXTENTION[this.inputSalesData.basicPlanTypeOther]
+        },
+        culcBasicPlanPrice () {
+            let total = 0
+            total += this.basicPlanPrice * this.inputSalesData.selectedBasicPlanNum
+            if (this.inputSalesData.basicPlanType == 1) {
+                total += this.basicPriceVipSeat * this.inputSalesData.vipSeatNum
+            }
+            return total
+        },
+        culcBasicPlanPriceOther () {
+            if (!this.showDiffBasicPlan) return 0
+
+            let total = 0
+            total += this.basicPlanPriceOther * this.inputSalesData.selectedBasicPlanOtherNum
+            if (this.inputSalesData.basicPlanTypeOther == 1) {
+                total += this.basicPriceVipSeat * this.inputSalesData.vipSeatNumOther
+            }
+            return total
+        },
+        culcExtentionPrice () {
+            return this.extentionPrice * this.inputSalesData.extentionNum
+        },
+        culcExtentionOtherPrice () {
+            if (!this.showDiffBasicPlan) return 0
+            return this.extentionPriceOther * this.inputSalesData.extentionOtherNum
+        },
+        appointPrice () {
+            if (this.inputSalesData.isAppointed == 0) return 0
+            let total = 0
+            for (const i in this.appointedCastDataList) {
+                total += this.calcQuantityPrice(
+                    this.appointedCastDataList[i].appointPrice,
+                    this.appointedCastDataList[i].quantity,
+                )
+            }
+            return total
+        },
+        douhanPrice () {
+            let total = 0
+            for (const i in this.appointedCastDataList) {
+                total += this.appointedCastDataList[i].douhanPrice
+            }
+            return total
+        },
+        salesDetailTotalPrice () {
+            let total = 0
+            for (const i in this.inputSalesDetailData) {
+                total += this.inputSalesDetailData[i].totalPrice
+            }
+            return total
+        },
+        salesDetailTotalTaxPrice () {
+            let total = 0
+            for (const i in this.inputSalesDetailData) {
+                total += this.inputSalesData[i].totalTaxPrice
+            }
+            return total
+        },
+        moveSeatTimeText () {
+            if (this.showDiffBasicPlan) {
+                return '席移動時間'
+            } else {
+                return '退店時間'
+            }
+        },
+        isExtention () {
+            if (this.inputSalesData.stayHour > 60) {
+                return true
+            }
+            return false
+        },
+        isExtentionOther () {
+            if (this.showDiffBasicPlan && this.inputSalesData.stayHourOther > 60) {
+                return true
+            }
+            return false
+        }
+    },
+    watch: {
+        'inputSalesData.visitTimeHour': function (val) {
+            if (val != null
+                && this.inputSalesData.visitTimeMinute != null
+                && this.inputSalesData.leaveTimeHour != null
+                && this.inputSalesData.leaveTimeMinute != null)
+            {
+                this.calcBasicPlan()
+            }
+        },
+        'inputSalesData.visitTimeMinute': function (val) {
+            if (val != null
+                && this.inputSalesData.visitTimeHour != null
+                && this.inputSalesData.leaveTimeHour != null
+                && this.inputSalesData.leaveTimeMinute != null)
+            {
+                this.calcBasicPlan()
+            }
+        },
+        'inputSalesData.leaveTimeHour': function (val) {
+            if (val != null
+                && this.inputSalesData.visitTimeHour != null
+                && this.inputSalesData.visitTimeMinute != null
+                && this.inputSalesData.leaveTimeMinute != null)
+            {
+                this.calcBasicPlan()
+                if (this.showDiffBasicPlan) {
+                    this.calcBasicPlanOther()
+                }
+            }
+        },
+        'inputSalesData.leaveTimeMinute': function (val) {
+            if (val != null
+                && this.inputSalesData.visitTimeHour != null
+                && this.inputSalesData.visitTimeMinute != null
+                && this.inputSalesData.leaveTimeHour != null)
+            {
+                this.calcBasicPlan()
+                if (this.showDiffBasicPlan) {
+                    this.calcBasicPlanOther()
+                }
+            }
+        },
+        'inputSalesData.leaveTimeHourAfterMove': function (val) {
+            if (val != null
+                && this.inputSalesData.leaveTimeHour != null
+                && this.inputSalesData.leaveTimeMinute != null
+                && this.inputSalesData.leaveTimeMinuteAfterMove != null)
+            {
+                this.calcBasicPlanOther()
+            }
+        },
+        'inputSalesData.leaveTimeMinuteAfterMove': function (val) {
+            if (val != null
+                && this.inputSalesData.leaveTimeHour != null
+                && this.inputSalesData.leaveTimeMinute != null
+                && this.inputSalesData.leaveTimeHourAfterMove != null)
+            {
+                this.calcBasicPlanOther()
+            }
+        },
+        'inputSalesData.basicPlanType': function (val) {
+            if (val == 0) {
+                this.inputSalesData.basicPlanTypeOther = 1
+            } else {
+                this.inputSalesData.basicPlanTypeOther = 0
+            }
         }
     },
     methods: {
+        calcBasicPlan () {
+            this.inputSalesData.selectedBasicPlanNum = 1
+            const VISIT_TIME_FOR_DIFF = (this.inputSalesData.visitTimeHour >= 20) ? Con.BASIC_PLAN_TIME_FOR_DIFF_A : Con.BASIC_PLAN_TIME_FOR_DIFF_B
+            const LEAVE_TIME_FOR_DIFF = (this.inputSalesData.leaveTimeHour >= 20) ? Con.BASIC_PLAN_TIME_FOR_DIFF_A : Con.BASIC_PLAN_TIME_FOR_DIFF_B
+            // 来店時間
+            const visitTime = dayjs(VISIT_TIME_FOR_DIFF + this.inputSalesData.visitTimeHour + ':' + this.inputSalesData.visitTimeMinute + ':00')
+            // 退店時間（席移動時は席移動時間）
+            const leaveTime = dayjs(LEAVE_TIME_FOR_DIFF + this.inputSalesData.leaveTimeHour + ':' + this.inputSalesData.leaveTimeMinute + ':00')
+
+            // 退店時間と来店時間の差分（席移動時は席移動時間と来店時間の差分）
+            const diff = leaveTime.diff(visitTime, 'minute')
+            // 延長料金を出すためにSET料金分の1時間を引く
+            const diff_minute = diff-60
+            // 延長料金の数量を出すために30で割って切り上げする
+            const extention_time = Math.ceil(diff_minute / 30)
+
+            if (diff_minute > 0) {
+                // 延長料金が発生しているパターン
+                this.inputSalesData.extentionNum = extention_time
+            } else {
+                // 延長料金は発生していないパターン
+                this.inputSalesData.extentionNum = 0
+            }
+
+            // プランAの判別（20:30~21:30）
+            if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
+                    && visitTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
+                if (visitTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlan = null
+                    this.inputSalesData.extentionNum = 0
+                    this.inputSalesData.stayHour = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlan = 0
+                    this.inputSalesData.stayHour = diff
+                }
+
+            // プランBの判別（21:30~22:30）
+            } else if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
+                    && visitTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
+                if (visitTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlan = null
+                    this.inputSalesData.extentionNum = 0
+                    this.inputSalesData.stayHour = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlan = 1
+                    this.inputSalesData.stayHour = diff
+                }
+
+            // プランCの判別（22:30~LAST）
+            } else {
+                if (visitTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlan = null
+                    this.inputSalesData.extentionNum = 0
+                    this.inputSalesData.stayHour = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlan = 2
+                    this.inputSalesData.stayHour = diff
+                }
+            }
+        },
+        calcBasicPlanOther () {
+            const MOVE_TIME_FOR_DIFF = (this.inputSalesData.leaveTimeHour >= 20) ? Con.BASIC_PLAN_TIME_FOR_DIFF_A : Con.BASIC_PLAN_TIME_FOR_DIFF_B
+            const LEAVE_TIME_FOR_DIFF = (this.inputSalesData.leaveTimeHourAfterMove >= 20) ? Con.BASIC_PLAN_TIME_FOR_DIFF_A : Con.BASIC_PLAN_TIME_FOR_DIFF_B
+            // 来店時間
+            const moveTime = dayjs(MOVE_TIME_FOR_DIFF + this.inputSalesData.leaveTimeHour + ':' + this.inputSalesData.leaveTimeMinute + ':00')
+            // 退店時間（席移動時は席移動時間）
+            const leaveTime = dayjs(LEAVE_TIME_FOR_DIFF + this.inputSalesData.leaveTimeHourAfterMove + ':' + this.inputSalesData.leaveTimeMinuteAfterMove + ':00')
+
+            // 席移動時間と退店時間の差分
+            const diff = leaveTime.diff(moveTime, 'minute')
+            // 延長料金を出すためにSET料金分の1時間を引く
+            const diff_minute = diff-60
+            // 延長料金の数量を出すために30で割って切り上げする
+            const extention_time = Math.ceil(diff_minute / 30)
+
+            if (diff_minute > 0) {
+                // 延長料金が発生しているパターン
+                this.inputSalesData.extentionOtherNum = extention_time
+            } else {
+                // 延長料金は発生していないパターン
+                this.inputSalesData.extentionOtherNum = 0
+            }
+
+            // プランAの判別（20:30~21:30）
+            if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
+                    && moveTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
+                if (moveTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlanOther = null
+                    this.inputSalesData.selectedBasicPlanOtherNum = 0
+                    this.inputSalesData.stayHourOther = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlanOther = 0
+                    this.inputSalesData.stayHourOther = diff
+                }
+
+            // プランBの判別（21:30~22:30）
+            } else if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
+                    && moveTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
+                if (moveTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlanOther = null
+                    this.inputSalesData.extentionOtherNum = 0
+                    this.inputSalesData.stayHourOther = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlanOther = 1
+                    this.inputSalesData.stayHourOther = diff
+                }
+
+            // プランCの判別（22:30~LAST）
+            } else {
+                if (moveTime.isSameOrAfter(leaveTime)) {
+                    this.inputSalesData.selectedBasicPlanOtherNum = null
+                    this.inputSalesData.extentionOtherNum = 0
+                    this.inputSalesData.stayHourOther = 0
+                } else {
+                    this.inputSalesData.selectedBasicPlanOtherNum = 1
+                    this.inputSalesData.stayHourOther = diff
+                }
+            }
+        },
         ...mapMutations([
         ]),
         register () {
-            console.log('register', this.inputSalesData)
-            // const data = this.inputSalesData
-            // this.$axios({
-            //     method: 'POST',
-            //     url: '/api/sales/',
-            //     data: {
-            //     }
-            // })
-            // .then(res => {
-            //     console.log(res)
-            // })
-            // .catch(e => {
-            //     console.log(e)
-            // })
+
+            let sales_detail_service_list = []
+            let sales_detail_list = []
+
+
+            // キャスト指名情報の追加
+            for (const i in this.appointedCastDataList) {
+                let large_category = 1
+                let middle_category = 0
+                let appointType = this.appointedCastDataList[i].appointType
+                let isDouhan = this.appointedCastDataList[i].isDouhan
+                let cast_id = this.appointedCastDataList[i].cast.id
+                let quantity = this.appointedCastDataList[i].quantity
+                let appointPrice = this.appointedCastDataList[i].appointPrice
+
+                if (isDouhan) {
+                    sales_detail_service_list.push(this.createDouhan(this.appointedCastDataList[i]))
+                }
+
+                if (!isDouhan) {
+                    switch (appointType) {
+                        case 0:
+                        break
+                        case 1:
+                        middle_category = 1
+                        break
+                        case 2:
+                        middle_category = 2
+                        break
+                        default:
+                        break
+                    }
+                }
+
+
+                let total = this.calcQuantityPrice(appointPrice, quantity)
+                let taxTotal = this.calcAddTaxPrice(total, Con.TAX_DEFAULT)
+
+                // 指名料を値引きなどする場合、こちらから動的に指定する必要あり。
+                const appointData = {
+                    basic_plan_type: this.inputSalesData.basicPlanType,
+                    large_category: large_category,
+                    middle_category: middle_category,
+                    cast_id: cast_id,
+                    quantity: quantity,
+                    fixed_price: appointPrice,
+                    fixed_tax_price: this.calcAddTaxPrice(appointPrice, Con.TAX_DEFAULT),
+                    total_price: total,
+                    total_tax_price: taxTotal,
+                }
+
+                sales_detail_service_list.push(appointData)
+
+            }
+
+            // 明細情報の追加
+            for (const i in this.inputSalesDetailData) {
+                const actually_price = this.inputSalesDetailData[i].actuallyPrice
+                const actually_tax_price = this.inputSalesDetailData[i].actuallyTaxPrice
+                const product_id = this.inputSalesDetailData[i].product.id
+                const quantity = this.inputSalesDetailData[i].quantity
+                const bottle = this.inputSalesDetailData[i].bottle
+                const remark = this.inputSalesDetailData[i].remark
+                const taxRate = this.inputSalesDetailData[i].taxRate
+                const totalPrice = this.inputSalesDetailData[i].totalPrice
+                const totalTaxPrice = this.inputSalesDetailData[i].totalTaxPrice
+                // 後に商品にキャストを紐づける用
+                const cast_id = null
+
+                const productData = {
+                    product_id: product_id,
+                    cast_id: cast_id,
+                    quantity: quantity,
+                    bottle: bottle,
+                    fixed_price: actually_price,
+                    fixed_tax_price: actually_tax_price,
+                    total_price: totalPrice,
+                    total_tax_price: totalTaxPrice,
+                    remark: remark,
+                    tax_rate: taxRate,
+                }
+
+                sales_detail_list.push(productData)
+            }
+
+
+
+            let diffDay = false
+            let moveDiffDay = false
+            let leaveDay = this.inputSalesData.accountDate
+            if (this.isDiffDayTime(this.inputSalesData.visitTimeHour, this.inputSalesData.leaveTimeHour)) {
+                leaveDay = dayjs(this.inputSalesData.accountDate).add(1, 'd').format('YYYY-MM-DD')
+            }
+
+            const visit_time = this.inputSalesData.accountDate + ' ' + this.modifyStrTime(this.inputSalesData.visitTimeHour, this.inputSalesData.visitTimeMinute)
+            const leave_time = leaveDay + ' ' + this.modifyStrTime(this.inputSalesData.leaveTimeHour, this.inputSalesData.leaveTimeMinute)
+            const move_time = this.calcMoveTime(leaveDay)
+
+
+            // サービス料金の追加
+            let basicPlanList = this.createBasicPlan()
+            for (const plan of basicPlanList) {
+                sales_detail_service_list.push(plan)
+            }
+
+
+            if (this.showDiffBasicPlan) {
+                let basicPlanOtherList = this.createBasicPlan()
+                for (const planOther of basicPlanOtherList) {
+                    sales_detail_service_list.push(planOther)
+                }
+            }
+            let stayHourOther = (this.showDiffBasicPlan) ? this.inputSalesData.stayHourOther : 0
+            let totalStayHour = (this.showDiffBasicPlan) ? this.inputSalesData.stayHour + this.inputSalesData.stayHourOther : this.inputSalesData.stayHour
+
+            const data = {
+                'customer_no': this.inputSalesData.customerNo,
+                'account_date': this.inputSalesData.accountDate,
+                'move_diff_seat': this.showDiffBasicPlan,
+                'visit_time': visit_time,
+                'leave_time': leave_time,
+                'move_time': move_time,
+                'payment_type': (this.inputSalesData.cardPayment) ? 1 : 0,
+                'appoint': this.appointedCastDataList.length != 0,
+                // 後々↓
+                'booking': false,
+                'basic_plan_type': this.inputSalesData.basicPlanType,
+                'stay_hour': this.inputSalesData.stayHour,
+                'stay_hour_other': stayHourOther,
+                'total_stay_hour': totalStayHour,
+                'total_sales': this.totalPrice,
+                'total_tax_sales': this.totalTaxPrice,
+                'sales_detail_service_list': sales_detail_service_list,
+                'sales_detail_list': sales_detail_list,
+            }
+
+
+            //バリデーション・・・
+            // サーバーの方はトランザクションだからおかしかったら登録されないが・・・
+
+            this.$axios({
+                method: 'POST',
+                url: '/api/sales/create_sales_data/',
+                data: data
+            })
+            .then(res => {
+                console.log(res)
+                this.init()
+                this.close()
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        createBasicPlan () {
+            let result = []
+            const basic_plan_type = this.inputSalesData.basicPlanType
+            const large_category = 0
+            const middle_category = this.inputSalesData.selectedBasicPlan
+            const quantity = this.inputSalesData.selectedBasicPlanNum
+            // 将来的には可変に
+            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[large_category][middle_category] * quantity
+            const fixed_tax_price = this.calcAddTaxPrice(fixed_price, Con.TAX_DEFAULT)
+            let data = {
+                basic_plan_type: basic_plan_type,
+                large_category: large_category,
+                middle_category: middle_category,
+                quantity: quantity,
+                fixed_price: fixed_price,
+                fixed_tax_price: fixed_tax_price,
+                total_price: fixed_price,
+                total_tax_price: fixed_tax_price,
+            }
+            result.push(data)
+
+            if (this.isExtention) {
+                const extentionFixedPrice = Con.BASIC_PLAN_EXTENTION[basic_plan_type] * this.inputSalesData.extentionNum
+                const extentionFixedTaxPrice = this.calcAddTaxPrice(extentionFixedPrice, Con.TAX_DEFAULT)
+                result.push({
+                    basic_plan_type: basic_plan_type,
+                    large_category: 3,
+                    middle_category: 0,
+                    quantity: this.inputSalesData.extentionNum,
+                    fixed_price: extentionFixedPrice,
+                    fixed_tax_price: extentionFixedTaxPrice,
+                    total_price: extentionFixedPrice,
+                    total_tax_price: extentionFixedTaxPrice,
+                })
+            }
+
+            if (basic_plan_type == 1) {
+                let VipSeatPrice = this.inputSalesData.vipSeatNum * Con.BASIC_PRICE_VIP_SEAT
+                let VipSeatTaxPrice = this.calcAddTaxPrice(VipSeatPrice, Con.TAX_DEFAULT)
+                result.push({
+                    basic_plan_type: basic_plan_type,
+                    large_category: 4,
+                    middle_category: 0,
+                    quantity: this.inputSalesData.vipSeatNum,
+                    fixed_price: VipSeatPrice,
+                    fixed_tax_price: VipSeatTaxPrice,
+                    total_price: VipSeatPrice,
+                    total_tax_price: VipSeatTaxPrice,
+                })
+            }
+            return result
+        },
+        createBasicPlanOther () {
+            let result = []
+            const basic_plan_type = this.inputSalesData.basicPlanTypeOther
+            const large_category = 0
+            const middle_category = this.inputSalesData.selectedBasicPlanOther
+            const quantity = this.inputSalesData.selectedBasicPlanOtherNum
+            // 将来的には可変に
+            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[large_category][middle_category] * quantity
+            const fixed_tax_price = this.calcAddTaxPrice(fixed_price, Con.TAX_DEFAULT)
+            let data = {
+                basic_plan_type: basic_plan_type,
+                large_category: large_category,
+                middle_category: middle_category,
+                quantity: quantity,
+                fixed_price: fixed_price,
+                fixed_tax_price: fixed_tax_price,
+                total_price: fixed_price,
+                total_tax_price: fixed_tax_price,
+            }
+            result.push(data)
+
+            if (this.isExtentionOther) {
+                const extentionFixedPrice = Con.BASIC_PLAN_EXTENTION[basic_plan_type] * this.inputSalesData.extentionOtherNum
+                const extentionFixedTaxPrice = this.calcAddTaxPrice(extentionFixedPrice, Con.TAX_DEFAULT)
+                result.push({
+                    basic_plan_type: basic_plan_type,
+                    large_category: 3,
+                    middle_category: 0,
+                    quantity: this.inputSalesData.extentionOtherNum,
+                    fixed_price: extentionFixedPrice,
+                    fixed_tax_price: extentionFixedTaxPrice,
+                    total_price: extentionFixedPrice,
+                    total_tax_price: extentionFixedTaxPrice,
+                })
+            }
+
+            if (basic_plan_type == 1) {
+                let VipSeatPrice = this.inputSalesData.vipSeatNumOther * Con.BASIC_PRICE_VIP_SEAT
+                let VipSeatTaxPrice = this.calcAddTaxPrice(VipSeatPrice, Con.TAX_DEFAULT)
+                result.push({
+                    basic_plan_type: basic_plan_type,
+                    large_category: 4,
+                    middle_category: 0,
+                    quantity: this.inputSalesData.vipSeatNumOther,
+                    fixed_price: VipSeatPrice,
+                    fixed_tax_price: VipSeatTaxPrice,
+                    total_price: VipSeatPrice,
+                    total_tax_price: VipSeatTaxPrice,
+                })
+            }
+            return result
+        },
+        createDouhan (data) {
+            // 将来的に可変
+            return {
+                basic_plan_type: this.inputSalesData.basicPlanType,
+                large_category: 2,
+                middle_category: 0,
+                quantity: 1,
+                fixed_price: 5000,
+                fixed_tax_price: 6750,
+                total_price: 5000,
+                total_tax_price: 6750,
+            }
+        },
+        calcMoveTime (leaveDay) {
+            if (this.showDiffBasicPlan) {
+                if (this.isDiffDayTime(this.inputSalesData.leaveTimeHour, this.inputSalesData.leaveTimeHourAfterMove)) {
+                    let day = dayjs(this.inputSalesData.accountDate).add(1, 'd').format('YYYY-MM-DD')
+                    return day + ' ' + this.modifyStrTime(this.inputSalesData.leaveTimeHourAfterMove, this.inputSalesData.leaveTimeMinuteAfterMove)
+                } else {
+                    return leaveDay + ' ' + this.modifyStrTime(this.inputSalesData.leaveTimeHourAfterMove, this.inputSalesData.leaveTimeMinuteAfterMove)
+                }
+            }
+            return null
         },
         init () {
-            this.inputSalesData = {}
+            this.inputSalesData = {
+                basicPlanType: 0, // 選択されている料金タイプの種類
+                customerNo: null,
+                accountDate: now,
+                visitTimeHour: null, // 来店時間（時）
+                visitTimeMinute: null, // 来店時間（分）
+                leaveTimeHour: null, // 退店時間（時）=> 席移動の場合は席移動時間（時）
+                leaveTimeMinute: null, // 退店時間（分）=> 席移動の場合は席移動時間（分）
+                selectedBasicPlan: 0, // SET料金のどれを選択しているか
+                selectedBasicPlanNum: 0, // SET料金の数量 1 or 0。サービスも考慮
+                stayHour: 0, // 滞在時間
+
+                // 延長はcomputedでextention_price
+                extentionNum: 0, // 延長料金の数量 1 or 0。
+
+                // VIP_SEATはbasicPlanType == 1の時
+                vipSeatNum: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+
+                basicPlanTypeOther: 1, // 選択されている料金タイプの種類（席移動先）basicPlanTypeと逆（computedで）
+                leaveTimeHourAfterMove: null, // 席移動後の退店時間（時）
+                leaveTimeMinuteAfterMove: null, // 席移動後の退店時間（分）
+                stayHourOther: 0, // 滞在時間（席移動先）
+                selectedBasicPlanOther: 0, // SET料金のどれを選択しているか（席移動後）
+                selectedBasicPlanOtherNum: 1, // SET料金の数量 1 or 0。サービスも考慮（席移動後）
+                extentionOtherNum: 0, // 延長料金の数量 1 or 0。
+                vipSeatNumOther: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+
+                totalSalesTax: Con.TAX_DEFAULT,
+                cardPayment: false,
+                isAppointed: 0,
+            }
+            this.showDiffBasicPlan = false
+            this.inputSalesDetailData = []
+            this.appointedCastDataList = []
         },
         test () {
             console.log('test')
@@ -541,9 +1442,6 @@ export default {
         },
         addCast (data) {
             console.log('addCast', data)
-            if (this.selectedStayHour == 0 || this.selectedStayHour < data.stayHour) {
-                this.selectedStayHour = data.stayHour
-            }
             this.appointedCastDataList.push(data)
         },
         getAppointStr (type) {
@@ -554,7 +1452,7 @@ export default {
         },
         getDouhanStr (isDouhan) {
             if (isDouhan) return '有'
-            return '無し'
+            return '無'
         },
         deleteCast (castData, idx) {
             this.appointedCastDataList.splice(idx, 1)
@@ -568,11 +1466,20 @@ export default {
         addSalesDetail (data) {
             this.inputSalesDetailData.push(data)
         },
+        addSalesDetailList (data) {
+            console.log('addSalesDetailList', data)
+            this.inputSalesDetailData = this.inputSalesDetailData.concat(data)
+        },
         getStayHourStr (stayHour) {
-            if (stayHour == 0) return 'full'
-            return stayHour
-        }
-    }
+            const h = Math.floor(stayHour / 60)
+            const m = stayHour % 60
+            if (h == 0) return  m + '分'
+            return h + '時間' + m + '分'
+        },
+    },
+    mixins: [
+        utilsMixin
+    ]
 }
 
 </script>
@@ -582,6 +1489,51 @@ export default {
     .input_sales_form {
         padding: 20px;
 
+        .input_sales_visit {
+            // border: 1px solid rgba(155, 155, 155, 0.5);
+            // background: rgba(184, 184, 184, 0.1);
+            border-radius: 5px;
+            // padding: 0 !important;
+        }
+
+        .input_sales_leave {
+            // display: flex;
+            // justify-content: space-between;
+            // border: 1px solid rgba(155, 155, 155, 0.5);
+            // background: rgba(184, 184, 184, 0.1);
+            // border-radius: 5px;
+        }
+
+        .input_sales_visit_time_wrap {
+            // display: flex;
+            .input_sales_visit_time {
+                // flex-direction: column;
+                // padding: 10px 20px;
+
+                .input_sales_visit_time_title {
+                    padding: 2px 0 4px 1px;
+                }
+
+                .input_sales_visit_time_select {
+                    padding: 3px 20px 3px 7px;
+                    font-size: 16px;
+                    font-weight: 200;
+                }
+                // .select_container::after {
+                //     border-left: 4px solid transparent;
+                //     border-right: 4px solid transparent;
+                //     border-top: 4.5px solid rgba(50, 50, 50, 1);
+                //     content: "";
+                //     position: relative;
+                //     right: 12px;
+                //     top: 13px;
+                //     width: 0;
+                // }
+            }
+        }
+
+
+
         .input_sales_stay_hour_wrap {
             .input_sales_stay_hour {
                 padding: 4px 9px;
@@ -590,32 +1542,42 @@ export default {
             }
         }
 
-        .appointed_cast_area {
-            width: 100%;
-            th:nth-child(1), td:nth-child(1) {
-                width: 8%;
-            }
-            th:nth-child(2), td:nth-child(2) {
-                width: 25%;
-            }
-            th:nth-child(3), td:nth-child(3) {
-                width: 20%;
-            }
-            th:nth-child(4), td:nth-child(4) {
-                width: 15%;
-            }
-            th:nth-child(5), td:nth-child(5) {
-                width: 20%;
-            }
+        .appoint_cast_area_wrap {
+            margin-top: 1rem;
+            margin-left: 8px !important;
+            margin-right: 8px !important;
+            padding-left: 8px !important;
+            padding-right: 8px !important;
 
-            .cast_icon {
-                border: 1px solid rgba(200, 200, 200, 0.5);
-            }
+            .appointed_cast_area {
+                margin-top: 1rem;
+                width: 100%;
+                // th:nth-child(1), td:nth-child(1) {
+                //     width: 8%;
+                // }
+                // th:nth-child(2), td:nth-child(2) {
+                //     width: 25%;
+                // }
+                // th:nth-child(3), td:nth-child(3) {
+                //     width: 20%;
+                // }
+                // th:nth-child(4), td:nth-child(4) {
+                //     width: 15%;
+                // }
+                // th:nth-child(5), td:nth-child(5) {
+                //     width: 20%;
+                // }
 
-            .trash_icon {
-                cursor: pointer;
+                .cast_icon {
+                    border: 1px solid rgba(200, 200, 200, 0.5);
+                }
+
+                .trash_icon {
+                    cursor: pointer;
+                }
             }
         }
+
     }
     .input-group-text {
         height: 100%;
@@ -627,23 +1589,54 @@ export default {
         border-bottom-width: 0;
     }
 
-// .container.form-wrap {
-//   padding: 0px 40px;
-// }
+    .input_sales_footer_tax {
+        height: 38px;
+        padding: 4px 9px;
+        border-radius: 3px;
+        border: 1px solid rgba(125, 125, 125, 0.6);
+    }
 
-// .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-//     width: 100%;
-// }
-// .vs-input-parent::v-deep {
-//     width: 100%;
-//     .vs-input {
-//         width: 100%;
-//     }
-// }
+    .input_sales_basic_price_select {
+        border-radius: 3px;
+        border: 1px solid rgba(125, 125, 125, 0.6);
+    }
 
-// .sales_dialog_footer {
-//     position: fixed;
-//     bottom: 0;
-// }
+    table {
+        width: 100%;
+        // table-layout: fixed;
+
+        th {
+            // font-weight: normal;
+        }
+
+        td {
+            padding-left: 0.5rem;
+        }
+
+        .width60 {
+            width: 60%;
+        }
+
+        .width50 {
+            width: 50%;
+        }
+
+        .width40 {
+            width: 40%;
+        }
+
+        .width30 {
+            width: 30%;
+        }
+
+        .width20 {
+            width: 20%;
+        }
+
+
+        .moveSeatCard {
+            border: 2px solid #cbcbcb;
+        }
+    }
 
 </style>

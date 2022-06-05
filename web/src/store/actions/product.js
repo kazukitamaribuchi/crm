@@ -8,7 +8,7 @@ const productActions = {
                 url: '/api/product/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getProductList', res)
                 resolve(res)
             })
             .catch(e => {
@@ -24,7 +24,23 @@ const productActions = {
                 url: '/api/product/get_product_by_category/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getProductByCategoryList', res)
+                resolve(res)
+            })
+            .catch(e => {
+                console.log(e)
+                reject(e)
+            })
+        })
+    },
+    getPopularProductList (ctx, kwargs) {
+        return new Promise((resolve, reject) => {
+            Vue.prototype.$axios({
+                method: 'GET',
+                url: '/api/product/get_popular_product/',
+            })
+            .then(res => {
+                console.log('getPopularProductList', res)
                 resolve(res)
             })
             .catch(e => {

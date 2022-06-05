@@ -1,14 +1,14 @@
 import Vue from 'vue'
 
-const bottleActions = {
-    getBottleList (ctx, kwargs) {
+const questionActions = {
+    getQuestionList (ctx, kwargs) {
         return new Promise((resolve, reject) => {
             Vue.prototype.$axios({
                 method: 'GET',
-                url: '/api/bottle/',
+                url: '/api/question/',
             })
             .then(res => {
-                console.log('getBottleList', res)
+                console.log('getQuestionList', res)
                 resolve(res)
             })
             .catch(e => {
@@ -19,4 +19,4 @@ const bottleActions = {
     }
 }
 
-export default bottleActions
+export default questionActions

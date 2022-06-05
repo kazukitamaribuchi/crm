@@ -10,6 +10,9 @@ from .models import (
     MProduct,
     MProductCategory,
     MSeat,
+    MPayment,
+    MService,
+    MQuestion,
 )
 
 from .sub_models import (
@@ -17,8 +20,10 @@ from .sub_models import (
     BottleManagement,
     SalesHeader,
     SalesDetail,
+    SalesServiceDetail,
     AttendanceManagement,
     BookingManagement,
+    QuestionAnswer,
 )
 
 from .utils import (
@@ -122,7 +127,7 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     # card = CardSerializer()
     first_visit = serializers.SerializerMethodField(allow_null=True)
     birthday = serializers.SerializerMethodField(allow_null=True)
-    birthday_str = serializers.CharField(write_only=True, allow_blank=True)
+    birthday_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
     job = serializers.SerializerMethodField(default='', allow_null=True)
     company = serializers.SerializerMethodField(default='', allow_null=True)
     created_at = serializers.SerializerMethodField()
@@ -212,15 +217,17 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             customer_no = validated_data['card']['customer_no']
         )
 
+        name_kana = get_val_in_validated_data('name_kana', validated_data)
+        age = get_val_in_validated_data('age', validated_data)
         birthday_str = get_val_in_validated_data('birthday_str', validated_data)
-        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != '' else None
+        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != None else None
         job = get_val_in_validated_data('job', validated_data)
         company = get_val_in_validated_data('company', validated_data)
 
         customer = MCustomer.objects.create(
             name=validated_data['name'],
-            name_kana=validated_data['name_kana'],
-            age=validated_data['age'],
+            name_kana=validated_data,
+            age=age,
             birthday=birthday,
             job=job,
             company=company,
@@ -340,6 +347,21 @@ class TaxSerializer(DynamicFieldsModelSerializer):
         ]
 
 
+class QuestionSerializer(DynamicFieldsModelSerializer):
+
+    value = serializers.IntegerField(read_only=True, source='id')
+    text = serializers.CharField(read_only=True, source='question')
+
+    class Meta:
+        model = MQuestion
+        fields = [
+            # 'id',
+            # 'question',
+            'value',
+            'text'
+        ]
+
+
 class ProductCategorySerializer(DynamicFieldsModelSerializer):
 
     LARGE_CATEGORIES = {
@@ -440,6 +462,32 @@ class ProductSerializer(DynamicFieldsModelSerializer):
         ]
 
 
+class ServiceSerializer(DynamicFieldsModelSerializer):
+
+    created_at = serializers.SerializerMethodField()
+    updated_at = serializers.SerializerMethodField()
+    tax = TaxSerializer(fields=['id', 'tax_rate'])
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = MService
+        fields = [
+            'id',
+            'name',
+            'price',
+            'basic_plan_type',
+            'large_category',
+            'middle_category',
+            'tax',
+            'tax_price',
+            'created_at',
+            'updated_at',
+            'delete_flg',
+        ]
+
+
 class SeatSerializer(DynamicFieldsModelSerializer):
 
 
@@ -505,20 +553,41 @@ class SalesDetailSerializer(DynamicFieldsModelSerializer):
         fields = [
             'id',
             'product',
+            'cast',
             'quantity',
             'fixed_price',
             'fixed_tax_price',
-            'discount_flg',
+            'total_price',
+            'total_tax_price',
+        ]
+
+
+
+class SalesServiceDetailSerializer(DynamicFieldsModelSerializer):
+
+    service = ServiceSerializer()
+
+    class Meta:
+        model = SalesDetail
+        fields = [
+            'id',
+            'service',
+            'cast',
+            'quantity',
+            'fixed_price',
+            'fixed_tax_price',
+            'total_price',
+            'total_tax_price',
         ]
 
 
 class SalesSerializer(DynamicFieldsModelSerializer):
 
     customer = CustomerSerializer()
-    cast = CastSerializer(many=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
     sales_detail = serializers.SerializerMethodField()
+    sales_service_detail = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -528,18 +597,36 @@ class SalesSerializer(DynamicFieldsModelSerializer):
         fields = [
             'id',
             'customer',
-            'cast',
+            'move_diff_seat',
+            'account_date',
+            'visit_time',
+            'leave_time',
+            'move_time',
+            'payment',
+            'appoint',
+            'booking',
+            'basic_plan_type',
+            'stay_hour',
+            'stay_hour_other',
+            'total_stay_hour',
             'total_sales',
             'total_tax_sales',
             'created_at',
             'updated_at',
             'delete_flg',
             'sales_detail',
+            'sales_service_detail',
         ]
 
     def get_sales_detail(self, obj):
         return SalesDetailSerializer(
             SalesDetail.objects.filter(header=obj),
+            many=True
+        ).data
+
+    def get_sales_service_detail(self, obj):
+        return SalesServiceDetailSerializer(
+            SalesServiceDetail.objects.filter(header=obj),
             many=True
         ).data
 

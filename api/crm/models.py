@@ -123,8 +123,6 @@ class MRank(models.Model):
 class MTax(models.Model):
     """
     税区分（必要に応じて追加
-        ・0%（非課税）
-        ・15%
     """
     TAX_CHOICES = (
         (0, _('非課税')),
@@ -133,12 +131,13 @@ class MTax(models.Model):
         (15, _('15%')),
         (20, _('20%')),
         (30, _('30%')),
+        (35, _('35%')),
     )
 
     tax_rate = models.SmallIntegerField(
         _('Price included Tax'),
         choices=TAX_CHOICES,
-        default=30,
+        default=35,
     )
 
     def __str__(self):
@@ -352,7 +351,9 @@ class MPayment(AbstractBaseModel):
         現金:0
         カード:1
     """
-    type = models.IntegerField(_('支払いタイプ'), default=0)
+    type = models.IntegerField(_('支払いタイプ'), default=0, primary_key=True)
+
+    type_name = models.CharField(max_length=20)
 
     tax = models.ForeignKey(
         MTax,
@@ -373,9 +374,9 @@ class MService(AbstractServiceModel):
         延長料金
             type:
                 0(基本)
-                    0:A 時間分け
-                    1:B 時間分け
-                    2:C 時間分け
+                    0:A 20:30~21:30
+                    1:B 21:30~22:30
+                    2:C 22:30~LAST
                 1(指名)
                     0:指名
                     1:本指名
@@ -383,22 +384,28 @@ class MService(AbstractServiceModel):
                 2(同伴)
                     0:同伴
                 3(延長)
-                    0:A 時間分け
-                    1:B 時間分け
+                    0:延長
+                4(席料金)
+                    0:席料金
 
         start_tile, end_time = 21:00のようにコロン区切り4桁文字列
 
+        将来的に指名でもNormal Vipの料金違いにも対応出来るように
+
     """
-    large_category = models.IntegerField(_('大カテゴリ'), default=0)
-    middle_category = models.IntegerField(_('中カテゴリ'), default=0)
+    basic_plan_type = models.SmallIntegerField(_('Normal or VIP'), default=0)
 
-    start_time = models.CharField(_('開始時間'), max_length=10, null=True, blank=True)
+    large_category = models.SmallIntegerField(_('大カテゴリ'), default=0)
+    middle_category = models.SmallIntegerField(_('中カテゴリ'), default=0)
 
-    end_time = models.CharField(_('開始時間'), max_length=10, null=True, blank=True)
+    start_time = models.DateTimeField(_('開始時間'), null=True, blank=True)
+    end_time = models.DateTimeField(_('終了時間'), null=True, blank=True)
 
 
     description = models.TextField(
-        _('説明')
+        _('説明'),
+        null=True,
+        blank=True,
     )
 
     tax = models.ForeignKey(
@@ -407,7 +414,7 @@ class MService(AbstractServiceModel):
         related_name='basic_service',
     )
 
-    tax_price = models.IntegerField(
+    tax_price = models.SmallIntegerField(
         _('税込価格'),
     )
 
@@ -476,6 +483,16 @@ class MProduct(AbstractServiceModel):
 
     tax_price = models.IntegerField(
         _('税込価格'),
+    )
+
+    like = models.BooleanField(
+        _('お気に入り'),
+        default=False,
+    )
+
+    priority = models.SmallIntegerField(
+        _('優先順位'),
+        default=0,
     )
 
     def __str__(self):

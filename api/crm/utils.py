@@ -84,5 +84,7 @@ def other_users_card(custoner_no, my_no):
 
 def get_val_in_validated_data(key, data):
     if key in data:
+        if data[key] == '':
+            return None
         return data[key]
-    return ''
+    return None

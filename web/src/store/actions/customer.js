@@ -8,7 +8,7 @@ const customerActions = {
                 url: '/api/customer/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getCustomerList', res)
                 resolve(res)
             })
             .catch(e => {

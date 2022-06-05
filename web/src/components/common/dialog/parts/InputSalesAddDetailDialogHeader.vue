@@ -33,45 +33,14 @@ export default {
         },
     },
     data: () => ({
-        alcoholHeader: [
-            { text: 'シャンパン', largeCategory: 1, middleCategory: 0, smallCategory: 0 },
-            { text: 'ワイン', largeCategory: 1, middleCategory: 0, smallCategory: 1 },
-            { text: '焼酎', largeCategory: 1, middleCategory: 0, smallCategory: 2 },
-            { text: 'サワー', largeCategory: 1, middleCategory: 0, smallCategory: 3 },
-            { text: 'カクテル', largeCategory: 1, middleCategory: 0, smallCategory: 4 },
-            { text: '日本酒', largeCategory: 1, middleCategory: 0, smallCategory: 5 },
-            { text: 'ビール', largeCategory: 1, middleCategory: 0, smallCategory: 6 },
-        ],
-        nonAlcoholHeader: [
-            { text: 'ノンアルコール', largeCategory: 1, middleCategory: 1, smallCategory: 0 }
-        ],
-        softDrinkHeader: [
-            { text: 'ソフトドリンク', largeCategory: 1, middleCategory: 2, smallCategory: 0 }
-        ],
-        mainHeader: [
-            { text: 'メイン', largeCategory: 2, middleCategory: 0, smallCategory: 0 },
-            // { text: '和食' },
-            // { text: '洋食' },
-            // { text: 'ファストフード' },
-        ],
-        otumamiHeader: [
-            { text: 'おつまみ', largeCategory: 2, middleCategory: 1, smallCategory: 0 }
-        ],
-        saradaHeader: [
-            { text: 'サラダ', largeCategory: 2, middleCategory: 2, smallCategory: 0 }
-        ],
-        dezartHeader: [
-            { text: 'デザート', largeCategory: 2, middleCategory: 3, smallCategory: 0 }
-        ],
-        categoryTitleList: {
-            0: 'アルコール',
-            1: 'ノンアルコール',
-            2: 'ソフトドリンク',
-            3: 'メイン',
-            4: 'おつまみ',
-            5: 'サラダ',
-            6: 'デザート',
-        },
+        alcoholHeader: Con.INPUT_SALES_DETAIL_PRODUCT_ALCOHOL_HEADER,
+        nonAlcoholHeader: Con.INPUT_SALES_DETAIL_PRODUCT_NON_ALCOHOL_HEADER,
+        softDrinkHeader: Con.INPUT_SALES_DETAIL_PRODUCT_SOFTDRINK_HEADER,
+        mainHeader: Con.INPUT_SALES_DETAIL_PRODUCT_MAIN_HEADER,
+        otumamiHeader: Con.INPUT_SALES_DETAIL_PRODUCT_OTUMAMI_HEADER,
+        saradaHeader: Con.INPUT_SALES_DETAIL_PRODUCT_SARADA_HEADER,
+        dezartHeader: Con.INPUT_SALES_DETAIL_PRODUCT_DEZART_HEADER,
+        categoryTitleList: Con.INPUT_SALES_DETAIL_PRODUCT_CATEGORY_LIST,
     }),
     computed: {
         categoryTitle () {

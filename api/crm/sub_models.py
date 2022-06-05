@@ -117,7 +117,7 @@ class SalesHeader(AbstractBaseModel):
     """
 
     # on_delete要検討
-    customer = models.OneToOneField(
+    customer = models.ForeignKey(
         'crm.MCustomer',
         on_delete=models.DO_NOTHING,
         related_name='sales_header',
@@ -138,11 +138,52 @@ class SalesHeader(AbstractBaseModel):
     #     through='AppointManagement',
     #     related_name='appoint'
     # )
+    move_diff_seat = models.BooleanField(
+        _('席移動フラグ'),
+        default=False
+    )
 
+    account_date = models.DateTimeField()
+
+    visit_time = models.DateTimeField()
+    leave_time = models.DateTimeField()
+
+    move_time = models.DateTimeField(null=True, blank=True)
     payment = models.ForeignKey(
         'crm.MPayment',
         on_delete=models.CASCADE,
         related_name='sales_header'
+    )
+
+    appoint = models.BooleanField(
+        _('指名フラグ'),
+        default=False,
+    )
+
+    # 予約と結び付けも考慮しなきゃ・・・
+    booking = models.BooleanField(
+        _('予約フラグ'),
+        default=False,
+    )
+
+    basic_plan_type = models.SmallIntegerField(
+        _('基本料金タイプ'),
+        default=0,
+    )
+
+    stay_hour = models.SmallIntegerField(
+        _('滞在時間（席移動の場合最初の）'),
+        default=0,
+    )
+
+    stay_hour_other = models.SmallIntegerField(
+        _('滞在時間（席移動後）'),
+        default=0,
+    )
+
+    total_stay_hour = models.SmallIntegerField(
+        _('総滞在時間'),
+        default=0,
     )
 
     total_sales = models.IntegerField(
@@ -190,14 +231,27 @@ class SalesServiceDetail(AbstractBaseModel):
         blank=True,
     )
 
+    quantity = models.DecimalField(
+        _('数量'),
+        max_digits=10,
+        decimal_places=2,
+        default=1.00,
+    )
+
     fixed_price = models.IntegerField(
         _('実価格（税抜）'),
-        null=True,
-        blank=True,
     )
 
     fixed_tax_price = models.IntegerField(
         _('実価格（税込）'),
+    )
+
+    total_price = models.IntegerField(
+        _('総計')
+    )
+
+    total_tax_price = models.IntegerField(
+        _('総計（税込）')
     )
 
 
@@ -229,11 +283,6 @@ class SalesDetail(AbstractBaseModel):
         blank=True,
     )
 
-    discount_flg = models.BooleanField(
-        _('値引きフラグ'),
-        default=False,
-    )
-
     quantity = models.DecimalField(
         _('個数'),
         max_digits=10,
@@ -243,12 +292,18 @@ class SalesDetail(AbstractBaseModel):
 
     fixed_price = models.IntegerField(
         _('実価格（税抜）'),
-        null=True,
-        blank=True,
     )
 
     fixed_tax_price = models.IntegerField(
         _('実価格（税込）'),
+    )
+
+    total_price = models.IntegerField(
+        _('総計')
+    )
+
+    total_tax_price = models.IntegerField(
+        _('総計（税込）')
     )
 
     def __str__(self):

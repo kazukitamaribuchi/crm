@@ -2,7 +2,7 @@
     <b-modal
         v-model="dialog"
         title="明細追加"
-        header-bg-variant="secondary"
+        header-bg-variant="primary"
         header-text-variant="light"
         ok-title="追加"
         cancel-title="閉じる"
@@ -65,12 +65,13 @@
                 <b-row>
                     <b-col
                         cols="2"
-                        v-for="item in popularProductTestData"
+                        v-for="item in popularProduct.popular"
                         :key=item.id
                     >
                         <b-card
                             class="productCard"
                             @click="selectProduct(item)"
+                            @dblclick="addStack(item)"
                         >
                             <b-card-img
                                 :src="apiPath + item.thumbnail"
@@ -103,12 +104,13 @@
                 <b-row>
                     <b-col
                         cols="2"
-                        v-for="item in productByCategoryTestData"
+                        v-for="item in productByCategoryList"
                         :key=item.id
                     >
                         <b-card
                             class="productCard"
                             @click="selectProduct(item)"
+                            @dblclick="addStack(item)"
                         >
                             <b-card-img
                                 :src="apiPath + item.thumbnail"
@@ -162,7 +164,7 @@
                 </b-col>
                 <b-col cols="8" class="add_sales_detail_footer_col">
                     <b-row>
-                        <b-col cols="3" class="add_sales_detail_footer_col">
+                        <b-col cols="2" class="add_sales_detail_footer_col">
                             <b-card-sub-title>定価</b-card-sub-title>
                             <div class="selected_product_area">
                                 <div v-if="selectedProduct != null">
@@ -171,39 +173,20 @@
                                 <div v-else> - </div>
                             </div>
                         </b-col>
-                        <b-col cols="1" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>個数</b-card-sub-title>
+                        <b-col class="add_sales_detail_footer_col">
+                            <b-card-sub-title>数量</b-card-sub-title>
                             <b-form-group>
                                 <b-form-group
                                     class="add_sales_detail_quantity_wrap"
                                 >
-                                    <b-form-select
+                                    <SelectForm
+                                        :optionType=7
                                         v-model="quantity"
-                                        :options="quantityOptions"
-                                        value-field="value"
-                                        text-field="text"
-                                        class="add_sales_detail_quantity"
-                                    ></b-form-select>
+                                    />
                                 </b-form-group>
                             </b-form-group>
                         </b-col>
-                        <b-col cols="1" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>税率</b-card-sub-title>
-                            <b-form-group>
-                                <b-form-group
-                                    class="add_sales_detail_tax_wrap"
-                                >
-                                    <b-form-select
-                                        v-model="tax"
-                                        :options="taxOptions"
-                                        value-field="value"
-                                        text-field="text"
-                                        class="add_sales_detail_tax"
-                                    ></b-form-select>
-                                </b-form-group>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="4" class="add_sales_detail_footer_col">
+                        <b-col cols="2" class="add_sales_detail_footer_col">
                             <b-card-sub-title>実価格</b-card-sub-title>
                             <b-form-input
                                 v-model="actuallyPrice"
@@ -213,6 +196,28 @@
                             ></b-form-input>
                         </b-col>
                         <b-col align="center" class="add_sales_detail_footer_col">
+                            <!-- <b-card-sub-title>税率</b-card-sub-title>
+                            <b-form-group>
+                                <b-form-group
+                                    class="add_sales_detail_tax_wrap"
+                                >
+                                    <SelectForm
+                                        :optionType=3
+                                        v-model="tax"
+                                    />%
+                                </b-form-group>
+                            </b-form-group> -->
+                            <b-card-sub-title>税区分</b-card-sub-title>
+                            <b-form-group>
+                                <b-form-checkbox-group
+                                    v-model="taxation"
+                                    :options=taxationOptions
+                                    buttons
+                                    bg-variant="success"
+                                ></b-form-checkbox-group>
+                            </b-form-group>
+                        </b-col>
+                        <b-col align="center" class="add_sales_detail_footer_col">
                             <b-card-sub-title>ボトル登録</b-card-sub-title>
                             <b-form-group>
                                 <b-form-checkbox-group
@@ -220,8 +225,19 @@
                                     :options=bottleOptions
                                     buttons
                                     :disabled=!isDrink
+                                    bg-variant="success"
                                 ></b-form-checkbox-group>
                             </b-form-group>
+                        </b-col>
+                        <b-col align="center" class="add_sales_detail_footer_col">
+                            <b-card-sub-title>まとめて追加</b-card-sub-title>
+                            <b-icon
+                                icon="plus-square"
+                                font-scale="1.5"
+                                variant="success"
+                                class="mt-2 add_sales_detail_add_product_btn"
+                                @click="addStack"
+                            ></b-icon>
                         </b-col>
                     </b-row>
                 </b-col>
@@ -235,6 +251,68 @@
                         v-model="remark"
                     ></b-form-textarea>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
+                <b-card v-if="selectedProductList.length > 0">
+                    <b-container fluid>
+                        <b-row>
+                            <b-card-title class="mb-4">
+                                選択商品一覧
+                            </b-card-title>
+                            <table>
+                                <tr>
+                                    <th>商品名</th>
+                                    <th>定価</th>
+                                    <th>数量</th>
+                                    <th>実価格</th>
+                                    <th>課税対象</th>
+                                    <th>ボトル</th>
+                                    <th>備考</th>
+                                    <th></th>
+                                </tr>
+                                <tr
+                                    v-for="(item, id) in selectedProductList"
+                                    :key=id
+                                >
+                                    <td>
+                                        <b-img
+                                            v-if="item.thumbnail != null"
+                                            :src="apiPath + item.thumbnail"
+                                            alt="Selected Product"
+                                            rounded
+                                            height="50"
+                                            width="50"
+                                        ></b-img>
+                                        <b-img
+                                            v-else
+                                            :src="defaultIcon"
+                                            alt="Selected Product"
+                                            rounded
+                                            height="50"
+                                            width="50"
+                                        ></b-img>
+                                        <span>{{ item.name }}</span>
+                                    </td>
+                                    <td>{{ item.price }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ item.actuallyPrice }}</td>
+                                    <td>{{ item.taxation }}</td>
+                                    <td>{{ item.bottle }}</td>
+                                    <td>{{ item.remark }}</td>
+                                    <td>
+                                        <b-icon
+                                            icon="dash-square"
+                                            font-scale="1.5"
+                                            variant="danger"
+                                            class="mt-2 add_sales_detail_delete_product_btn"
+                                            @click="deleteProduct(id)"
+                                        ></b-icon>
+                                    </td>
+                                </tr>
+                            </table>
+                        </b-row>
+                    </b-container>
+                </b-card>
             </b-row>
             <b-row class="add_cast_footer_bottom_area mt-5">
                 <b-col cols="2">
@@ -281,20 +359,19 @@ import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
-import InputSalesAddDetailDialogHeader from '@/components/parts/InputSalesAddDetailDialogHeader'
+import InputSalesAddDetailDialogHeader from '@/components/common/dialog/parts/InputSalesAddDetailDialogHeader'
+import SelectForm from '@/components/common/parts/SelectForm'
 import Decimal from 'decimal.js'
+import utilsMixin from '@/mixins/utils'
+
 
 export default {
     name: 'InputSalesAddDetailDialogItem',
     props: {
-        // appointed: {
-        //     type: Array,
-        //     required: true,
-        //     default: () => ([])
-        // },
     },
     components: {
         InputSalesAddDetailDialogHeader,
+        SelectForm,
     },
     data: () => ({
         dialog: false,
@@ -308,515 +385,26 @@ export default {
         bottleOptions: [
             { text: '登録', value: 1 }
         ],
+        taxationOptions: [
+            { text: '課税', value: 1 }
+        ],
         appointOptions: [
             { text: '指名', value: 0 },
             { text: '本指名', value: 1 },
             { text: '場内指名', value: 2 },
         ],
-        quantityOptions: [
-            { value: 1.0, text: '1.0' },
-            { value: 1.5, text: '1.5' },
-            { value: 2.0, text: '2.0' },
-            { value: 2.5, text: '2.5' },
-            { value: 3.0, text: '3.0' },
-            { value: 3.5, text: '3.5' },
-            { value: 4.0, text: '4.0' },
-            { value: 4.5, text: '4.5' },
-            { value: 5.0, text: '5.0' },
-            { value: 5.5, text: '5.5' },
-            { value: 6.0, text: '6.0' },
-            { value: 6.5, text: '6.5' },
-            { value: 7.0, text: '7.0' },
-            { value: 7.5, text: '7.5' },
-            { value: 8.0, text: '8.0' },
-            { value: 8.5, text: '8.5' },
-            { value: 9.0, text: '9.0' },
-            { value: 9.5, text: '9.5' },
-            { value: 10.0, text: '10.0' },
-        ],
-        taxOptions: [
-            { value: 30, text: '30' },
-            { value: 0, text: '0' },
-        ],
-        siderbaritems: [
-            {
-                text: '飲み物',
-                items: [
-                    { text: 'アルコール', productType: 0 },
-                    { text: 'ノンアルコール', productType: 1 },
-                    { text: 'ソフトドリンク', productType: 2 },
-                ]
-            },
-            {
-                text: '食べ物',
-                items: [
-                    { text: 'メイン', productType: 3 },
-                    { text: 'おつまみ', productType: 4 },
-                    { text: 'サラダ', productType: 5 },
-                    { text: 'デザート', productType: 6 },
-                ]
-            },
-        ],
+        quantityOptions: Con.OPTIONS_QUANTITIES,
+        taxOptions: Con.OPTIONS_TAX,
+        siderbaritems: Con.INPUT_SALES_DETAIL_PRODUCT_CATEGORY_SIDEBAR,
         selectedProductType: null,
-        popularProductTestData: [
-            {
-                name: 'NOT BOTTLE',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 0,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'NOT BOTTLE',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 1,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-        ],
-        defaultIcon: 'http://localhost:8000/media/upload/酒2.png',
-        productByCategoryTestData: [
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒1.jpg',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒1.jpg',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: 'KRUG',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-            {
-                name: '侍',
-                price: '20000',
-                thumbnail: '/media/upload/酒2.png',
-                category: {
-                    large_category: 1,
-                    middle_category: 0,
-                }
-            },
-        ],
-        topProductTestData: {
-            0: [
-                {
-                    name: '侍',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒1.jpg',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: '侍',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            1: [
-                {
-                    name: 'ノンアルコールトップ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒1.jpg',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            2: [
-                {
-                    name: 'ソフトドリンクトップ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒1.jpg',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'ソフトドリンクトップ2',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'ソフトドリンクトップ3',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            3: [
-                {
-                    name: 'メインフードトップ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒1.jpg',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'メインフードトップ2',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            4: [
-                {
-                    name: 'おつまみトプ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            5: [
-                {
-                    name: 'サラダトプ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            6: [
-                {
-                    name: 'デザートトップ',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ],
-            100: [
-                {
-                    name: 'TOP not bottle',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 0,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'NOT BOTTLE',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 1,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-                {
-                    name: 'KRUG',
-                    price: '20000',
-                    thumbnail: '/media/upload/酒2.png',
-                    category: {
-                        large_category: 1,
-                        middle_category: 0,
-                    }
-                },
-            ]
-        },
+        defaultIcon: Con.DEFAULT_ALCOHOL_ICON,
+        productByCategoryList: [],
         selectedProduct: null,
+        selectedProductList: [],
         remark: '',
-        tax: 30,
-        apiPath: 'http://localhost:8000',
+        tax: 35,
+        taxation: [1],
+        apiPath: Con.API_PATH,
     }),
     computed: {
         ...mapGetters([
@@ -824,8 +412,10 @@ export default {
             // ↓人気商品、カテゴリ別の商品を取るようにする
             'product',
             'productByCategory',
+            'popularProduct',
         ]),
         isDisabled () {
+            if (this.selectedProductList.length > 0) return false
             return this.selectedProduct == null
         },
         isDrink () {
@@ -836,15 +426,58 @@ export default {
             }
             return false
         },
+        actuallyTaxPrice () {
+            return this.calcAddTaxPrice(this.actuallyPrice, this.tax)
+        },
         totalPrice () {
-            if (this.selectedProduct == null) return 0
-            const quantity = new Decimal(this.quantity)
-            return Math.ceil(quantity.times(this.actuallyPrice).toNumber())
+            let total = 0
+
+            for (const i in this.selectedProductList) {
+                total += this.calcQuantityPrice(
+                    this.selectedProductList[i].quantity,
+                    this.selectedProductList[i].actuallyPrice,
+                )
+            }
+
+            if (this.selectedProduct == null) return total
+
+            total += this.calcQuantityPrice(this.actuallyPrice, this.quantity)
+            return total
         },
         totalTaxPrice () {
-            if (this.selectedProduct == null) return 0
-            const tax_rate = new Decimal(this.tax / 100)
-            return Math.ceil(tax_rate.times(this.totalPrice).toNumber() + this.totalPrice)
+            let total = 0
+
+            // 商品毎にtaxが設定されている場合も考慮
+            for (const i in this.selectedProductList) {
+                let q = new Decimal(this.selectedProductList[i].quantity)
+                if (!this.selectedProductList[i].taxation) {
+                    // TAX無しの場合
+                    total += Math.ceil(q.times(this.selectedProductList[i].actuallyPrice).toNumber())
+                } else {
+                    // TAX有の場合
+                    total += this.calcAddTaxPrice(
+                        this.selectedProductList[i].actuallyPrice,
+                        Con.TAX_DEFAULT,
+                    )
+                }
+            }
+
+            if (this.selectedProduct == null) return total
+            if (this.taxation.length == 0) {
+                total += this.calcQuantityPrice(
+                    this.actuallyPrice,
+                    this.quantity
+                )
+            } else {
+                total += this.calcAddTaxPrice(
+                    this.calcQuantityPrice(
+                        this.actuallyPrice,
+                        this.quantity
+                    ),
+                    Con.TAX_DEFAULT,
+                )
+            }
+            return total
         },
     },
     watch: {
@@ -860,11 +493,8 @@ export default {
     created () {
         this.$eventHub.$off('filterProductCategory')
         this.$eventHub.$on('filterProductCategory', this.filterProductCategory)
-
-        // console.log(this.cast)
-        // this.filterdCast = _.cloneDeep(this.cast)
-        console.log(this.product)
-        console.log(this.productByCategory)
+    },
+    mounted () {
     },
     methods: {
         open () {
@@ -875,36 +505,39 @@ export default {
                 const item = this.appointed[i]
                 this.appointedCastId.add(item.cast.id)
             }
+            this.productByCategoryList = _.cloneDeep(this.productByCategory)
         },
         close () {
             this.dialog = false
             this.init()
         },
         add () {
-            // const data = {
-            //     product: this.selectedProduct,
-            //     tax: this.tax,
-            //     actually_price: this.actuallyPrice,
-            //     bottle: this.isBottle.length != 0,
-            //     total_price: this.totalPrice,
-            //     total_tax_price: this.totalTaxPrice,
-            // }
+
+            if (this.selectedProductList.length > 0) {
+                this.$eventHub.$emit('addSalesDetailList', this.selectedProductList)
+                this.close()
+                return
+            }
+
             const product = this.selectedProduct
 
             const data = {
                 name: product.name,
                 price: product.price,
-                actually_price: this.actuallyPrice,
-                tax_rate: this.tax,
+                actuallyPrice: this.actuallyPrice,
+                actuallyTaxPrice: this.actuallyTaxPrice,
+                taxRate: this.tax,
+                taxation: this.taxation.length != 0,
                 quantity: this.quantity,
-                total_price: this.totalPrice,
-                total_tax_price: this.totalTaxPrice,
+                totalPrice: this.totalPrice,
+                totalTaxPrice: this.totalTaxPrice,
                 bottle: this.isBottle.length != 0,
                 thumbnail: product.thumbnail,
                 category: product.category,
+                remark: this.remark,
+                product: product,
             }
-            console.log(this.selectedProduct)
-            // console.log(data)
+            this.init()
             this.$eventHub.$emit('addSalesDetail', data)
             this.close()
         },
@@ -915,10 +548,12 @@ export default {
             this.appointedCastId = new Set()
             this.selectedProductType = null
             this.selectedProduct = null
+            this.selectedProductList = []
             this.remark = ''
             this.actuallyPrice = 0
             this.isBottle = []
             this.quantity = 1
+            this.taxation = [1]
         },
         select (item) {
             if (this.isAppointed(item)) return
@@ -947,7 +582,7 @@ export default {
             return !Object.keys(obj).length
         },
         selectProductCategory (item) {
-            this.productByCategoryTestData = this.topProductTestData[item.productType]
+            this.productByCategoryList = this.popularProduct.top[item.productType]
             this.selectedProductType = item.productType
         },
         selectProduct (item) {
@@ -962,12 +597,45 @@ export default {
             const middle = data.middleCategory
             const small = data.smallCategory
             const res = this.productByCategory[large][middle][small]
-            this.productByCategoryTestData = _.cloneDeep(res)
+            this.productByCategoryList = _.cloneDeep(res)
         },
         showTopPopularProduct () {
             this.selectedProductType = null
+        },
+        addStack () {
+            const product = this.selectedProduct
+
+            const data = {
+                name: product.name,
+                price: product.price,
+                actuallyPrice: this.actuallyPrice,
+                actuallyTaxPrice: this.actuallyTaxPrice,
+                product: product,
+                taxRate: this.tax,
+                taxation: this.taxation.length != 0,
+                quantity: this.quantity,
+                totalPrice: this.totalPrice,
+                totalTaxPrice: this.totalTaxPrice,
+                bottle: this.isBottle.length != 0,
+                thumbnail: product.thumbnail,
+                category: product.category,
+                remark: this.remark,
+            }
+            this.selectedProductList.push(data)
+            this.selectedProduct = null
+            this.remark = ''
+            this.quantity = 1
+            this.tax = 35
+            this.isBottle = []
+            this.taxation = [1]
+        },
+        deleteProduct (id) {
+            this.selectedProductList.splice(id, 1)
         }
     },
+    mixins: [
+        utilsMixin
+    ]
 }
 
 </script>
@@ -1027,5 +695,10 @@ export default {
 .isAppointed {
     background-color: rgba(255, 255, 255, 1);
     filter: opacity(30%);
+}
+
+.add_sales_detail_add_product_btn,
+.add_sales_detail_delete_product_btn {
+    cursor: pointer;
 }
 </style>

@@ -40,6 +40,7 @@
                 <b-card
                     class="addCastCard"
                     @click="select(item)"
+                    @dblclick="add"
                     :class="{'isAppointed': isAppointed(item)}"
                 >
                     <b-card-img
@@ -101,18 +102,13 @@
                             </b-form-group>
                         </b-col>
                         <b-col class="add_cast_footer_col">
-                            <b-card-sub-title>滞在時間</b-card-sub-title>
+                            <b-card-sub-title>数量</b-card-sub-title>
                             <b-form-group
-                                class="add_cast_stay_hour_wrap"
                             >
-                                <b-form-select
-                                    v-model="stayHour"
-                                    :options="stayHourOptions"
-                                    stayHourOptions
-                                    value-field="value"
-                                    text-field="text"
-                                    class="add_cast_stay_hour"
-                                ></b-form-select>
+                                <SelectForm
+                                    :optionType=99
+                                    v-model="quantity"
+                                />
                             </b-form-group>
                         </b-col>
                     </b-row>
@@ -143,6 +139,7 @@
 </template>
 
 <script>
+import SelectForm from '@/components/common/parts/SelectForm'
 import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import { Const } from '@/assets/js/const'
@@ -157,6 +154,9 @@ export default {
             default: () => ([])
         },
     },
+    components: {
+        SelectForm,
+    },
     data: () => ({
         dialog: false,
         selected: {},
@@ -165,7 +165,6 @@ export default {
         appointType: 0,
         appointedCastId: new Set(),
         isDouhan: [],
-        stayHour: 0,
         douhanOptions: [
             { text: '同伴', value: 1 }
         ],
@@ -174,31 +173,9 @@ export default {
             { text: '本指名', value: 1 },
             { text: '場内指名', value: 2 },
         ],
-        stayHourOptions: [
-            { value: 0, text: 'full' },
-            { value: 0.5, text: '0.5' },
-            { value: 1.0, text: '1.0' },
-            { value: 1.5, text: '1.5' },
-            { value: 2.0, text: '2.0' },
-            { value: 2.5, text: '2.5' },
-            { value: 3.0, text: '3.0' },
-            { value: 3.5, text: '3.5' },
-            { value: 4.0, text: '4.0' },
-            { value: 4.5, text: '4.5' },
-            { value: 5.0, text: '5.0' },
-            { value: 5.5, text: '5.5' },
-            { value: 6.0, text: '6.0' },
-            { value: 6.5, text: '6.5' },
-            { value: 7.0, text: '7.0' },
-            { value: 7.5, text: '7.5' },
-            { value: 8.0, text: '8.0' },
-            { value: 8.5, text: '8.5' },
-            { value: 9.0, text: '9.0' },
-            { value: 9.5, text: '9.5' },
-            { value: 10.0, text: '10.0' },
-        ],
         defaultIcon: 'http://localhost:8000/media/upload/女性1111.png',
         apiPath: 'http://localhost:8000',
+        quantity: 1,
     }),
     computed: {
         ...mapGetters([
@@ -237,12 +214,18 @@ export default {
             this.dialog = false
             this.init()
         },
+
+        // 指名料の税を可変にする場合ここで考慮する必要あり
         add () {
+            let douhan = this.isDouhan.length !== 0
+            let douhanPrice = (douhan) ? Con.DOUHAN_PRICE : 0
             const castData = {
                 cast: this.selected,
                 appointType: this.appointType,
-                isDouhan: this.isDouhan.length !== 0,
-                stayHour: this.stayHour,
+                isDouhan: douhan,
+                appointPrice: Con.APPOINT_PRICE,
+                douhanPrice: douhanPrice,
+                quantity: this.quantity,
             }
             this.$eventHub.$emit('addCast', castData)
             this.close()
@@ -253,9 +236,9 @@ export default {
             this.searchWord = ''
             this.appointType = 0
             this.isDouhan = []
-            this.stayHour = 0
             this.appointedCastId = new Set()
             this.errorMsg = []
+            this.quantity = 1
         },
         select (item) {
             if (this.isAppointed(item)) return

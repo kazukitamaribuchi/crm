@@ -3,14 +3,19 @@
         <div
             v-for="(item, id) in items"
             :key="id"
-            class="siderbar_item"
+            class="sidebar_item"
+            @click="toPage(item)"
         >
-            <b-icon
-                :icon=item.icon
-                aria-hidden="true"
-                class="siderbar_icon"
-                @click="toPage(item)"
-            ></b-icon>
+            <span>
+                <b-icon
+                    :icon=item.icon
+                    aria-hidden="true"
+                    class="sidebar_icon"
+                ></b-icon>
+            </span>
+            <span class="sidebar_text">
+                {{ item.text }}
+            </span>
         </div>
         <!-- <b-icon icon="people" aria-hidden="true"></b-icon>
         <b-icon icon="people-fill" aria-hidden="true"></b-icon>
@@ -75,27 +80,32 @@ export default {
             {
                 icon: 'people-fill',
                 link: 'CustomerList',
-                type: 'Page'
+                type: 'Page',
+                text: '顧客管理',
             },
             {
                 icon: 'credit-card',
                 link: 'SalesList',
-                type: 'Page'
+                type: 'Page',
+                text: '売上管理',
             },
             {
                 icon: 'person-square',
                 link: 'CastList',
-                type: 'Page'
+                type: 'Page',
+                text: 'キャスト管理',
             },
             {
                 icon: 'calendar2-date',
                 link: 'AttendanceList',
-                type: 'Page'
+                type: 'Page',
+                text: '勤怠管理',
             },
             {
                 icon: 'clipboard-check',
                 link: 'BookingList',
-                type: 'Page'
+                type: 'Page',
+                text: '予約管理',
             },
             // ボトルのアイコンどうするか・・・
             // {
@@ -104,7 +114,8 @@ export default {
             {
                 icon: 'search',
                 ref: 'searchCustomerNo',
-                type: 'Dialog'
+                type: 'Dialog',
+                text: '顧客検索'
             },
         ],
         // menus: [
@@ -174,21 +185,27 @@ export default {
 
 <style lang="scss" scoped>
     #sidebar_wrap {
-        width: $siderbar-width;
+        width: $sidebar-width;
         background-color: $theme-color;
 
         // height: calc( #{$sidebar-height} - #{$header-height} );
         // margin-top: 1rem;
         color: white;
 
-        .siderbar_item {
+        .sidebar_item {
+            cursor: pointer;
             height: 80px;
-            font-size: 1.5rem;
+            padding-left: 20px;
 
-            .siderbar_icon {
-                display: block;
-                margin: 0 auto;
-                cursor: pointer;
+            .sidebar_icon {
+                font-size: 1.2rem;
+                // display: block;
+                // margin: 0 auto;
+                // cursor: pointer;
+            }
+
+            .sidebar_text {
+                font-size: 0.9rem;
             }
         }
     }

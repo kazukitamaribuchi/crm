@@ -177,6 +177,89 @@
                             </b-col>
                         </b-row>
                         <b-row>
+                            <b-col>
+                                <b-form-group
+                                    label="Q&A1"
+                                >
+                                    <span class="basic_select_wrap">
+                                        <b-form-select
+                                            v-model="createCastData.question_one"
+                                            :options=qanda
+                                            value-field="value"
+                                            text-field="text"
+                                            class="basic_select"
+                                        >
+                                            <template #first>
+                                                <b-form-select-option :value="null" disabled>質問を選択してください</b-form-select-option>
+                                            </template>
+                                        </b-form-select>
+                                    </span>
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCastData.answer_one"
+                                            type="text"
+                                            placeholder="回答を入力してください"
+                                            required
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group
+                                    label="Q&A2"
+                                >
+                                    <span class="basic_select_wrap">
+                                        <b-form-select
+                                            v-model="createCastData.question_two"
+                                            :options=qanda
+                                            value-field="value"
+                                            text-field="text"
+                                            class="basic_select"
+                                        >
+                                            <template #first>
+                                                <b-form-select-option :value="null" disabled>質問を選択してください</b-form-select-option>
+                                            </template>
+                                        </b-form-select>
+                                    </span>
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCastData.answer_two"
+                                            type="text"
+                                            placeholder="回答を入力してください"
+                                            required
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col>
+                                <b-form-group
+                                    label="Q&A3"
+                                >
+                                    <span class="basic_select_wrap">
+                                        <b-form-select
+                                            v-model="createCastData.question_three"
+                                            :options=qanda
+                                            value-field="value"
+                                            text-field="text"
+                                            class="basic_select"
+                                        >
+                                            <template #first>
+                                                <b-form-select-option :value="null" disabled>質問を選択してください</b-form-select-option>
+                                            </template>
+                                        </b-form-select>
+                                    </span>
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCastData.answer_three"
+                                            type="text"
+                                            placeholder="回答を入力してください"
+                                            required
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
                             <b-col cols="12">
                                 <b-form-group
                                     label="備考"
@@ -197,7 +280,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
 
@@ -206,14 +289,27 @@ export default {
     props: {
     },
     data: () => ({
-        createCastData: {},
+        createCastData: {
+            question_one: null,
+            question_two: null,
+            question_three: null,
+        },
         year: Con.SELECT_BIRTHDAY_YEAR,
         dialog: false,
     }),
     computed: {
+        ...mapGetters([
+            'question',
+        ]),
         isDisabled () {
             return true
         },
+        // 質問内容の絞り込み（後で
+        qanda () {
+            return this.question
+        },
+    },
+    created () {
     },
     methods: {
         ...mapMutations([
@@ -238,5 +334,30 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+    .basic_select_wrap {
+        width: 100%;
+        display: grid;
+        .basic_select {
+            background: white;
+            border-radius: 4px;
+            border: 1px solid rgba(125, 125, 125, 0.4);
+            padding: 6px 20px 6px 7px;
+            font-size: 16px;
+            font-weight: 200;
+            width: 100%;
+        }
+    }
 
+    .basic_select_wrap::after {
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4.5px solid rgba(50, 50, 50, 1);
+        content: "";
+        position: relative;
+        // right: 12px;
+        // top: 13px;
+        right: -315px;
+        top: -18px;
+        width: 0;
+    }
 </style>

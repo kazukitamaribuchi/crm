@@ -8,7 +8,7 @@ const salesActions = {
                 url: '/api/sales/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getSalesList', res)
                 resolve(res)
             })
             .catch(e => {

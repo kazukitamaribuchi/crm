@@ -4,6 +4,7 @@ import VuexPersistedstate from 'vuex-persistedstate'
 
 import customerMutations from './mutations/customer'
 import castMutations from './mutations/cast'
+import questionMutations from './mutations/question'
 import bottleMutations from './mutations/bottle'
 import bookingMutations from './mutations/booking'
 import salesMutations from './mutations/sales'
@@ -12,6 +13,7 @@ import productMutations from './mutations/product'
 
 import customerActions from './actions/customer'
 import castActions from './actions/cast'
+import questionActions from './actions/question'
 import bottleActions from './actions/bottle'
 import bookingActions from './actions/booking'
 import salesActions from './actions/sales'
@@ -28,6 +30,7 @@ const initialState = {
     sales: [],
     attendance: [],
     cast: [],
+    question: [],
     booking: [],
     bottle: [],
     product: [],
@@ -50,6 +53,7 @@ export default new Vuex.Store({
         sales: state => state.sales,
         attendance: state => state.attendance,
         cast: state => state.cast,
+        question: state => state.question,
         booking: state => state.booking,
         bottle: state => state.bottle,
         product: state => state.product,
@@ -59,6 +63,7 @@ export default new Vuex.Store({
     mutations: {
         ...customerMutations,
         ...castMutations,
+        ...questionMutations,
         ...bottleMutations,
         ...bookingMutations,
         ...salesMutations,
@@ -79,6 +84,7 @@ export default new Vuex.Store({
     actions: {
         ...customerActions,
         ...castActions,
+        ...questionActions,
         ...bookingActions,
         ...bottleActions,
         ...salesActions,

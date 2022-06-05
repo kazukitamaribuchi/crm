@@ -8,7 +8,7 @@ const attendanceActions = {
                 url: '/api/attendance/',
             })
             .then(res => {
-                console.log(res)
+                console.log('getAttendanceList', res)
                 resolve(res)
             })
             .catch(e => {

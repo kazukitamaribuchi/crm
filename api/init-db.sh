@@ -17,6 +17,9 @@ python manage.py loaddata fixture-card.json
 python manage.py loaddata fixture-product.json
 python manage.py loaddata fixture-customer.json
 python manage.py loaddata fixture-cast.json
+python manage.py loaddata fixture-payment.json
+python manage.py loaddata fixture-service.json
+python manage.py loaddata fixture-question.json
 
 # python manage.py loaddata fixture-salesheader.json
 # python manage.py loaddata fixture-salesdetail.json

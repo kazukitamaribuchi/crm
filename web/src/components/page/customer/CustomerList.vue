@@ -1,154 +1,415 @@
 <template>
     <div id="customer_list_wrap">
+
         <b-row>
-            <b-col cols="8">
-                <b-card class="customer_list_area1">
-                </b-card>
-            </b-col>
-            <b-col>
-                <b-card class="customer_list_area2">
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-card
-            class="customer_list_area3"
-            no-body
-        >
-            <!-- <b-card-header header-tag="nav">
-                <b-nav card-header tabs>
-                    <b-nav-item
-                        v-for="item in navHeader"
-                        :key="item.id"
-                        @click="navClick(item)"
-                        :active="item.id == activeHeader"
+            <b-tabs pills card>
+                <b-tab title="管理画面" active>
+                    <b-row class="customer_list_top">
+                        <b-col cols="8">
+                            <b-row>
+                                <b-col cols="4">
+                                    <b-card class="customer_list_area customer_list_area1">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                総会員数
+                                            </b-card-text>
+                                            <b-row>
+                                                <b-col cols="8">
+                                                    <VueApexCharts
+                                                        width="150"
+                                                        height="150"
+                                                        type="radialBar"
+                                                        :options="totalCustomerChartOptions"
+                                                        :series="totalCustomerSeries"
+                                                    />
+                                                </b-col>
+                                                <b-col cols="4" align="right" class="pt-4">
+                                                    <b-card-title>
+                                                        {{ totalCustomer }}
+                                                    </b-card-title>
+                                                    <b-card-sub-title>
+                                                        customers
+                                                    </b-card-sub-title>
+                                                </b-col>
+                                                <b-col>
+
+                                                </b-col>
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="4">
+                                    <b-card class="customer_list_area customer_list_area1">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                アクティブ会員
+                                            </b-card-text>
+                                            <b-row>
+                                                <b-col cols="8">
+                                                    <VueApexCharts
+                                                        width="150"
+                                                        height="150"
+                                                        type="radialBar"
+                                                        :options="activeCustomerChartOptions"
+                                                        :series="activeCustomerSeries"
+                                                    />
+                                                </b-col>
+                                                <b-col cols="4" align="right" class="pt-4">
+                                                    <b-card-title>
+                                                        5
+                                                    </b-card-title>
+                                                    <b-card-sub-title>
+                                                        customers
+                                                    </b-card-sub-title>
+                                                </b-col>
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="4">
+                                    <b-card class="customer_list_area customer_list_area1">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                ノンアクティブ会員
+                                            </b-card-text>
+                                            <b-row>
+                                                <b-col cols="8">
+                                                    <VueApexCharts
+                                                        width="150"
+                                                        height="150"
+                                                        type="radialBar"
+                                                        :options="nonActiveCustomerChartOptions"
+                                                        :series="nonActiveCustomerSeries"
+                                                    />
+                                                </b-col>
+                                                <b-col cols="4" align="right" class="pt-4">
+                                                    <b-card-title>
+                                                        6
+                                                    </b-card-title>
+                                                    <b-card-sub-title>
+                                                        customers
+                                                    </b-card-sub-title>
+                                                </b-col>
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6">
+                                    <b-card class="customer_list_area customer_list_area2">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                会員年齢層
+                                            </b-card-text>
+                                            <b-row>
+                                                <b-col>
+                                                    <VueApexCharts
+                                                        type="bar"
+                                                        :options="customerAgeChartOptions"
+                                                        :series="customerAgeSeries"
+                                                    />
+                                                </b-col>
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6">
+                                    <b-card class="customer_list_area customer_list_area2">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                ランク別会員数
+                                            </b-card-text>
+                                            <b-row>
+                                                <VueApexCharts
+                                                    type="bar"
+                                                    :options="customerRankChartOptions"
+                                                    :series="customerRankSeries"
+                                                />
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6">
+                                    <b-card class="customer_list_area customer_list_area2">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                会員年齢層
+                                            </b-card-text>
+                                            <b-row>
+                                                <b-col>
+                                                    <VueApexCharts
+                                                        type="bar"
+                                                        :options="customerAgeChartOptions"
+                                                        :series="customerAgeSeries"
+                                                    />
+                                                </b-col>
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6">
+                                    <b-card class="customer_list_area customer_list_area2">
+                                        <b-container fluid>
+                                            <b-card-text class="mb-1">
+                                                ランク別会員数
+                                            </b-card-text>
+                                            <b-row>
+                                                <VueApexCharts
+                                                    type="bar"
+                                                    :options="customerRankChartOptions"
+                                                    :series="customerRankSeries"
+                                                />
+                                            </b-row>
+                                        </b-container>
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                        </b-col>
+                        <b-col cols="4">
+                            <b-col cols="12">
+                                <b-card
+                                    class="customer_list_area customer_list_area3"
+                                    header="売上ランキング"
+                                    header-bg-variant="dark"
+                                    header-text-variant="white"
+                                    header-class="customer_list_area3_header"
+                                >
+                                    <b-row class="customer_list_area3_top mb-2">
+                                        <b-col cols="2">
+                                            Rank
+                                        </b-col>
+                                        <b-col cols="4">
+                                            名前
+                                        </b-col>
+                                        <b-col align="right">
+                                            総来店回数
+                                        </b-col>
+                                        <b-col align="right">
+                                            総売上
+                                        </b-col>
+                                    </b-row>
+                                    <b-row
+                                        v-for="(item, i) in customerSalesRanking"
+                                        :key=i
+                                        class="customer_list_area3_middle pt-2 mb-0"
+                                    >
+                                        <b-col cols="2">
+                                            <b-card-text>{{ i + 1 }}</b-card-text>
+                                        </b-col>
+                                        <b-col cols="4" class="mt-0 pt-0 mb-0 pb-0">
+                                            {{ item.name }}
+                                            <b-card-sub-title
+                                                style="font-size: 12px;"
+                                                class="pt-1"
+                                            >年齢: {{ item.age }}  会員ランク: {{ item.rank }}</b-card-sub-title>
+                                        </b-col>
+                                        <b-col align="right">
+                                            <b-card-text>{{ item.total_visit }}回</b-card-text>
+                                        </b-col>
+                                        <b-col align="right">
+                                            <b-icon icon="currency-yen"></b-icon>{{ item.sales }}
+                                        </b-col>
+                                    </b-row>
+                                </b-card>
+                            </b-col>
+                            <b-col cols="12">
+                                <b-card
+                                    class="customer_list_area customer_list_area3"
+                                    header="来店数ランキング"
+                                    header-bg-variant="dark"
+                                    header-text-variant="white"
+                                    header-class="customer_list_area3_header"
+                                >
+                                    <b-row class="customer_list_area3_top mb-2">
+                                        <b-col cols="2">
+                                            Rank
+                                        </b-col>
+                                        <b-col cols="4">
+                                            名前
+                                        </b-col>
+                                        <b-col align="right">
+                                            総来店回数
+                                        </b-col>
+                                        <b-col align="right">
+                                            総売上
+                                        </b-col>
+                                    </b-row>
+                                    <b-row
+                                        v-for="(item, i) in customerSalesRanking"
+                                        :key=i
+                                        class="customer_list_area3_middle pt-2 mb-0"
+                                    >
+                                        <b-col cols="2">
+                                            <b-card-text>{{ i + 1 }}</b-card-text>
+                                        </b-col>
+                                        <b-col cols="4" class="mt-0 pt-0 mb-0 pb-0">
+                                            {{ item.name }}
+                                            <b-card-sub-title
+                                                style="font-size: 12px;"
+                                                class="pt-1"
+                                            >年齢: {{ item.age }}  会員ランク: {{ item.rank }}</b-card-sub-title>
+                                        </b-col>
+                                        <b-col align="right">
+                                            <b-card-text>{{ item.total_visit }}回</b-card-text>
+                                        </b-col>
+                                        <b-col align="right">
+                                            <b-icon icon="currency-yen"></b-icon>{{ item.sales }}
+                                        </b-col>
+                                    </b-row>
+                                </b-card>
+                            </b-col>
+                        </b-col>
+                    </b-row>
+
+                </b-tab>
+                <b-tab title="顧客一覧">
+                    <b-table
+                        hover
+                        :items="customer"
+                        :fields="fields"
+                        :dark="true"
+                        caption-top
+                        selectable
+                        :per-page="perPage"
+                        :current-page="currentPage"
+                        :filter="filter"
+                        :filter-included-fields="filterOn"
+                        @row-selected="onRowSelected"
+                        @filterd="onFilterd"
                     >
-                        {{ item.title }}
-                    </b-nav-item>
-                </b-nav>
-            </b-card-header> -->
 
-
-            <!-- <b-card-body v-if="activeHeader == 1"> -->
-                <b-table
-                    striped
-                    hover
-                    :items="customer"
-                    :fields="fields"
-                    :dark="true"
-                    caption-top
-                    selectable
-                    :tbody-tr-class="rowClass"
-                    @row-selected="onRowSelected"
-                >
-
-                    <template #cell(rank_id)="data">
-                        <b v-if="data.value == 1">
-                            <b-icon
-                                icon="credit-card2-front-fill"
-                            ></b-icon>
-                            <b>
-                                normal
+                        <template #cell(rank_id)="data">
+                            <b v-if="data.value == 1">
+                                <b-icon
+                                    icon="credit-card2-front-fill"
+                                ></b-icon>
+                                <b>
+                                    normal
+                                </b>
                             </b>
-                        </b>
-                        <b v-else-if="data.value == 2">
-                            <b-icon
-                                icon="credit-card2-front-fill"
-                                style="color: #c0c0c0;"
-                            ></b-icon>
+                            <b v-else-if="data.value == 2">
+                                <b-icon
+                                    icon="credit-card2-front-fill"
+                                    style="color: #c0c0c0;"
+                                ></b-icon>
 
-                            <b>
-                                silver
+                                <b>
+                                    silver
+                                </b>
                             </b>
-                        </b>
-                        <b v-else-if="data.value == 3">
-                            <b-icon
-                                icon="credit-card2-front-fill"
-                                style="color: #e1f30c;"
-                            ></b-icon>
-                            <b>
-                                gold
+                            <b v-else-if="data.value == 3">
+                                <b-icon
+                                    icon="credit-card2-front-fill"
+                                    style="color: #e1f30c;"
+                                ></b-icon>
+                                <b>
+                                    gold
+                                </b>
                             </b>
-                        </b>
-                        <b v-else-if="data.value == 4">
-                            <b-icon
-                                icon="credit-card2-front-fill"
-                                style="color: rgb(98,98,98);"
-                            ></b-icon>
-                            <b>
-                                platinum
+                            <b v-else-if="data.value == 4">
+                                <b-icon
+                                    icon="credit-card2-front-fill"
+                                    style="color: rgb(98,98,98);"
+                                ></b-icon>
+                                <b>
+                                    platinum
+                                </b>
                             </b>
-                        </b>
-                        <b v-else-if="data.value == 5">
-                            <b-icon
-                                icon="credit-card2-front"
-                            ></b-icon>
-                            <b>
-                                black
+                            <b v-else-if="data.value == 5">
+                                <b-icon
+                                    icon="credit-card2-front"
+                                ></b-icon>
+                                <b>
+                                    black
+                                </b>
                             </b>
-                        </b>
-                    </template>
+                        </template>
 
-                    <template #cell(age)="data">
-                        <b v-if="data.value != ''">
-                            {{ data.value }} 歳
-                        </b>
-                        <b v-else>
-                            -
-                        </b>
-                    </template>
+                        <template #cell(age)="data">
+                            <b v-if="data.value != ''">
+                                {{ data.value }} 歳
+                            </b>
+                            <b v-else>
+                                -
+                            </b>
+                        </template>
 
-                    <template #cell(birthday)="data">
-                        <b v-if="data.value != ''">
-                            {{ data.value }}
-                        </b>
-                        <b v-else>
-                            -
-                        </b>
-                    </template>
+                        <template #cell(birthday)="data">
+                            <b v-if="data.value != ''">
+                                {{ data.value }}
+                            </b>
+                            <b v-else>
+                                -
+                            </b>
+                        </template>
 
-                    <template #cell(total_visit)="data">
-                        <b>{{ data.value }}</b> <b>回</b>
-                    </template>
+                        <template #cell(total_visit)="data">
+                            <b>{{ data.value }}</b> <b>回</b>
+                        </template>
 
-                    <template #cell(total_sales)="data">
-                        <b>￥{{ data.value }}</b>
-                    </template>
+                        <template #cell(total_sales)="data">
+                            <b>￥{{ data.value }}</b>
+                        </template>
 
-                    <template #cell(first_visit)="data">
-                        <b v-if="data.value != ''">
-                            <b>{{ data.value }}</b>
-                        </b>
-                        <b v-else>
-                            -
-                        </b>
-                    </template>
+                        <template #cell(first_visit)="data">
+                            <b v-if="data.value != ''">
+                                <b>{{ data.value }}</b>
+                            </b>
+                            <b v-else>
+                                -
+                            </b>
+                        </template>
 
-                    <template #cell(caution_flg)="data">
-                        <b v-if="data.value == true">
-                            <b class="text-danger">要注意人物</b>
-                        </b>
-                        <b v-else>
-                            -
-                        </b>
-                    </template>
+                        <template #cell(caution_flg)="data">
+                            <b v-if="data.value == true">
+                                <b class="text-danger">要注意</b>
+                            </b>
+                            <b v-else>
+                                -
+                            </b>
+                        </template>
 
-                </b-table>
-            <!-- </b-card-body>
+                    </b-table>
+                    <b-row>
+                        <!-- <b-col cols="4">
+                        </b-col> -->
+                        <b-col cols="4">
+                            <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
+                                :per-page="perPage"
+                                align="fill"
+                                size="sm"
+                                class="my-0"
+                            ></b-pagination>
+                        </b-col>
+                        <!-- <b-col cols="4">
+                        </b-col> -->
+                    </b-row>
+                </b-tab>
+            </b-tabs>
+        </b-row>
 
-            <b-card-body v-else-if="activeHeader == 2">
-                <b style="color: white;">Customer Sales</b>
-            </b-card-body>
 
-            <b-card-body v-else-if="activeHeader == 3">
-                <b style="color: white;">Customer Ranking</b>
-            </b-card-body> -->
+        <!-- <b-row>
+            <b-col cols="6">
+                <b-card class="customer_list_area customer_list_area4">
+                    <b-container fluid>
+                        <b-card-text class="mb-1">
+                            週間来店売上
+                        </b-card-text>
+                        <b-row>
+                            <VueApexCharts
+                                type="line"
+                                :options="weekVisitSalesChartOptions"
+                                :series="weekVisitSalesSeries"
+                            />
+                        </b-row>
+                    </b-container>
+                </b-card>
+            </b-col>
+        </b-row> -->
 
-        </b-card>
 
-        <!-- <CreateCustomerDialog
-            @update="createCustomerDialog = $event"
-            :createCustomerDialog="createCustomerDialog"
-        /> -->
     </div>
 </template>
 
@@ -164,44 +425,54 @@ export default {
         createCustomerDialog: false,
         fields: [
             {
+                key: 'customer_no',
+                sortable: true,
+                label: '会員No',
+            },
+            {
                 key: 'name',
                 sortable: true,
-                headerTitle: '名前',
+                label: '名前',
+            },
+            {
+                key: 'name_kana',
+                sortable: true,
+                label: '名前(カナ)',
             },
             {
                 key: 'rank_id',
                 sortable: true,
+                label: '会員ランク',
             },
             {
                 key: 'age',
                 sortable: true,
-                // thStyle: {
-                //     'background-color': 'yellow',
-                // }
+                label: '年齢',
             },
             {
                 key: 'birthday',
-                sortable: true
+                sortable: true,
+                label: '誕生日',
             },
             {
                 key: 'total_visit',
-                sortable: true
+                sortable: true,
+                label: '総来店回数',
             },
             {
                 key: 'total_sales',
-                sortable: true
+                sortable: true,
+                label: '総売上',
             },
             {
                 key: 'first_visit',
-                sortable: true
-            },
-            {
-                key: 'customer_no',
                 sortable: true,
+                label: '初回来店日',
             },
             {
                 key: 'caution_flg',
                 sortable: true,
+                label: '要注意',
             }
         ],
         navHeader: [
@@ -222,6 +493,532 @@ export default {
             },
         ],
         activeHeader: 1,
+        pSeries: [1024],
+        totalCustomerChartOptions: {
+            chart: {
+              height: 350,
+              type: 'radialBar',
+              toolbar: {
+                show: false
+              }
+            },
+            plotOptions: {
+              radialBar: {
+                startAngle: -135,
+                endAngle: 225,
+                 hollow: {
+                  margin: 0,
+                  size: '80%',
+                  background: '#fff',
+                  image: undefined,
+                  imageOffsetX: 0,
+                  imageOffsetY: 0,
+                  position: 'front',
+                  dropShadow: {
+                    enabled: true,
+                    top: 3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.24
+                  }
+                },
+                track: {
+                  background: '#fff',
+                  strokeWidth: '67%',
+                  margin: 0, // margin is in pixels
+                  dropShadow: {
+                    enabled: true,
+                    top: -3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.35
+                  }
+                },
+
+                dataLabels: {
+                  show: true,
+                  name: {
+                    offsetY: -10,
+                    show: true,
+                    color: '#888',
+                    fontSize: '17px'
+                  },
+                  value: {
+                    formatter: function(val) {
+                      return parseInt(val);
+                    },
+                    color: '#111',
+                    fontSize: '20px',
+                    show: true,
+                  }
+                }
+              }
+            },
+            fill: {
+              type: 'gradient',
+              gradient: {
+                shade: 'dark',
+                type: 'horizontal',
+                shadeIntensity: 0.5,
+                gradientToColors: ['#ABE5A1'],
+                inverseColors: true,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100]
+              }
+            },
+            stroke: {
+              lineCap: 'round'
+            },
+            labels: ['total'],
+        },
+        totalCustomer: 0,
+        customerAgeSeries: [{
+            // data: [1, 20, 45, 63, 55, 5, 3, 1]
+            name: '年齢',
+            data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3]
+        }],
+        customerRankSeries: [{
+            name: 'ランク',
+            data: [78.0, 12.0, 5.0, 4.5, 0.5]
+        }],
+        customerAgeChartOptions: {
+
+            chart: {
+                type: 'bar',
+                // ↓左上のdownloadとかやつ
+                toolbar: {
+                    show: false,
+                },
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 3,
+                    dataLabels: {
+                        position: 'top', // top, center, bottom
+                    },
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val + "%";
+                },
+                offsetY: -20,
+                style: {
+                    fontSize: '10px',
+                    // colors: ["#304758"]
+                }
+            },
+
+            xaxis: {
+                categories: ["10代", "20代", "30代", "40代", "50代", "60代", "70代", "80代"],
+                labels: {
+                    style: {
+                        colors: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+                        fontSize: '10px',
+                    },
+                },
+                position: 'top',
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                crosshairs: {
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            colorFrom: '#D8E3F0',
+                            colorTo: '#BED1E6',
+                            stops: [0, 100],
+                            opacityFrom: 0.4,
+                            opacityTo: 0.5,
+                        }
+                    }
+                },
+            },
+            yaxis: {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false,
+                },
+                labels: {
+                    show: false,
+                    formatter: function (val) {
+                        return val + "%";
+                    }
+                },
+            },
+            tooltip: {
+                // 分かるまでfalseにしておく
+                enabled: false,
+                fillSeriesColor: true,
+                style: {
+                    colors: ["#000000"]
+                },
+                theme: false,
+            },
+        },
+        customerRankChartOptions: {
+
+            chart: {
+                type: 'bar',
+                // ↓左上のdownloadとかやつ
+                toolbar: {
+                    show: false,
+                },
+                height: '400px'
+            },
+            plotOptions: {
+                bar: {
+                    borderRadius: 3,
+                    dataLabels: {
+                        position: 'top', // top, center, bottom
+                    },
+                    horizontal: true,
+                    barHeight: '50%',
+                    distributed: true,
+                    colors: {
+                        // ranges: [{
+                        //     from: 0,
+                        //     to: 0,
+                        //     color: undefined
+                        // }],
+                        // backgroundBarColors: ["#ffffff"],
+                        // backgroundBarOpacity: 0.4,
+                        // backgroundBarRadius: 0,
+                    },
+                }
+            },
+            dataLabels: {
+                enabled: true,
+                formatter: function (val) {
+                    return val + "人";
+                },
+                offsetY: -20,
+                style: {
+                    fontSize: '10px',
+                    // colors: ["#304758"]
+                }
+            },
+
+            xaxis: {
+                categories: ["normal", "gold", "silver", "platinum", "black"],
+                labels: {
+                    style: {
+                        colors: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+                        fontSize: '10px',
+
+                    },
+                },
+                position: 'top',
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                },
+                crosshairs: {
+                    fill: {
+                        type: 'gradient',
+                        gradient: {
+                            colorFrom: '#D8E3F0',
+                            colorTo: '#BED1E6',
+                            stops: [0, 100],
+                            opacityFrom: 0.4,
+                            opacityTo: 0.5,
+                        }
+                    }
+                },
+                // tooltip: {
+                //   enabled: true,
+                // }
+            },
+            yaxis: {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false,
+                },
+                labels: {
+                    show: false,
+                    formatter: function (val) {
+                        return val + "%";
+                    }
+                },
+            },
+            tooltip: {
+                // 分かるまでfalseにしておく
+                enabled: false,
+                fillSeriesColor: true,
+                style: {
+                    colors: ["#000000"]
+                },
+                theme: false,
+            },
+            // colors: ['#ffffff', '#dab300', '#bec1c3', '#F0F8FF', '#000000'],
+        },
+        activeCustomerChartOptions: {
+            chart: {
+              height: 350,
+              type: 'radialBar',
+              toolbar: {
+                show: false
+              }
+            },
+            plotOptions: {
+              radialBar: {
+                startAngle: -135,
+                endAngle: 225,
+                 hollow: {
+                  margin: 0,
+                  size: '80%',
+                  background: '#fff',
+                  image: undefined,
+                  imageOffsetX: 0,
+                  imageOffsetY: 0,
+                  position: 'front',
+                  dropShadow: {
+                    enabled: true,
+                    top: 3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.24
+                  }
+                },
+                track: {
+                  background: '#fff',
+                  strokeWidth: '67%',
+                  margin: 0, // margin is in pixels
+                  dropShadow: {
+                    enabled: true,
+                    top: -3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.35
+                  }
+                },
+
+                dataLabels: {
+                  show: true,
+                  name: {
+                    offsetY: -10,
+                    show: true,
+                    color: '#888',
+                    fontSize: '17px'
+                  },
+                  value: {
+                    formatter: function(val) {
+                      return parseInt(val);
+                    },
+                    color: '#111',
+                    fontSize: '20px',
+                    show: true,
+                  }
+                }
+              }
+            },
+            // fill: {
+            //   type: 'gradient',
+            //   gradient: {
+            //     shade: 'dark',
+            //     type: 'horizontal',
+            //     shadeIntensity: 0.5,
+            //     gradientToColors: ['#ABE5A1'],
+            //     inverseColors: true,
+            //     opacityFrom: 1,
+            //     opacityTo: 1,
+            //     stops: [0, 100]
+            //   }
+            // },
+            stroke: {
+              lineCap: 'round'
+            },
+            labels: ['active'],
+        },
+        nonActiveCustomerChartOptions: {
+            chart: {
+              height: 350,
+              type: 'radialBar',
+              toolbar: {
+                show: false
+              }
+            },
+            plotOptions: {
+              radialBar: {
+                 hollow: {
+                  margin: 0,
+                  size: '80%',
+                  background: '#fff',
+                  image: undefined,
+                  imageOffsetX: 0,
+                  imageOffsetY: 0,
+                  position: 'front',
+                  dropShadow: {
+                    enabled: true,
+                    top: 3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.24
+                  }
+                },
+                track: {
+                  background: '#fff',
+                  strokeWidth: '67%',
+                  margin: 0, // margin is in pixels
+                  dropShadow: {
+                    enabled: true,
+                    top: -3,
+                    left: 0,
+                    blur: 4,
+                    opacity: 0.35
+                  }
+                },
+
+                dataLabels: {
+                  show: true,
+                  name: {
+                    offsetY: -10,
+                    show: true,
+                    color: '#888',
+                    fontSize: '17px'
+                  },
+                  value: {
+                    formatter: function(val) {
+                      return parseInt(val);
+                    },
+                    color: '#111',
+                    fontSize: '20px',
+                    show: true,
+                  }
+                }
+              }
+            },
+            stroke: {
+              lineCap: 'round'
+            },
+            labels: ['non active'],
+        },
+        weekVisitSalesSeries: [
+            {
+                name: '売上',
+                type: 'column',
+                data: [120, 40, 12, 130, 9, 220, 130]
+            },
+            {
+                name: '来店人数',
+                type: 'line',
+                data: [10, 4, 3, 9, 2, 12, 9]
+            }
+        ],
+        weekVisitSalesChartOptions: {
+            chart: {
+              // height: 350,
+              type: 'line',
+              toolbar: {
+                  show: false,
+              },
+            },
+            stroke: {
+              width: [0, 4]
+            },
+            dataLabels: {
+              enabled: true,
+              enabledOnSeries: [1]
+            },
+            labels: ['2022/06/25', '2022/06/26', '2022/06/27', '2022/06/28', '2022/06/29', '2022/06/30', '2022/06/31'],
+            xaxis: {
+              type: 'category',
+            },
+            yaxis: [{
+              title: {
+                text: '売上(万)',
+              },
+
+            }, {
+              opposite: true,
+              title: {
+                text: '来店人数'
+              }
+            }]
+        },
+        customerSalesRanking: [
+            {
+                name: '田中道彦',
+                sales: 99999999,
+                age: '45',
+                rank: 'black',
+                total_visit: 144,
+            },
+            {
+                name: '田中三郎',
+                sales: 99999999,
+                age: '45',
+                rank: 'black',
+                total_visit: 122,
+            },
+            {
+                name: '田中五郎',
+                sales: 999999,
+                age: '45',
+                rank: 'black',
+                total_visit: 114,
+            },
+            {
+                name: '田中一郎',
+                sales: 99999,
+                age: '45',
+                rank: 'black',
+                total_visit: 10,
+            },
+            {
+                name: '山口達也',
+                sales: 99999,
+                age: '45',
+                rank: 'black',
+                total_visit: 33,
+            },
+            // {
+            //     name: '田中道彦',
+            //     sales: 99999,
+            //     age: '45',
+            //     rank: 'black',
+            // },
+            // {
+            //     name: '田中三郎',
+            //     sales: 99999,
+            //     age: '45',
+            //     rank: 'black',
+            // },
+            // {
+            //     name: '田中五郎',
+            //     sales: 99999,
+            //     age: '45',
+            //     rank: 'black',
+            // },
+            // {
+            //     name: '田中一郎',
+            //     sales: 99999,
+            //     age: '45',
+            //     rank: 'black',
+            // },
+            // {
+            //     name: '山口達也',
+            //     sales: 99999,
+            //     age: '45',
+            //     rank: 'black',
+            // },
+        ],
+        currentPage: 1,
+        totalRows: 1,
+        perPage: 5,
+        filter: null,
+        filterOn: [],
     }),
     components: {
         // ListView,
@@ -231,10 +1028,27 @@ export default {
         ...mapGetters([
             'customer'
         ]),
+        totalCustomerMax () {
+            return 100
+        },
+        // totalCustomer () {
+        //     return this.customer.length
+        // },
+        totalCustomerSeries () {
+            return [this.customer.length]
+        },
+        activeCustomerSeries () {
+            return [5]
+        },
+        nonActiveCustomerSeries () {
+            return [6]
+        },
     },
     created () {
     },
     mounted () {
+        this.totalCustomer = this.customer.length
+        this.totalRows = this.customer.length
     },
     methods: {
         showCustomerDetail (data) {
@@ -257,12 +1071,17 @@ export default {
                 }
             })
         },
-        rowClass (item, type) {
-            if (!item || type !== 'row') return
-            if (item.caution_flg == true) return 'table-danger'
-        },
+        // rowClass (item, type) {
+        //     if (!item || type !== 'row') return
+        //     if (item.caution_flg == true) return 'table-danger'
+        // },
         navClick (item) {
             this.activeHeader = item.id
+        },
+        onFiltered(filteredItems) {
+        // Trigger pagination to update the number of buttons/pages due to filtering
+            this.totalRows = filteredItems.length
+            this.currentPage = 1
         }
     }
 }
@@ -275,19 +1094,63 @@ export default {
         margin-top: $main-top-margin;
         margin-left: $main-top-side-margin;
         margin-right: $main-top-side-margin;
-        height: $main-height;
+        // height: $main-height;
         padding: 20px;
 
-        .customer_list_area1 {
-            background-color: $theme-color;
-            height: 25rem;
+        .customer_list_top {
+            height: 100%;
         }
-        .customer_list_area2 {
+
+        // .customer_list_area1 {
+        //     background-color: $theme-color;
+        //     // height: 30rem;
+        //     height: 100%;
+        //     color: white;
+        // }
+        .customer_list_area {
             background-color: $theme-color;
-            height: 25rem;
+            color: white;
+        }
+
+        .customer_list_area1 {
+            height: 200px;
+        }
+
+        .customer_list_area2 {
+            height: 350px;
         }
 
         .customer_list_area3 {
+            height: 100%;
+            .card-body {
+                padding: 0.5rem 1rem;
+            }
+            .customer_list_area3_top {
+                border-bottom: 1px solid rgba(150, 150, 150, 0.5);
+                background-color: rgba(35, 33, 38, 0.5);
+                // background-color: rgba(15, 15, 22, 0.5);
+            }
+            .customer_list_area3_middle {
+                background-color: rgba(35, 33, 38, 0.5);
+                border-bottom: 1px solid rgba(50, 50, 50, 0.5);
+                height: 4rem;
+                box-shadow: 1px 2px 1px rgba(10, 10, 10, 0.4);
+                margin-top: 10px;
+            }
+        }
+
+        .customer_list_area3_header {
+            text-align: center;
+            padding: 20px
+        }
+
+        .customer_list_area4 {
+            height: 100%;
+        }
+
+
+
+        .customer_list_area5 {
             padding: 1.7rem;
             background-color: $theme-color;
             height: 100%;
@@ -307,5 +1170,9 @@ export default {
 //   padding-right: 100px !important;
 //   margin-bottom: 20px !important;
 // }
+    .apexcharts-tooltip {
+        background: #1e90ff;
+        color: white;
+    }
 
 </style>
