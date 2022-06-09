@@ -18,7 +18,7 @@
                         class="mb-0"
                     >
                         <b-row>
-                            <b-col cols="4">
+                            <b-col cols="2">
                                 <b-form-group
                                     label="会員No"
                                 >
@@ -26,7 +26,19 @@
                                         <b-form-input
                                             v-model="inputSalesData.customerNo"
                                             type="number"
-                                            placeholder="会員Noを入力してください"
+                                            required
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="2">
+                                <b-form-group
+                                    label="来店人数"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="inputSalesData.total_visitors"
+                                            type="number"
                                             required
                                         ></b-form-input>
                                     </b-input-group>
@@ -53,7 +65,7 @@
                                     </label>
                                     <b-container>
                                         <b-row style="min-height: 80px;" align-h="between">
-                                            <b-col>
+                                            <b-col cols="6">
                                                 <b-card-sub-title>料金タイプ</b-card-sub-title>
                                                 <b-form-group style="min-height: 40px;">
                                                     <b-form-radio-group
@@ -70,6 +82,18 @@
                                                         variant="primary"
                                                         class="ml-3 pl-3"
                                                     ></b-icon>
+                                                </b-form-group>
+                                            </b-col>
+                                            <b-col>
+                                                <b-form-group>
+                                                    <b-form-checkbox-group
+                                                        v-if="inputSalesData.basicPlanType == 1"
+                                                        style="margin-top: 14px;"
+                                                        v-model="inputSalesData.isChartered"
+                                                        :options=charterOptions
+                                                        buttons
+                                                        button-variant="primary"
+                                                    ></b-form-checkbox-group>
                                                 </b-form-group>
                                             </b-col>
                                             <b-col style="text-align: right;">
@@ -217,16 +241,24 @@
                                                         VIP Seat
                                                     </td>
                                                     <td class="width20">
-                                                        {{ basicPriceVipSeat }}
+                                                        {{ vipSeatPrice }}
+                                                        <!-- {{ basicPriceVipSeat }} -->
                                                     </td>
                                                     <td class="width30">
-                                                        <b-form-spinbutton
+                                                        <b-form-group
+                                                        >
+                                                            <SelectForm
+                                                                :optionType=99
+                                                                v-model="inputSalesData.vipSeatNum"
+                                                            />
+                                                        </b-form-group>
+                                                        <!-- <b-form-spinbutton
                                                             v-model="inputSalesData.vipSeatNum"
                                                             inline
                                                             max=1
                                                             min=0
                                                             size="sm"
-                                                        ></b-form-spinbutton>
+                                                        ></b-form-spinbutton> -->
                                                     </td>
                                                 </tr>
                                             </table>
@@ -339,8 +371,8 @@
                                         基本料金（席移動後）
                                     </label>
                                     <b-container>
-                                        <b-row style="min-height: 80px;" align-h="between">
-                                            <b-col>
+                                        <b-row style="min-height: 80px;">
+                                            <b-col cols="3">
                                                 <b-card-sub-title>料金タイプ</b-card-sub-title>
                                                 <b-form-group style="min-height: 40px;">
                                                     <b-form-radio-group
@@ -358,6 +390,18 @@
                                                         variant="primary"
                                                         class="ml-3 pl-3"
                                                     ></b-icon>
+                                                </b-form-group>
+                                            </b-col>
+                                            <b-col cols="3">
+                                                <b-form-group>
+                                                    <b-form-checkbox-group
+                                                        v-if="inputSalesData.basicPlanTypeOther == 1"
+                                                        style="margin-top: 14px;"
+                                                        v-model="inputSalesData.isCharteredOther"
+                                                        :options=charterOptions
+                                                        buttons
+                                                        button-variant="primary"
+                                                    ></b-form-checkbox-group>
                                                 </b-form-group>
                                             </b-col>
                                         </b-row>
@@ -480,16 +524,24 @@
                                                         VIP Seat
                                                     </td>
                                                     <td class="width20">
-                                                        {{ basicPriceVipSeat }}
+                                                        {{ vipSeatPriceOther }}
+                                                        <!-- {{ basicPriceVipSeat }} -->
                                                     </td>
                                                     <td class="width30">
-                                                        <b-form-spinbutton
+                                                        <b-form-group
+                                                        >
+                                                            <SelectForm
+                                                                :optionType=99
+                                                                v-model="inputSalesData.vipSeatNumOther"
+                                                            />
+                                                        </b-form-group>
+                                                        <!-- <b-form-spinbutton
                                                             v-model="inputSalesData.vipSeatNumOther"
                                                             inline
                                                             max=1
                                                             min=0
                                                             size="sm"
-                                                        ></b-form-spinbutton>
+                                                        ></b-form-spinbutton> -->
                                                     </td>
                                                 </tr>
                                             </table>
@@ -704,6 +756,9 @@ export default {
             selectedBasicPlanNum: 0, // SET料金の数量 1 or 0。サービスも考慮
             stayHour: 0, // 滞在時間
 
+            isChartered: [],
+            isCharteredOther: [],
+
             // 延長はcomputedでextention_price
             extentionNum: 0, // 延長料金の数量 1 or 0。
 
@@ -732,6 +787,8 @@ export default {
 
         inputSalesDetailDialog: false,
         basicPriceVipSeat: Con.BASIC_PRICE_VIP_SEAT, // VIPの席料金
+
+
         taxOptions: Con.OPTIONS_TAX,
         numOptions: Con.OPTIONS_NUM,
         hourOptions: Con.OPTIONS_HOUR,
@@ -774,6 +831,9 @@ export default {
             { text: 'フリー', value: 0 },
             { text: '指名', value: 1 },
         ],
+        charterOptions: [
+            { text: '貸切', value: 1 }
+        ]
     }),
     created () {
         this.$eventHub.$off('addCast')
@@ -913,7 +973,19 @@ export default {
                 return true
             }
             return false
-        }
+        },
+        vipSeatPrice () {
+            if (this.inputSalesData.isChartered.length > 0) {
+                return Con.CHARTER_PRICE_VIP_SEAT
+            }
+            return Con.BASIC_PRICE_VIP_SEAT
+        },
+        vipSeatPriceOther () {
+            if (this.inputSalesData.isCharteredOther.length > 0) {
+                return Con.CHARTER_PRICE_VIP_SEAT
+            }
+            return Con.BASIC_PRICE_VIP_SEAT
+        },
     },
     watch: {
         'inputSalesData.visitTimeHour': function (val) {
@@ -982,7 +1054,23 @@ export default {
             } else {
                 this.inputSalesData.basicPlanTypeOther = 0
             }
-        }
+        },
+        'inputSalesData.total_visitors': function (val) {
+            if (this.inputSalesData.basicPlanType == 1) {
+                if (val != '' && val >= Con.CHARTER_TOTAL_NUM) {
+                    this.inputSalesData.isChartered = [1]
+                }
+            } else {
+                this.inputSalesData.isChartered = []
+            }
+            if (this.inputSalesData.basicPlanTypeOther == 1) {
+                if (val != '' && val >= Con.CHARTER_TOTAL_NUM) {
+                    this.inputSalesData.isCharteredOther = [1]
+                }
+            } else {
+                this.inputSalesData.isCharteredOther = []
+            }
+        },
     },
     methods: {
         calcBasicPlan () {
@@ -1000,6 +1088,10 @@ export default {
             const diff_minute = diff-60
             // 延長料金の数量を出すために30で割って切り上げする
             const extention_time = Math.ceil(diff_minute / 30)
+
+            const vipSeatTypeMinute = (this.inputSalesData.isChartered.length != 0) ? 120 : 60
+
+            this.inputSalesData.vipSeatNum = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
                 // 延長料金が発生しているパターン
@@ -1059,6 +1151,9 @@ export default {
             const diff_minute = diff-60
             // 延長料金の数量を出すために30で割って切り上げする
             const extention_time = Math.ceil(diff_minute / 30)
+
+            const vipSeatTypeMinute = (this.inputSalesData.isCharteredOther.length != 0) ? 120 : 60
+            this.inputSalesData.vipSeatNumOther = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
                 // 延長料金が発生しているパターン

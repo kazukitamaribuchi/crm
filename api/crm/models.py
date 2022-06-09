@@ -167,13 +167,14 @@ class MCustomer(AbstractHumanModel):
         max_length=100,
     )
     total_visit = models.IntegerField(
-        _('総来店回数'),
+        _('来店回数'),
         default=0,
     )
-    total_sales = models.BigIntegerField(
-        _('総売上'),
-        default=0,
-    )
+    # 2022/06/06 => ここ持つと更新が大変なため廃止
+    # total_sales = models.BigIntegerField(
+    #     _('総売上'),
+    #     default=0,
+    # )
     first_visit = models.DateField(
         _('初来店日'),
         null=True,
@@ -201,7 +202,6 @@ class MCustomer(AbstractHumanModel):
         verbose_name_plural = '顧客マスタ'
         indexes = [
             models.Index(fields=['name'], name='mcustomer_name_idx'),
-            models.Index(fields=['total_sales'], name='mcustomer_total_sales_idx'),
             models.Index(fields=['rank'], name='mcustomer_rank_idx'),
         ]
 
@@ -386,7 +386,12 @@ class MService(AbstractServiceModel):
                 3(延長)
                     0:延長
                 4(席料金)
-                    0:席料金
+                    0:席料金 (VIPの場合 席料金1)
+                    1:席料金 (VIPのみで 席料金2)
+
+        2022/06/06 => VIPの場合SET料金無しで席料金のみ
+　　　　　　　　　　　　⇒1~4人・・・1時間20000
+　　　　　　　　　　　　⇒5人以上・・・2時間100000で貸し切りみたいな形になる
 
         start_tile, end_time = 21:00のようにコロン区切り4桁文字列
 
@@ -488,6 +493,10 @@ class MProduct(AbstractServiceModel):
     like = models.BooleanField(
         _('お気に入り'),
         default=False,
+    )
+
+    cast_price = models.SmallIntegerField(
+        _('キャスト価格 => キャストが頼む際の料金')
     )
 
     priority = models.SmallIntegerField(

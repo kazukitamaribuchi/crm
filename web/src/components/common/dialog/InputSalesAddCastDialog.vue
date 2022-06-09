@@ -2,7 +2,7 @@
     <b-modal
         v-model="dialog"
         title="キャスト追加"
-        header-bg-variant="secondary"
+        header-bg-variant="primary"
         header-text-variant="light"
         ok-title="追加"
         cancel-title="閉じる"
@@ -87,16 +87,19 @@
                                     v-model="appointType"
                                     :options=appointOptions
                                     buttons
+                                    button-variant="primary"
                                 ></b-form-radio-group>
                             </b-form-group>
                         </b-col>
                         <b-col class="add_cast_footer_col">
-                            <b-card-sub-title>同伴出勤</b-card-sub-title>
+                            <!-- <b-card-sub-title>同伴出勤</b-card-sub-title> -->
                             <b-form-group>
                                 <b-form-checkbox-group
+                                    style="margin-top: 14px;"
                                     v-model="isDouhan"
                                     :options=douhanOptions
                                     buttons
+                                    button-variant="primary"
                                     @change="douhanClick"
                                 ></b-form-checkbox-group>
                             </b-form-group>

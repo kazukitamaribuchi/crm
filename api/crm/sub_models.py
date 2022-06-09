@@ -125,6 +125,11 @@ class SalesHeader(AbstractBaseModel):
         blank=True,
     )
 
+    total_visitors = models.SmallIntegerField(
+        _('来店人数'),
+        default=1,
+    )
+
     # 5/14 => 指名管理の中間テーブルに変更
     # on_delete要検討
     # cast = models.ManyToManyField(
@@ -272,6 +277,12 @@ class SalesDetail(AbstractBaseModel):
         'crm.MProduct',
         on_delete=models.CASCADE,
         related_name='sales_detail',
+    )
+
+    # cast_order = Trueの場合、キャストが必ず紐づく
+    cast_order = models.BooleanField(
+        _('キャストの頼んだ商品か'),
+        default=False,
     )
 
     # これは誰のキャストの売上か

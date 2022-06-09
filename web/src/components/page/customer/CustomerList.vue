@@ -9,7 +9,7 @@
                             <b-row>
                                 <b-col cols="4">
                                     <b-card class="customer_list_area customer_list_area1">
-                                        <b-container fluid>
+                                        <b-container fluid class="customer_list_area1_container">
                                             <b-card-text class="mb-1">
                                                 総会員数
                                             </b-card-text>
@@ -23,7 +23,7 @@
                                                         :series="totalCustomerSeries"
                                                     />
                                                 </b-col>
-                                                <b-col cols="4" align="right" class="pt-4">
+                                                <b-col cols="4" align="right" class="pt-4 ml-0 pl-0">
                                                     <b-card-title>
                                                         {{ totalCustomer }}
                                                     </b-card-title>
@@ -31,16 +31,13 @@
                                                         customers
                                                     </b-card-sub-title>
                                                 </b-col>
-                                                <b-col>
-
-                                                </b-col>
                                             </b-row>
                                         </b-container>
                                     </b-card>
                                 </b-col>
                                 <b-col cols="4">
                                     <b-card class="customer_list_area customer_list_area1">
-                                        <b-container fluid>
+                                        <b-container fluid class="customer_list_area1_container">
                                             <b-card-text class="mb-1">
                                                 アクティブ会員
                                             </b-card-text>
@@ -68,7 +65,7 @@
                                 </b-col>
                                 <b-col cols="4">
                                     <b-card class="customer_list_area customer_list_area1">
-                                        <b-container fluid>
+                                        <b-container fluid class="customer_list_area1_container">
                                             <b-card-text class="mb-1">
                                                 ノンアクティブ会員
                                             </b-card-text>
@@ -103,6 +100,7 @@
                                             <b-row>
                                                 <b-col>
                                                     <VueApexCharts
+                                                        height="280"
                                                         type="bar"
                                                         :options="customerAgeChartOptions"
                                                         :series="customerAgeSeries"
@@ -120,40 +118,7 @@
                                             </b-card-text>
                                             <b-row>
                                                 <VueApexCharts
-                                                    type="bar"
-                                                    :options="customerRankChartOptions"
-                                                    :series="customerRankSeries"
-                                                />
-                                            </b-row>
-                                        </b-container>
-                                    </b-card>
-                                </b-col>
-                                <b-col cols="6">
-                                    <b-card class="customer_list_area customer_list_area2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                会員年齢層
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col>
-                                                    <VueApexCharts
-                                                        type="bar"
-                                                        :options="customerAgeChartOptions"
-                                                        :series="customerAgeSeries"
-                                                    />
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
-                                    </b-card>
-                                </b-col>
-                                <b-col cols="6">
-                                    <b-card class="customer_list_area customer_list_area2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                ランク別会員数
-                                            </b-card-text>
-                                            <b-row>
-                                                <VueApexCharts
+                                                    height="280"
                                                     type="bar"
                                                     :options="customerRankChartOptions"
                                                     :series="customerRankSeries"
@@ -165,214 +130,202 @@
                             </b-row>
                         </b-col>
                         <b-col cols="4">
-                            <b-col cols="12">
-                                <b-card
-                                    class="customer_list_area customer_list_area3"
-                                    header="売上ランキング"
-                                    header-bg-variant="dark"
-                                    header-text-variant="white"
-                                    header-class="customer_list_area3_header"
+                            <b-card
+                                class="customer_list_area customer_list_area3"
+                                header="売上ランキング"
+                                header-bg-variant="dark"
+                                header-text-variant="white"
+                                header-class="customer_list_area3_header"
+                            >
+                                <b-row class="customer_list_area3_top mb-2">
+                                    <b-col cols="3">
+                                        Rank
+                                    </b-col>
+                                    <b-col cols="5">
+                                        名前
+                                    </b-col>
+                                    <!-- <b-col align="right">
+                                        来店回数
+                                    </b-col> -->
+                                    <b-col align="right">
+                                        総売上
+                                    </b-col>
+                                </b-row>
+                                <b-row
+                                    v-for="(item, i) in customerSalesRanking"
+                                    :key=i
+                                    class="customer_list_area3_middle pt-2 mb-0"
                                 >
-                                    <b-row class="customer_list_area3_top mb-2">
-                                        <b-col cols="2">
-                                            Rank
-                                        </b-col>
-                                        <b-col cols="4">
-                                            名前
-                                        </b-col>
-                                        <b-col align="right">
-                                            総来店回数
-                                        </b-col>
-                                        <b-col align="right">
-                                            総売上
-                                        </b-col>
-                                    </b-row>
-                                    <b-row
-                                        v-for="(item, i) in customerSalesRanking"
-                                        :key=i
-                                        class="customer_list_area3_middle pt-2 mb-0"
-                                    >
-                                        <b-col cols="2">
-                                            <b-card-text>{{ i + 1 }}</b-card-text>
-                                        </b-col>
-                                        <b-col cols="4" class="mt-0 pt-0 mb-0 pb-0">
-                                            {{ item.name }}
-                                            <b-card-sub-title
-                                                style="font-size: 12px;"
-                                                class="pt-1"
-                                            >年齢: {{ item.age }}  会員ランク: {{ item.rank }}</b-card-sub-title>
-                                        </b-col>
-                                        <b-col align="right">
-                                            <b-card-text>{{ item.total_visit }}回</b-card-text>
-                                        </b-col>
-                                        <b-col align="right">
-                                            <b-icon icon="currency-yen"></b-icon>{{ item.sales }}
-                                        </b-col>
-                                    </b-row>
-                                </b-card>
-                            </b-col>
-                            <b-col cols="12">
-                                <b-card
-                                    class="customer_list_area customer_list_area3"
-                                    header="来店数ランキング"
-                                    header-bg-variant="dark"
-                                    header-text-variant="white"
-                                    header-class="customer_list_area3_header"
-                                >
-                                    <b-row class="customer_list_area3_top mb-2">
-                                        <b-col cols="2">
-                                            Rank
-                                        </b-col>
-                                        <b-col cols="4">
-                                            名前
-                                        </b-col>
-                                        <b-col align="right">
-                                            総来店回数
-                                        </b-col>
-                                        <b-col align="right">
-                                            総売上
-                                        </b-col>
-                                    </b-row>
-                                    <b-row
-                                        v-for="(item, i) in customerSalesRanking"
-                                        :key=i
-                                        class="customer_list_area3_middle pt-2 mb-0"
-                                    >
-                                        <b-col cols="2">
-                                            <b-card-text>{{ i + 1 }}</b-card-text>
-                                        </b-col>
-                                        <b-col cols="4" class="mt-0 pt-0 mb-0 pb-0">
-                                            {{ item.name }}
-                                            <b-card-sub-title
-                                                style="font-size: 12px;"
-                                                class="pt-1"
-                                            >年齢: {{ item.age }}  会員ランク: {{ item.rank }}</b-card-sub-title>
-                                        </b-col>
-                                        <b-col align="right">
-                                            <b-card-text>{{ item.total_visit }}回</b-card-text>
-                                        </b-col>
-                                        <b-col align="right">
-                                            <b-icon icon="currency-yen"></b-icon>{{ item.sales }}
-                                        </b-col>
-                                    </b-row>
-                                </b-card>
-                            </b-col>
+                                    <b-col cols="3">
+                                        <b-card-text>{{ i + 1 }}</b-card-text>
+                                    </b-col>
+                                    <b-col cols="4" class="mt-0 pt-0 mb-0 pb-0">
+                                        {{ item.name }}
+                                        <b-card-sub-title
+                                            style="font-size: 12px;"
+                                            class="pt-1"
+                                        >年齢 : {{ item.age }}  ランク : {{ item.rank }}</b-card-sub-title>
+                                    </b-col>
+                                    <!-- <b-col align="right">
+                                        <b-card-text>{{ item.total_visit }}回</b-card-text>
+                                    </b-col> -->
+                                    <b-col align="right">
+                                        <b-icon icon="currency-yen"></b-icon>
+                                        <b>{{ item.sales }}</b>
+                                    </b-col>
+                                </b-row>
+                                <b-row>
+                                    <b-button
+                                        style="padding: 20px;"
+                                        block
+                                        variant="dark"
+                                    >More Detail</b-button>
+                                </b-row>
+                            </b-card>
                         </b-col>
                     </b-row>
 
                 </b-tab>
-                <b-tab title="顧客一覧">
-                    <b-table
-                        hover
-                        :items="customer"
-                        :fields="fields"
-                        :dark="true"
-                        caption-top
-                        selectable
-                        :per-page="perPage"
-                        :current-page="currentPage"
-                        :filter="filter"
-                        :filter-included-fields="filterOn"
-                        @row-selected="onRowSelected"
-                        @filterd="onFilterd"
-                    >
+                <b-tab title="顧客一覧" class="customer_table_wrap">
+                    <b-row class="mb-3">
+                        <b-col cols="10">
+                            <b-col cols="3">
+                                <b-form-group
+                                    class="mb-0"
+                                >
+                                    <b-input-group size="sm">
+                                        <b-form-input
+                                            id="filter-input"
+                                            v-model="filter"
+                                            type="search"
+                                            placeholder="Name"
+                                        ></b-form-input>
+                                        <b-input-group-append>
+                                            <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-col>
 
-                        <template #cell(rank_id)="data">
-                            <b v-if="data.value == 1">
-                                <b-icon
-                                    icon="credit-card2-front-fill"
-                                ></b-icon>
-                                <b>
-                                    normal
-                                </b>
-                            </b>
-                            <b v-else-if="data.value == 2">
-                                <b-icon
-                                    icon="credit-card2-front-fill"
-                                    style="color: #c0c0c0;"
-                                ></b-icon>
 
-                                <b>
-                                    silver
-                                </b>
-                            </b>
-                            <b v-else-if="data.value == 3">
-                                <b-icon
-                                    icon="credit-card2-front-fill"
-                                    style="color: #e1f30c;"
-                                ></b-icon>
-                                <b>
-                                    gold
-                                </b>
-                            </b>
-                            <b v-else-if="data.value == 4">
-                                <b-icon
-                                    icon="credit-card2-front-fill"
-                                    style="color: rgb(98,98,98);"
-                                ></b-icon>
-                                <b>
-                                    platinum
-                                </b>
-                            </b>
-                            <b v-else-if="data.value == 5">
-                                <b-icon
-                                    icon="credit-card2-front"
-                                ></b-icon>
-                                <b>
-                                    black
-                                </b>
-                            </b>
-                        </template>
-
-                        <template #cell(age)="data">
-                            <b v-if="data.value != ''">
-                                {{ data.value }} 歳
-                            </b>
-                            <b v-else>
-                                -
-                            </b>
-                        </template>
-
-                        <template #cell(birthday)="data">
-                            <b v-if="data.value != ''">
-                                {{ data.value }}
-                            </b>
-                            <b v-else>
-                                -
-                            </b>
-                        </template>
-
-                        <template #cell(total_visit)="data">
-                            <b>{{ data.value }}</b> <b>回</b>
-                        </template>
-
-                        <template #cell(total_sales)="data">
-                            <b>￥{{ data.value }}</b>
-                        </template>
-
-                        <template #cell(first_visit)="data">
-                            <b v-if="data.value != ''">
-                                <b>{{ data.value }}</b>
-                            </b>
-                            <b v-else>
-                                -
-                            </b>
-                        </template>
-
-                        <template #cell(caution_flg)="data">
-                            <b v-if="data.value == true">
-                                <b class="text-danger">要注意</b>
-                            </b>
-                            <b v-else>
-                                -
-                            </b>
-                        </template>
-
-                    </b-table>
+                    </b-row>
                     <b-row>
-                        <!-- <b-col cols="4">
-                        </b-col> -->
-                        <b-col cols="4">
+                        <b-table
+                            hover
+                            :items="customer"
+                            :fields="fields"
+                            :dark="true"
+                            caption-top
+                            selectable
+                            :per-page="perPage"
+                            :current-page="currentPage"
+                            :filter="filter"
+                            :filter-included-fields="filterOn"
+                            @row-selected="onRowSelected"
+                        >
+                        <!-- @filterd="onFilterd" -->
+
+                            <template #cell(rank_id)="data">
+                                <b v-if="data.value == 1">
+                                    <b-icon
+                                        icon="credit-card2-front-fill"
+                                    ></b-icon>
+                                    <b>
+                                        normal
+                                    </b>
+                                </b>
+                                <b v-else-if="data.value == 2">
+                                    <b-icon
+                                        icon="credit-card2-front-fill"
+                                        style="color: #c0c0c0;"
+                                    ></b-icon>
+
+                                    <b>
+                                        silver
+                                    </b>
+                                </b>
+                                <b v-else-if="data.value == 3">
+                                    <b-icon
+                                        icon="credit-card2-front-fill"
+                                        style="color: #e1f30c;"
+                                    ></b-icon>
+                                    <b>
+                                        gold
+                                    </b>
+                                </b>
+                                <b v-else-if="data.value == 4">
+                                    <b-icon
+                                        icon="credit-card2-front-fill"
+                                        style="color: rgb(98,98,98);"
+                                    ></b-icon>
+                                    <b>
+                                        platinum
+                                    </b>
+                                </b>
+                                <b v-else-if="data.value == 5">
+                                    <b-icon
+                                        icon="credit-card2-front"
+                                    ></b-icon>
+                                    <b>
+                                        black
+                                    </b>
+                                </b>
+                            </template>
+
+                            <template #cell(age)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }} 歳
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(birthday)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }}
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(total_visit)="data">
+                                <b>{{ data.value }}</b> <b>回</b>
+                            </template>
+
+                            <template #cell(total_sales)="data">
+                                <b>￥{{ data.value }}</b>
+                            </template>
+
+                            <template #cell(first_visit)="data">
+                                <b v-if="data.value != ''">
+                                    <b>{{ data.value }}</b>
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(caution_flg)="data">
+                                <b v-if="data.value == true">
+                                    <b class="text-danger">要注意</b>
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                        </b-table>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="5">
+                            <b-card-sub-title>
+                                Page {{ currentPage }} of {{ Math.floor(totalRows / perPage) + 1 }}
+                            </b-card-sub-title>
+                        </b-col>
+                        <b-col cols="2">
                             <b-pagination
                                 v-model="currentPage"
                                 :total-rows="totalRows"
@@ -382,8 +335,8 @@
                                 class="my-0"
                             ></b-pagination>
                         </b-col>
-                        <!-- <b-col cols="4">
-                        </b-col> -->
+                        <b-col cols="5">
+                        </b-col>
                     </b-row>
                 </b-tab>
             </b-tabs>
@@ -1016,7 +969,7 @@ export default {
         ],
         currentPage: 1,
         totalRows: 1,
-        perPage: 5,
+        perPage: 15,
         filter: null,
         filterOn: [],
     }),
@@ -1113,7 +1066,11 @@ export default {
         }
 
         .customer_list_area1 {
-            height: 200px;
+            height: 220px;
+            .customer_list_area1_container {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
         }
 
         .customer_list_area2 {
@@ -1133,7 +1090,7 @@ export default {
             .customer_list_area3_middle {
                 background-color: rgba(35, 33, 38, 0.5);
                 border-bottom: 1px solid rgba(50, 50, 50, 0.5);
-                height: 4rem;
+                height: 4.3rem;
                 box-shadow: 1px 2px 1px rgba(10, 10, 10, 0.4);
                 margin-top: 10px;
             }
@@ -1156,6 +1113,10 @@ export default {
             height: 100%;
             margin-top: 1rem;
         }
+
+        .customer_table_wrap {
+
+        }
     }
 
 // .vs-con-table {
@@ -1173,6 +1134,11 @@ export default {
     .apexcharts-tooltip {
         background: #1e90ff;
         color: white;
+    }
+
+    .input-group-text {
+        height: 100%;
+        border-radius: 5px 0 0 5px !important;
     }
 
 </style>

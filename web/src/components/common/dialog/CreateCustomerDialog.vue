@@ -5,7 +5,7 @@
             size="lg"
             screenable
             title="顧客入力"
-            header-bg-variant="dark"
+            header-bg-variant="primary"
             header-text-variant="light"
             ok-title="登録"
             cancel-title="閉じる"

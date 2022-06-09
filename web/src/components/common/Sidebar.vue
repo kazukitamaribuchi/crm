@@ -195,17 +195,17 @@ export default {
         .sidebar_item {
             cursor: pointer;
             height: 80px;
-            padding-left: 20px;
+            padding-left: 10px;
 
             .sidebar_icon {
-                font-size: 1.2rem;
+                font-size: 20px;
                 // display: block;
                 // margin: 0 auto;
                 // cursor: pointer;
             }
 
             .sidebar_text {
-                font-size: 0.9rem;
+                font-size: 13px;
             }
         }
     }
