@@ -165,6 +165,11 @@ class SalesHeader(AbstractBaseModel):
         default=False,
     )
 
+    douhan = models.BooleanField(
+        _('同伴フラグ'),
+        default=False,
+    )
+
     # 予約と結び付けも考慮しなきゃ・・・
     booking = models.BooleanField(
         _('予約フラグ'),

@@ -23,6 +23,10 @@ export default {
                 return true
             }
             return false
-        }
+        },
+        isPositiveNumber (val) {
+            if (val == null) return false
+            return /^\d+$/.test(val)
+        },
     }
 }

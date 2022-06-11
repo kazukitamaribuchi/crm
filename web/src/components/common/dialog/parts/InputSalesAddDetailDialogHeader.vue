@@ -36,10 +36,13 @@ export default {
         alcoholHeader: Con.INPUT_SALES_DETAIL_PRODUCT_ALCOHOL_HEADER,
         nonAlcoholHeader: Con.INPUT_SALES_DETAIL_PRODUCT_NON_ALCOHOL_HEADER,
         softDrinkHeader: Con.INPUT_SALES_DETAIL_PRODUCT_SOFTDRINK_HEADER,
+
         mainHeader: Con.INPUT_SALES_DETAIL_PRODUCT_MAIN_HEADER,
-        otumamiHeader: Con.INPUT_SALES_DETAIL_PRODUCT_OTUMAMI_HEADER,
         saradaHeader: Con.INPUT_SALES_DETAIL_PRODUCT_SARADA_HEADER,
-        dezartHeader: Con.INPUT_SALES_DETAIL_PRODUCT_DEZART_HEADER,
+        zensaiHeader: Con.INPUT_SALES_DETAIL_PRODUCT_ZENSAI_HEADER,
+        agemonoHeader: Con.INPUT_SALES_DETAIL_PRODUCT_AGEMONO_HEADER,
+        suimonoHeader: Con.INPUT_SALES_DETAIL_PRODUCT_SUIMONO_HEADER,
+
         categoryTitleList: Con.INPUT_SALES_DETAIL_PRODUCT_CATEGORY_LIST,
     }),
     computed: {
@@ -57,11 +60,13 @@ export default {
                 case 3:
                     return this.mainHeader
                 case 4:
-                    return this.otumamiHeader
-                case 5:
                     return this.saradaHeader
+                case 5:
+                    return this.zensaiHeader
                 case 6:
-                    return this.dezartHeader
+                    return this.agemonoHeader
+                case 7:
+                    return this.suimonoHeader
                 default:
                     return []
             }

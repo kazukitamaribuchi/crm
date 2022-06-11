@@ -365,20 +365,21 @@ class Const {
             text: '食べ物',
             items: [
                 { text: 'メイン', productType: 3 },
-                { text: 'おつまみ', productType: 4 },
-                { text: 'サラダ', productType: 5 },
-                { text: 'デザート', productType: 6 },
+                { text: 'サラダ', productType: 4 },
+                { text: '前菜', productType: 5 },
+                { text: '揚げ物', productType: 6 },
+                { text: '吸い物、御飯物', productType: 7 },
             ]
         },
     ]
     INPUT_SALES_DETAIL_PRODUCT_ALCOHOL_HEADER = [
         { text: 'シャンパン', largeCategory: 1, middleCategory: 0, smallCategory: 0 },
-        { text: 'ワイン', largeCategory: 1, middleCategory: 0, smallCategory: 1 },
+        { text: 'ウイスキー', largeCategory: 1, middleCategory: 0, smallCategory: 1 },
         { text: '焼酎', largeCategory: 1, middleCategory: 0, smallCategory: 2 },
-        { text: 'サワー', largeCategory: 1, middleCategory: 0, smallCategory: 3 },
-        { text: 'カクテル', largeCategory: 1, middleCategory: 0, smallCategory: 4 },
-        { text: '日本酒', largeCategory: 1, middleCategory: 0, smallCategory: 5 },
-        { text: 'ビール', largeCategory: 1, middleCategory: 0, smallCategory: 6 },
+        { text: 'ワイン（赤）', largeCategory: 1, middleCategory: 0, smallCategory: 3 },
+        { text: 'ワイン（白）', largeCategory: 1, middleCategory: 0, smallCategory: 4 },
+        { text: '顧客ドリンク', largeCategory: 1, middleCategory: 0, smallCategory: 5 },
+        { text: 'キャストドリンク', largeCategory: 1, middleCategory: 0, smallCategory: 6 },
     ]
     INPUT_SALES_DETAIL_PRODUCT_NON_ALCOHOL_HEADER = [
         { text: 'ノンアルコール', largeCategory: 1, middleCategory: 1, smallCategory: 0 }
@@ -387,25 +388,29 @@ class Const {
         { text: 'ソフトドリンク', largeCategory: 1, middleCategory: 2, smallCategory: 0 }
     ]
     INPUT_SALES_DETAIL_PRODUCT_MAIN_HEADER = [
-        { text: '和食', largeCategory: 2, middleCategory: 0, smallCategory: 0 },
-    ]
-    INPUT_SALES_DETAIL_PRODUCT_OTUMAMI_HEADER = [
-        { text: 'おつまみ', largeCategory: 2, middleCategory: 1, smallCategory: 0 }
+        { text: 'メイン', largeCategory: 2, middleCategory: 0, smallCategory: 0 },
     ]
     INPUT_SALES_DETAIL_PRODUCT_SARADA_HEADER = [
-        { text: 'サラダ', largeCategory: 2, middleCategory: 2, smallCategory: 0 }
+        { text: 'サラダ', largeCategory: 2, middleCategory: 1, smallCategory: 0 }
     ]
-    INPUT_SALES_DETAIL_PRODUCT_DEZART_HEADER = [
-        { text: 'デザート', largeCategory: 2, middleCategory: 3, smallCategory: 0 }
+    INPUT_SALES_DETAIL_PRODUCT_ZENSAI_HEADER = [
+        { text: '前菜', largeCategory: 2, middleCategory: 2, smallCategory: 0 }
+    ]
+    INPUT_SALES_DETAIL_PRODUCT_AGEMONO_HEADER = [
+        { text: '揚げ物', largeCategory: 2, middleCategory: 3, smallCategory: 0 }
+    ]
+    INPUT_SALES_DETAIL_PRODUCT_SUIMONO_HEADER = [
+        { text: '吸い物、御飯物', largeCategory: 2, middleCategory: 4, smallCategory: 0 }
     ]
     INPUT_SALES_DETAIL_PRODUCT_CATEGORY_LIST = {
         0: 'アルコール',
         1: 'ノンアルコール',
         2: 'ソフトドリンク',
         3: 'メイン',
-        4: 'おつまみ',
-        5: 'サラダ',
-        6: 'デザート',
+        4: 'サラダ',
+        5: '前菜',
+        6: '揚げ物',
+        7: '吸い物、御飯物',
     }
     MONTH = [
         { value: 1, text: '1' },

@@ -91,6 +91,7 @@
                                                         style="margin-top: 14px;"
                                                         v-model="inputSalesData.isChartered"
                                                         :options=charterOptions
+                                                        :disabled="inputSalesData.total_visitors >= 5"
                                                         buttons
                                                         button-variant="primary"
                                                     ></b-form-checkbox-group>
@@ -690,8 +691,8 @@
                             <b-button
                                 variant="primary"
                                 @click="register"
+                                :disabled=isDisabled
                             >
-                            <!-- :disabled=isDisabled -->
                                 登録
                             </b-button>
                         </b-col>
@@ -708,6 +709,11 @@
             ref="inputSalesAddcastDialog"
             :appointed="appointedCastDataList"
         />
+
+        <ErrorModal
+            ref="errorModal"
+            :errorMsg="errorMsg"
+        />
     </div>
 </template>
 
@@ -716,6 +722,7 @@ import InputSalesDetailDialog from '@/components/common/dialog/InputSalesDetailD
 import InputSalesAddDetailDialog from '@/components/common/dialog/InputSalesAddDetailDialog'
 import InputSalesAddCastDialog from '@/components/common/dialog/InputSalesAddCastDialog'
 import SelectForm from '@/components/common/parts/SelectForm'
+import ErrorModal from '@/components/common/dialog/ErrorModal'
 import CheckboxForm from '@/components/common/parts/CheckboxForm'
 import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
@@ -741,6 +748,7 @@ export default {
         InputSalesAddDetailDialog,
         SelectForm,
         CheckboxForm,
+        ErrorModal
     },
     data: () => ({
         dialog: false,
@@ -763,7 +771,7 @@ export default {
             extentionNum: 0, // 延長料金の数量 1 or 0。
 
             // VIP_SEATはbasicPlanType == 1の時
-            vipSeatNum: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+            vipSeatNum: 0, // VIPの席料金の数量 1 or 0。サービスも考慮
 
             basicPlanTypeOther: 1, // 選択されている料金タイプの種類（席移動先）basicPlanTypeと逆（computedで）
             leaveTimeHourAfterMove: null, // 席移動後の退店時間（時）
@@ -772,7 +780,7 @@ export default {
             selectedBasicPlanOther: 0, // SET料金のどれを選択しているか（席移動後）
             selectedBasicPlanOtherNum: 1, // SET料金の数量 1 or 0。サービスも考慮（席移動後）
             extentionOtherNum: 0, // 延長料金の数量 1 or 0。
-            vipSeatNumOther: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+            vipSeatNumOther: 0, // VIPの席料金の数量 1 or 0。サービスも考慮
 
             totalSalesTax: Con.TAX_DEFAULT,
             cardPayment: false,
@@ -833,7 +841,8 @@ export default {
         ],
         charterOptions: [
             { text: '貸切', value: 1 }
-        ]
+        ],
+        errorMsg: []
     }),
     created () {
         this.$eventHub.$off('addCast')
@@ -878,7 +887,11 @@ export default {
             return totalPrice + this.salesDetailTotalPrice
         },
         isDisabled () {
-            return true
+            if (!this.isPositiveNumber(this.inputSalesData.customerNo)
+                || !this.isPositiveNumber(this.inputSalesData.total_visitors)) {
+                    return true
+                }
+            return false
         },
         basicPlanPrice () {
             if (this.inputSalesData.basicPlanType == 0) {
@@ -902,7 +915,7 @@ export default {
             let total = 0
             total += this.basicPlanPrice * this.inputSalesData.selectedBasicPlanNum
             if (this.inputSalesData.basicPlanType == 1) {
-                total += this.basicPriceVipSeat * this.inputSalesData.vipSeatNum
+                total += this.vipSeatPrice * this.inputSalesData.vipSeatNum
             }
             return total
         },
@@ -912,7 +925,7 @@ export default {
             let total = 0
             total += this.basicPlanPriceOther * this.inputSalesData.selectedBasicPlanOtherNum
             if (this.inputSalesData.basicPlanTypeOther == 1) {
-                total += this.basicPriceVipSeat * this.inputSalesData.vipSeatNumOther
+                total += this.vipSeatPriceOther * this.inputSalesData.vipSeatNumOther
             }
             return total
         },
@@ -978,11 +991,17 @@ export default {
             if (this.inputSalesData.isChartered.length > 0) {
                 return Con.CHARTER_PRICE_VIP_SEAT
             }
+            if (this.inputSalesData.total_visitors > 0) {
+                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.total_visitors
+            }
             return Con.BASIC_PRICE_VIP_SEAT
         },
         vipSeatPriceOther () {
             if (this.inputSalesData.isCharteredOther.length > 0) {
                 return Con.CHARTER_PRICE_VIP_SEAT
+            }
+            if (this.inputSalesData.total_visitors > 0) {
+                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.total_visitors
             }
             return Con.BASIC_PRICE_VIP_SEAT
         },
@@ -1071,6 +1090,12 @@ export default {
                 this.inputSalesData.isCharteredOther = []
             }
         },
+        'inputSalesData.isChartered': function (val) {
+            this.calcBasicPlan()
+        },
+        'inputSalesData.isCharteredOther': function (val) {
+            this.calcBasicPlanOther()
+        },
     },
     methods: {
         calcBasicPlan () {
@@ -1089,8 +1114,8 @@ export default {
             // 延長料金の数量を出すために30で割って切り上げする
             const extention_time = Math.ceil(diff_minute / 30)
 
-            const vipSeatTypeMinute = (this.inputSalesData.isChartered.length != 0) ? 120 : 60
-
+            const isCharted = this.inputSalesData.isChartered.length > 0
+            const vipSeatTypeMinute = (isCharted) ? 120 : 60
             this.inputSalesData.vipSeatNum = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
@@ -1152,7 +1177,8 @@ export default {
             // 延長料金の数量を出すために30で割って切り上げする
             const extention_time = Math.ceil(diff_minute / 30)
 
-            const vipSeatTypeMinute = (this.inputSalesData.isCharteredOther.length != 0) ? 120 : 60
+            const isCharted = this.inputSalesData.isCharteredOther.length > 0
+            const vipSeatTypeMinute = (isCharted) ? 120 : 60
             this.inputSalesData.vipSeatNumOther = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
@@ -1203,8 +1229,13 @@ export default {
         ]),
         register () {
 
+            this.validate()
+
             let sales_detail_service_list = []
             let sales_detail_list = []
+
+            // この会計は同伴かをヘッダに持たせる
+            let douhanFlg = false
 
 
             // キャスト指名情報の追加
@@ -1218,6 +1249,8 @@ export default {
                 let appointPrice = this.appointedCastDataList[i].appointPrice
 
                 if (isDouhan) {
+                    // この会計は同伴かをヘッダに持たせる
+                    douhanFlg = true
                     sales_detail_service_list.push(this.createDouhan(this.appointedCastDataList[i]))
                 }
 
@@ -1326,6 +1359,7 @@ export default {
                 'move_time': move_time,
                 'payment_type': (this.inputSalesData.cardPayment) ? 1 : 0,
                 'appoint': this.appointedCastDataList.length != 0,
+                'douhan': douhanFlg,
                 // 後々↓
                 'booking': false,
                 'basic_plan_type': this.inputSalesData.basicPlanType,
@@ -1497,11 +1531,14 @@ export default {
                 selectedBasicPlanNum: 0, // SET料金の数量 1 or 0。サービスも考慮
                 stayHour: 0, // 滞在時間
 
+                isChartered: [],
+                isCharteredOther: [],
+
                 // 延長はcomputedでextention_price
                 extentionNum: 0, // 延長料金の数量 1 or 0。
 
                 // VIP_SEATはbasicPlanType == 1の時
-                vipSeatNum: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+                vipSeatNum: 0, // VIPの席料金の数量 1 or 0。サービスも考慮
 
                 basicPlanTypeOther: 1, // 選択されている料金タイプの種類（席移動先）basicPlanTypeと逆（computedで）
                 leaveTimeHourAfterMove: null, // 席移動後の退店時間（時）
@@ -1510,7 +1547,7 @@ export default {
                 selectedBasicPlanOther: 0, // SET料金のどれを選択しているか（席移動後）
                 selectedBasicPlanOtherNum: 1, // SET料金の数量 1 or 0。サービスも考慮（席移動後）
                 extentionOtherNum: 0, // 延長料金の数量 1 or 0。
-                vipSeatNumOther: 1, // VIPの席料金の数量 1 or 0。サービスも考慮
+                vipSeatNumOther: 0, // VIPの席料金の数量 1 or 0。サービスも考慮
 
                 totalSalesTax: Con.TAX_DEFAULT,
                 cardPayment: false,
@@ -1519,6 +1556,7 @@ export default {
             this.showDiffBasicPlan = false
             this.inputSalesDetailData = []
             this.appointedCastDataList = []
+            this.errorMsg = []
         },
         test () {
             console.log('test')
@@ -1571,6 +1609,23 @@ export default {
             if (h == 0) return  m + '分'
             return h + '時間' + m + '分'
         },
+        validate () {
+            // if (this.inputSalesData.customerNo == null
+            //     || !this.isPositiveNumber(this.inputSalesData.customerNo)) {
+            //         this.errorMsg.push({
+            //             'text': '会員Noを正しく入力してください'
+            //         })
+            //     }
+            // if (this.inputSalesData.total_visitors == null
+            //     || !this.isPositiveNumber(this.inputSalesData.total_visitors)) {
+            //         this.errorMsg.push({
+            //             'text': '来店人数を正しく入力してください'
+            //         })
+            // }
+            // if (this.errorMsg.length > 0) {
+            //     this.$refs.errorModal.open()
+            // }
+        }
     },
     mixins: [
         utilsMixin

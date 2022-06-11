@@ -604,6 +604,7 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             'move_time',
             'payment',
             'appoint',
+            'douhan',
             'booking',
             'basic_plan_type',
             'stay_hour',

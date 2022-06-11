@@ -2,7 +2,7 @@
     <div id="customer_list_wrap">
 
         <b-row>
-            <b-tabs pills card>
+            <b-tabs card>
                 <b-tab title="管理画面" active>
                     <b-row class="customer_list_top">
                         <b-col cols="8">
