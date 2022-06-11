@@ -50,6 +50,7 @@ from .sub_models import (
     SalesHeader,
     SalesDetail,
     SalesServiceDetail,
+    SalesAppointDetail,
     AttendanceManagement,
     BookingManagement,
     QuestionAnswer,
@@ -419,6 +420,7 @@ class SalesViewSet(BaseModelViewSet):
         )
 
         sales_service_detail_list = []
+        sales_appoint_detail_list = []
         sales_detail_list = []
 
         for data in request.data['sales_detail_service_list']:
@@ -430,10 +432,8 @@ class SalesViewSet(BaseModelViewSet):
                 middle_category=data['middle_category'],
             )
 
-            # 指名、同伴の場合キャストが紐づく
+            # 基本料金なのでcastはNone
             cast = None
-            if data['large_category'] == 1 or data['large_category'] == 2:
-                cast = MCast.objects.get(id=data['cast_id'])
 
             sales_service_detail_list.append(
                 SalesServiceDetail(
@@ -447,6 +447,35 @@ class SalesViewSet(BaseModelViewSet):
                     total_tax_price=data['total_tax_price'],
                 )
             )
+
+        for data in request.data['sales_detail_appoint_list']:
+            logger.debug('★★★')
+            logger.debug(data)
+            service = MService.objects.get(
+                basic_plan_type=data['basic_plan_type'],
+                large_category=data['large_category'],
+                middle_category=data['middle_category'],
+            )
+
+            # 指名、同伴の場合キャストが紐づく
+            cast = None
+            if data['large_category'] == 1 or data['large_category'] == 2:
+                cast = MCast.objects.get(id=data['cast_id'])
+
+            sales_appoint_detail_list.append(
+                SalesAppointDetail(
+                    header=header,
+                    service=service,
+                    cast=cast,
+                    quantity=data['quantity'],
+                    fixed_price=data['fixed_price'],
+                    fixed_tax_price=data['fixed_tax_price'],
+                    total_price=data['total_price'],
+                    total_tax_price=data['total_tax_price'],
+                )
+            )
+
+
 
         for data in request.data['sales_detail_list']:
             logger.debug('★★★★')
@@ -486,8 +515,18 @@ class SalesViewSet(BaseModelViewSet):
 
         if len(sales_service_detail_list) > 0:
             SalesServiceDetail.objects.bulk_create(sales_service_detail_list)
+        if len(sales_appoint_detail_list) > 0:
+            SalesAppointDetail.objects.bulk_create(sales_appoint_detail_list)
         if len(sales_detail_list) > 0:
             SalesDetail.objects.bulk_create(sales_detail_list)
+
+        customer.total_visit = customer.total_visit + 1
+        customer.total_sales = customer.total_sales + total_tax_sales
+
+        if customer.first_visit == None:
+            customer.first_visit = account_date
+
+        customer.save()
 
         return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
 

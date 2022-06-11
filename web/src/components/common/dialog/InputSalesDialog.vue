@@ -1232,6 +1232,7 @@ export default {
             this.validate()
 
             let sales_detail_service_list = []
+            let sales_detail_appoint_list = []
             let sales_detail_list = []
 
             // この会計は同伴かをヘッダに持たせる
@@ -1251,7 +1252,7 @@ export default {
                 if (isDouhan) {
                     // この会計は同伴かをヘッダに持たせる
                     douhanFlg = true
-                    sales_detail_service_list.push(this.createDouhan(this.appointedCastDataList[i]))
+                    sales_detail_appoint_list.push(this.createDouhan(this.appointedCastDataList[i]))
                 }
 
                 if (!isDouhan) {
@@ -1286,7 +1287,7 @@ export default {
                     total_tax_price: taxTotal,
                 }
 
-                sales_detail_service_list.push(appointData)
+                sales_detail_appoint_list.push(appointData)
 
             }
 
@@ -1369,9 +1370,11 @@ export default {
                 'total_sales': this.totalPrice,
                 'total_tax_sales': this.totalTaxPrice,
                 'sales_detail_service_list': sales_detail_service_list,
+                'sales_detail_appoint_list': sales_detail_appoint_list,
                 'sales_detail_list': sales_detail_list,
             }
 
+            console.log('register', data)
 
             //バリデーション・・・
             // サーバーの方はトランザクションだからおかしかったら登録されないが・・・

@@ -2,7 +2,11 @@
     <div id="sales_list_wrap">
         <b-row>
             <b-tabs pill card>
-                <b-tab title="管理画面" active>
+                <b-tab
+                    title="管理画面"
+                    :active=topActive
+                    @click="setSalesTopActive(0)"
+                >
                     <b-tabs pills card fill>
                         <b-tab title="本日" active>
                             <b-row class="sales_list_area_top">
@@ -525,13 +529,17 @@
                         </b-col>
                     </b-row> -->
                 </b-tab>
-                <b-tab title="売上一覧">
+                <b-tab
+                    title="売上一覧"
+                    :active=!topActive
+                    @click="setSalesTopActive(1)"
+                >
                     <v-row>
                         <b-table
                             hover
                             :items="sales"
                             :fields="fields"
-                            :dark="true"
+                            dark
                             caption-top
                             selectable
                             :per-page="perPage"
@@ -1218,7 +1226,7 @@ export default {
             },
             {
                 key: 'visit_time',
-                lable: '来店時間'
+                label: '来店時間'
             },
             {
                 key: 'leave_time',
@@ -1239,8 +1247,15 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'sales'
+            'sales',
+            'salesTopActive'
         ]),
+        topActive () {
+            if (this.salesTopActive == undefined || this.salesTopActive == 0) {
+                return true
+            }
+            return false
+        }
     },
     created () {
     },
@@ -1248,8 +1263,16 @@ export default {
         this.totalRows = this.sales.length
     },
     methods: {
+        ...mapMutations([
+            'setSalesTopActive'
+        ]),
         onRowSelected (item) {
-            console.log('onRowSelected', item)
+            this.$router.push({
+                name: 'SalesDetail',
+                params: {
+                    id: item[0].id
+                }
+            })
         }
     }
 }

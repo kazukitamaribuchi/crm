@@ -17,7 +17,7 @@
                     </b-input-group-prepend>
                     <b-form-input
                         v-model="customerNo"
-                        type="text"
+                        type="number"
                         placeholder="顧客No"
                         required
                     ></b-form-input>
@@ -107,10 +107,10 @@ export default {
                         id: this.customerNo
                     }
                 })
-                this.$router.go({
-                    path: this.$router.currentRoute.path,
-                    force: true
-                })
+                // this.$router.go({
+                //     path: this.$router.currentRoute.path,
+                //     force: true
+                // })
             }
             this.close()
         }

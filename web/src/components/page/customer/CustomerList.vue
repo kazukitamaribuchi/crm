@@ -3,7 +3,11 @@
 
         <b-row>
             <b-tabs card>
-                <b-tab title="管理画面" active>
+                <b-tab
+                    title="管理画面"
+                    :active=topActive
+                    @click="setCustomerTopActive(0)"
+                >
                     <b-row class="customer_list_top">
                         <b-col cols="8">
                             <b-row>
@@ -186,7 +190,12 @@
                     </b-row>
 
                 </b-tab>
-                <b-tab title="顧客一覧" class="customer_table_wrap">
+                <b-tab
+                    title="顧客一覧"
+                    class="customer_table_wrap"
+                    :active=!topActive
+                    @click="setCustomerTopActive(1)"
+                >
                     <b-row class="mb-3">
                         <b-col cols="10">
                             <b-col cols="3">
@@ -979,7 +988,8 @@ export default {
     },
     computed: {
         ...mapGetters([
-            'customer'
+            'customer',
+            'customerTopActive',
         ]),
         totalCustomerMax () {
             return 100
@@ -996,6 +1006,12 @@ export default {
         nonActiveCustomerSeries () {
             return [6]
         },
+        topActive () {
+            if (this.customerTopActive == undefined || this.customerTopActive == 0) {
+                return true
+            }
+            return false
+        }
     },
     created () {
     },
@@ -1004,6 +1020,9 @@ export default {
         this.totalRows = this.customer.length
     },
     methods: {
+        ...mapMutations([
+            'setCustomerTopActive'
+        ]),
         showCustomerDetail (data) {
             // 1回クリック時
         },

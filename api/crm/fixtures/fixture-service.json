@@ -68,7 +68,7 @@
     "model": "crm.mservice",
     "pk": 6,
     "fields": {
-      "basic_plan_type": 0,
+      "basic_plan_type": 1,
       "large_category": 0,
       "middle_category": 2,
       "tax": 8,

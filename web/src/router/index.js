@@ -27,6 +27,9 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+    router['toPage'] = to
+    router['referrer'] = from
+    router['nextPage'] = next
 	next()
 })
 

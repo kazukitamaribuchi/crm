@@ -8,6 +8,7 @@ import eventHub from '@/plugins/eventHub'
 import VueSession from 'vue-session'
 import { BootstrapVue, BootstrapVueIcons } from 'bootstrap-vue'
 import VueApexCharts from 'vue-apexcharts'
+import truncate from '@/filters/truncate'
 
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
@@ -25,6 +26,7 @@ Vue.use(VueApexCharts)
 Vue.component('VueApexCharts', VueApexCharts)
 
 Vue.use(VueSession)
+Vue.filter('truncate', truncate)
 
 new Vue({
   router,

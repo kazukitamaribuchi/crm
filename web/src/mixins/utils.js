@@ -28,5 +28,11 @@ export default {
             if (val == null) return false
             return /^\d+$/.test(val)
         },
+        getStrInData (val) {
+            if (val == undefined || val == null || val == '') {
+                return '-'
+            }
+            return val
+        }
     }
 }

@@ -5,6 +5,9 @@ const customerMutations = {
     addCustomerList (state, payload) {
         state.customer.push(payload.data)
     },
+    setCustomerTopActive (state, payload) {
+        state.customerTopActive = payload
+    }
 }
 
 export default customerMutations

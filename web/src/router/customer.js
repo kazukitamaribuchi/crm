@@ -18,7 +18,7 @@ const routes = {
             name: 'CustomerDetail',
             component: CustomerDetail,
             meta: {
-                title: 'CustomerDetailDao'
+                title: 'CustomerDetailだよ'
             }
         }
     ]

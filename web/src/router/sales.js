@@ -1,5 +1,5 @@
 import { Sales } from '@/views/index'
-import { SalesList } from '@/components/index'
+import { SalesList, SalesDetail } from '@/components/index'
 
 const routes = {
     path: '/sales',
@@ -11,6 +11,14 @@ const routes = {
             component: SalesList,
             meta: {
                 title: 'SalesListDao'
+            }
+        },
+        {
+            path: ':id',
+            name: 'SalesDetail',
+            component: SalesDetail,
+            meta: {
+                title: 'SalesDetailだよ'
             }
         }
     ]

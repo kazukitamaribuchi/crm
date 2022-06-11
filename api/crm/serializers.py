@@ -21,6 +21,7 @@ from .sub_models import (
     SalesHeader,
     SalesDetail,
     SalesServiceDetail,
+    SalesAppointDetail,
     AttendanceManagement,
     BookingManagement,
     QuestionAnswer,
@@ -157,6 +158,8 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             'birthday',
             'birthday_str',
             'job',
+            'mail',
+            'phone',
             'company',
             'address',
             'rank_id',
@@ -175,12 +178,12 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     def get_first_visit(self, obj):
         if obj.first_visit == None:
             return ''
-        return utc_to_jst(obj.first_visit).strftime('%Y/%m/%d')
+        return obj.first_visit.strftime('%Y/%m/%d')
 
     def get_birthday(self, obj):
         if obj.birthday == None:
             return ''
-        return obj.birthday.strftime('%Y/%m/%m')
+        return obj.birthday.strftime('%Y/%m/%d')
 
     def get_job(self, obj):
         if obj.job == None:
@@ -580,6 +583,24 @@ class SalesServiceDetailSerializer(DynamicFieldsModelSerializer):
             'total_tax_price',
         ]
 
+class SalesAppointDetailSerializer(DynamicFieldsModelSerializer):
+
+    service = ServiceSerializer()
+    cast = CastSerializer()
+
+    class Meta:
+        model = SalesDetail
+        fields = [
+            'id',
+            'service',
+            'cast',
+            'quantity',
+            'fixed_price',
+            'fixed_tax_price',
+            'total_price',
+            'total_tax_price',
+        ]
+
 
 class SalesSerializer(DynamicFieldsModelSerializer):
 
@@ -587,7 +608,12 @@ class SalesSerializer(DynamicFieldsModelSerializer):
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
     sales_detail = serializers.SerializerMethodField()
+    sales_appoint_detail = serializers.SerializerMethodField()
     sales_service_detail = serializers.SerializerMethodField()
+    account_date = serializers.SerializerMethodField()
+    visit_time = serializers.SerializerMethodField()
+    leave_time = serializers.SerializerMethodField()
+    move_time = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -597,6 +623,7 @@ class SalesSerializer(DynamicFieldsModelSerializer):
         fields = [
             'id',
             'customer',
+            'total_visitors',
             'move_diff_seat',
             'account_date',
             'visit_time',
@@ -616,6 +643,7 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             'updated_at',
             'delete_flg',
             'sales_detail',
+            'sales_appoint_detail',
             'sales_service_detail',
         ]
 
@@ -625,12 +653,37 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             many=True
         ).data
 
+    def get_sales_appoint_detail(self, obj):
+        return SalesAppointDetailSerializer(
+            SalesAppointDetail.objects.filter(header=obj),
+            many=True
+        ).data
+
     def get_sales_service_detail(self, obj):
         return SalesServiceDetailSerializer(
             SalesServiceDetail.objects.filter(header=obj),
             many=True
         ).data
 
+    def get_account_date(self, obj):
+        if obj.account_date == None:
+            return ''
+        return utc_to_jst(obj.account_date).strftime('%Y/%m/%d')
+
+    def get_visit_time(self, obj):
+        if obj.visit_time == None:
+            return ''
+        return utc_to_jst(obj.visit_time).strftime('%Y/%m/%d %H:%M')
+
+    def get_leave_time(self, obj):
+        if obj.leave_time == None:
+            return ''
+        return utc_to_jst(obj.leave_time).strftime('%Y/%m/%d %H:%M')
+
+    def get_move_time(self, obj):
+        if obj.move_time == None:
+            return ''
+        return utc_to_jst(obj.move_time).strftime('%Y/%m/%d %H:%M')
 
 
 class AttendanceSerializer(DynamicFieldsModelSerializer):

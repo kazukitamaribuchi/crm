@@ -265,6 +265,56 @@ class SalesServiceDetail(AbstractBaseModel):
     )
 
 
+
+class SalesAppointDetail(AbstractBaseModel):
+    """
+    売上明細
+        指名料金
+    """
+
+    header = models.ForeignKey(
+        SalesHeader,
+        on_delete=models.CASCADE,
+        related_name='sales_appoint_detail'
+    )
+
+    service = models.ForeignKey(
+        'crm.MService',
+        on_delete=models.CASCADE,
+        related_name="sales_appoint_detail"
+    )
+
+    cast = models.ForeignKey(
+        'crm.MCast',
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+    )
+
+    quantity = models.DecimalField(
+        _('数量'),
+        max_digits=10,
+        decimal_places=2,
+        default=1.00,
+    )
+
+    fixed_price = models.IntegerField(
+        _('実価格（税抜）'),
+    )
+
+    fixed_tax_price = models.IntegerField(
+        _('実価格（税込）'),
+    )
+
+    total_price = models.IntegerField(
+        _('総計')
+    )
+
+    total_tax_price = models.IntegerField(
+        _('総計（税込）')
+    )
+
+
 class SalesDetail(AbstractBaseModel):
     """
     売上明細

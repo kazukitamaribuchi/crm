@@ -160,6 +160,18 @@ class MCustomer(AbstractHumanModel):
         blank=True,
         max_length=100,
     )
+    mail = models.CharField(
+        _('メールアドレス'),
+        null=True,
+        blank=True,
+        max_length=200,
+    )
+    phone = models.CharField(
+        _('電話'),
+        null=True,
+        blank=True,
+        max_length=20,
+    )
     company = models.CharField(
         _('会社'),
         null=True,
@@ -171,10 +183,10 @@ class MCustomer(AbstractHumanModel):
         default=0,
     )
     # 2022/06/06 => ここ持つと更新が大変なため廃止
-    # total_sales = models.BigIntegerField(
-    #     _('総売上'),
-    #     default=0,
-    # )
+    total_sales = models.BigIntegerField(
+        _('総売上'),
+        default=0,
+    )
     first_visit = models.DateField(
         _('初来店日'),
         null=True,

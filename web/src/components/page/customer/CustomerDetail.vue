@@ -1,6 +1,150 @@
 <template>
     <div id="customer_detail_wrap">
-        <b-card
+        <b-row>
+            <b-tabs pill>
+                <b-tab
+                    title="顧客詳細"
+                >
+                    <b-card
+                        class="customer_detail_area"
+                    >
+                        <b-container fluid>
+                            <b-row>
+                                <b-col cols="5">
+                                    <b-card-title>
+                                        顧客詳細
+                                    </b-card-title>
+                                    <div style="display: flex; margin-left: 30px; margin-top: 30px;">
+                                        <div>
+                                            <img
+                                                src="@/assets/img/男性3.jpg"
+                                                class="customer_detail_customer_icon"
+                                            >
+                                        </div>
+                                        <div class="mt-3" style="margin-left: 15px;">
+                                            <b style="font-size: 20px;">
+                                                {{ customerData.name }}
+                                            </b>
+                                            <b-card-sub-title>
+                                                {{ getStrInData(customerData.name_kana) }}
+                                            </b-card-sub-title>
+                                        </div>
+                                    </div>
+                                </b-col>
+                                <b-col cols="2" style="padding-top: 70px;">
+                                    <b-card-sub-title>
+                                        年齢
+                                    </b-card-sub-title>
+                                    <b-card-text style="font-size: 24px;">
+                                        {{ getStrInData(customerData.age) }} 歳
+                                    </b-card-text>
+                                </b-col>
+                                <b-col cols="2" style="padding-top: 70px;">
+                                    <b-card-sub-title>
+                                        誕生日
+                                    </b-card-sub-title>
+                                    <b-card-text style="font-size: 24px;">
+                                        {{ getStrInData(customerData.birthday) }}
+                                    </b-card-text>
+                                </b-col>
+                                <b-col cols="1" style="padding-top: 70px;">
+                                    <b-card-sub-title>
+                                        ランク
+                                    </b-card-sub-title>
+                                    <b-card-text style="font-size: 24px;">
+                                        {{ customerData.rank_name }}
+                                    </b-card-text>
+                                </b-col>
+                                <b-col cols="2" align-self="stretch">
+                                    <b-button
+                                        size="sm"
+                                    >
+                                        <b-icon
+                                            icon="pencil"
+                                            aria-hidden="true"
+                                        ></b-icon> 編集
+                                    </b-button>
+                                    <b-button
+                                        size="sm"
+                                        style="position: relative; left: 10px;"
+                                    >
+                                        <b-icon
+                                            icon="trash"
+                                            aria-hidden="true"
+                                        ></b-icon> 削除
+                                    </b-button>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-tabs pill card fill>
+                                    <b-tab
+                                        title="詳細情報"
+                                    >
+                                        <!-- <b-card-text
+                                            style="border-bottom: 1px solid rgba(200, 200, 200, 0.1); margin-top: 10px; padding-bottom: 14px;"
+                                        >
+                                            個人情報
+                                        </b-card-text> -->
+                                        <b-row>
+                                            <b-col cols="7">
+                                                <b-card-sub-title class="mt-3" style="font-size: 15px;">
+                                                    会社
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.company) }}
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    職業
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.job) }}
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    住所
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.address) }}
+                                                </b-card-title>
+                                            </b-col>
+                                            <b-col cols="5">
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    電話番号
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.phone) }}
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    メールアドレス
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.mail) }}
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    初来店日
+                                                </b-card-sub-title>
+                                                <b-card-title  style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.first_visit) }}
+                                                </b-card-title>
+                                            </b-col>
+                                        </b-row>
+                                    </b-tab>
+                                    <b-tab
+                                        title="指名データ"
+                                    >
+                                    </b-tab>
+                                    <b-tab
+                                        title="売上データ"
+                                    >
+                                    </b-tab>
+                                </b-tabs>
+                            </b-row>
+                        </b-container>
+                    </b-card>
+                </b-tab>
+            </b-tabs>
+        </b-row>
+
+        <!-- <b-card
             class="customer_detail"
             text-variant="white"
         >
@@ -42,15 +186,12 @@
                             </div>
                             <small class="customer_detail_rank_detail">
                                 【初回来店日】  2022年6月15日
-                                <!-- 初回来店日 {{ customerData.first_visit }} -->
                             </small>
                             <small class="customer_detail_rank_detail">
                                 【総来店数】  110 回
-                                <!-- 総来店数 {{ customerData.total_visit }} -->
                             </small>
                             <small class="customer_detail_rank_detail">
                                 【総売上】  ￥100,000,000
-                                <!-- 総来店数 {{ customerData.total_sales }} -->
                             </small>
                         </b-card-body>
                     </b-card>
@@ -133,11 +274,10 @@
                         title="グラフとかテーブルで指名、売上の傾向とか"
                         text-variant="black"
                     >
-
                     </b-card>
                 </b-col>
             </b-row>
-        </b-card>
+        </b-card> -->
 
 
         <!-- <EditCustomerDialog
@@ -152,10 +292,12 @@
 import EditCustomerDialog from '@/components/common/dialog/EditCustomerDialog'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
+import utilsMixin from '@/mixins/utils'
 
 export default {
     name: 'CustomerDetailItem',
     data: () => ({
+        customerId: '',
         customerData: {},
         editCustomerData: {},
         colorx: 'rgb(16, 16, 179)',
@@ -222,73 +364,102 @@ export default {
         },
     },
     created () {
-        this.$axios({
-            method: 'GET',
-            url: `/api/customer/${this.$route.params['id']}`,
-        })
-        .then(res => {
-            console.log(res)
-            this.customerData = _.cloneDeep(res.data)
-            this.isDanger = this.customerData.caution_flg
-        })
-        .catch(e => {
-            console.log(e)
-        })
+        // this.$axios({
+        //     method: 'GET',
+        //     url: `/api/customer/${this.$route.params['id']}`,
+        // })
+        // .then(res => {
+        //     console.log(res)
+        //     this.customerData = _.cloneDeep(res.data)
+        //     this.isDanger = this.customerData.caution_flg
+        // })
+        // .catch(e => {
+        //     console.log(e)
+        // })
         // 検索から詳細きてうまくいかせるやり方わかったら、↓の様にstoreから取得する方法に切り替え
-        // this.customerData = this.customer.find(c => c.id === this.$route.params['id'])
+        this.customerData = _.cloneDeep(this.customer.find(c => c.id == this.$route.params['id']))
     },
     mounted () {
+        // console.log(this.$router.referrer)
+        // console.log(this.$router.toPage)
     },
+    // beforeRouteUpdate (to, from, next) {
+    //     this.cusotmerId = to.query.id
+    //     this.customerData = _.cloneDeep(this.customer.find(c => c.id === this.customerId))
+    //     console.log(this.customer)
+    //     console.log(this.customerId)
+    //     console.log(this.customerData)
+    //     next()
+    // },
     methods: {
         showEditCustomerDialog () {
             this.$refs.editCustomer.open(this.customerData)
         }
-    }
+    },
+    mixins: [
+        utilsMixin
+    ]
 }
 </script>
 
 <style lang="scss" scoped>
     #customer_detail_wrap {
-        background-color: $theme-color;
-        // background-color: white;
         margin-top: $main-top-margin;
         margin-left: $main-top-side-margin;
         margin-right: $main-top-side-margin;
         height: $main-height;
+        color: white;
         padding: 20px;
 
-        .customer_detail {
+        .btn-secondary {
             background-color: $theme-color;
-            height: 100%;
-
-            .customer_detail_card_body {
-                padding: 0 1.5rem;
-
-
-                .input-group-text {
-                    height: 100%;
-                    border-radius: 5px 0 0 5px !important;
-                }
-
-                .customer_detail_age {
-                    width: 6rem;
-                }
-
-                .customer_detail_birthday {
-                    width: 8rem;
-                }
-
-                .customer_detail_job {
-                    width: 12rem;
-                }
-
-                .customer_detail_rank_detail {
-                    display: block;
-                }
-
-            }
-
+            border-color: $theme-color;
         }
+
+        .customer_detail_area {
+            background-color: $theme-color;
+            padding: 0;
+            margin: 0;
+
+            .customer_detail_customer_icon {
+                border-radius: 50%;
+                width: 100px;
+                height: 100px;
+            }
+        }
+
+        // .customer_detail {
+        //     background-color: $theme-color;
+        //     height: 100%;
+        //
+        //     .customer_detail_card_body {
+        //         padding: 0 1.5rem;
+        //
+        //
+        //         .input-group-text {
+        //             height: 100%;
+        //             border-radius: 5px 0 0 5px !important;
+        //         }
+        //
+        //         .customer_detail_age {
+        //             width: 6rem;
+        //         }
+        //
+        //         .customer_detail_birthday {
+        //             width: 8rem;
+        //         }
+        //
+        //         .customer_detail_job {
+        //             width: 12rem;
+        //         }
+        //
+        //         .customer_detail_rank_detail {
+        //             display: block;
+        //         }
+        //
+        //     }
+        //
+        // }
 
     }
 
