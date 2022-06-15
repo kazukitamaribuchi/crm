@@ -183,10 +183,10 @@ class MCustomer(AbstractHumanModel):
         default=0,
     )
     # 2022/06/06 => ここ持つと更新が大変なため廃止
-    total_sales = models.BigIntegerField(
-        _('総売上'),
-        default=0,
-    )
+    # total_sales = models.BigIntegerField(
+    #     _('総売上'),
+    #     default=0,
+    # )
     first_visit = models.DateField(
         _('初来店日'),
         null=True,

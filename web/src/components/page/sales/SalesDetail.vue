@@ -14,6 +14,9 @@
                                     <b-card-title>
                                         売上詳細
                                     </b-card-title>
+                                    <b-card-sub-title>
+                                        伝票No{{ salesData.id }}
+                                    </b-card-sub-title>
                                     <div style="display: flex; margin-left: 30px; margin-top: 20px;">
                                         <div>
                                             <img
@@ -80,16 +83,16 @@
                                 </b-col>
                                 <b-col cols="2">
                                     <b-card-sub-title>
-                                        会計日
-                                    </b-card-sub-title>
-                                    <b-card-text>
-                                        {{ salesData.account_date }}
-                                    </b-card-text>
-                                    <b-card-sub-title>
                                         来店時間
                                     </b-card-sub-title>
                                     <b-card-text>
                                         {{ salesData.visit_time }}
+                                    </b-card-text>
+                                    <b-card-sub-title>
+                                        席移動時間
+                                    </b-card-sub-title>
+                                    <b-card-text>
+                                        {{ getStrInData(salesData.move_time) }}
                                     </b-card-text>
                                     <b-card-sub-title>
                                         退店時間
@@ -99,32 +102,51 @@
                                     </b-card-text>
                                 </b-col>
                                 <b-col cols="2">
-                                    <b-button
-                                        size="sm"
-                                    >
-                                        <b-icon
-                                            icon="pencil"
-                                            aria-hidden="true"
-                                        ></b-icon> 編集
-                                    </b-button>
-                                    <b-button
-                                        size="sm"
-                                        style="position: relative; left: 10px;"
-                                    >
-                                        <b-icon
-                                            icon="trash"
-                                            aria-hidden="true"
-                                        ></b-icon> 削除
-                                    </b-button>
+                                    <div style="height: 55px;">
+                                        <b-button
+                                            size="sm"
+                                            @click="showEditSalesDialog"
+                                        >
+                                            <b-icon
+                                                icon="pencil"
+                                                aria-hidden="true"
+                                            ></b-icon> 編集
+                                        </b-button>
+                                        <b-button
+                                            size="sm"
+                                            style="position: relative; left: 10px;"
+                                            @click="showDeleteSalesDetailDialog"
+                                        >
+                                            <b-icon
+                                                icon="trash"
+                                                aria-hidden="true"
+                                            ></b-icon> 削除
+                                        </b-button>
+                                    </div>
+                                    <b-card-sub-title>
+                                        会計日
+                                    </b-card-sub-title>
+                                    <b-card-text>
+                                        {{ salesData.account_date }}
+                                    </b-card-text>
+                                    <b-card-sub-title>
+                                        支払い方法
+                                    </b-card-sub-title>
+                                    <b-card-text v-if="salesData.payment == 0">
+                                        現金
+                                    </b-card-text>
+                                    <b-card-text v-else>
+                                        カード
+                                    </b-card-text>
                                 </b-col>
                             </b-row>
                             <b-row class="sales_detail_top_total_sales">
                                 <b-col cols="2">
                                     <b-card-sub-title>
-                                        総計
+                                        総計（税抜）
                                     </b-card-sub-title>
                                     <b-card-title>
-                                        ￥119,900
+                                        ￥{{ salesData.total_sales }}
                                     </b-card-title>
                                 </b-col>
                                 <b-col cols="2">
@@ -132,7 +154,7 @@
                                         総計（税込）
                                     </b-card-sub-title>
                                     <b-card-title>
-                                        ￥159,900
+                                        ￥{{ salesData.total_tax_sales }}
                                     </b-card-title>
 
                                 </b-col>
@@ -140,29 +162,46 @@
                                     <b-card-sub-title>
                                         基本料金
                                     </b-card-sub-title>
-                                    <b-card-title
-                                        v-if="salesData.basic_plan_type == 1 || salesData.move_diff_seat"
-                                    >
-                                        VIP
+                                    <b-card-title v-if="salesData.move_diff_seat">
+                                        <p v-if="salesData.basic_plan_type == 1">
+                                            VIP⇒一般
+                                        </p>
+                                        <p v-else>
+                                            一般⇒VIP
+                                        </p>
                                     </b-card-title>
-                                    <b-card-title
-                                        v-else
-                                    >
-                                        一般
+                                    <b-card-title v-else>
+                                        <p v-if="salesData.basic_plan_type == 1">
+                                            VIP
+                                        </p>
+                                        <p v-else>
+                                            一般
+                                        </p>
                                     </b-card-title>
                                 </b-col>
-                                <b-col cols="2">
+                                <b-col cols="1">
+                                    <b-card-sub-title>
+                                        税率
+                                    </b-card-sub-title>
+                                    <b-card-title v-if="salesData.payment == 0">
+                                        {{ salesData.tax_rate }} %
+                                    </b-card-title>
+                                    <b-card-title v-else>
+                                        {{ salesData.tax_rate + 10 }} %
+                                    </b-card-title>
+                                </b-col>
+                                <b-col cols="1">
                                     <b-card-sub-title>
                                         指名有無
                                     </b-card-sub-title>
                                     <b-card-title v-if="salesData.appoint">
-                                        指名
+                                        有
                                     </b-card-title>
                                     <b-card-title v-else>
                                         フリー
                                     </b-card-title>
                                 </b-col>
-                                <b-col cols="2">
+                                <b-col cols="1">
                                     <b-card-sub-title>
                                         来店人数
                                     </b-card-sub-title>
@@ -170,12 +209,34 @@
                                         {{ salesData.total_visitors }} 人
                                     </b-card-title>
                                 </b-col>
-                                <b-col cols="2">
+                                <b-col cols="1">
+                                    <b-card-sub-title>
+                                        貸切
+                                    </b-card-sub-title>
+                                    <b-card-title v-if="salesData.is_charterd">
+                                        有
+                                    </b-card-title>
+                                    <b-card-title v-else>
+                                        無
+                                    </b-card-title>
+                                </b-col>
+                                <b-col cols="1">
                                     <b-card-sub-title>
                                         滞在時間
                                     </b-card-sub-title>
                                     <b-card-title>
                                         {{ salesData.total_stay_hour }} 分
+                                    </b-card-title>
+                                </b-col>
+                                <b-col cols="1">
+                                    <b-card-sub-title>
+                                        席移動有無
+                                    </b-card-sub-title>
+                                    <b-card-title v-if="salesData.move_diff_seat">
+                                        有
+                                    </b-card-title>
+                                    <b-card-title v-else>
+                                        無
                                     </b-card-title>
                                 </b-col>
                             </b-row>
@@ -201,16 +262,24 @@
 
 
                                 </b-table>
-                                <b-col cols="8" class="mt-0 pt-0">
+                                <b-col cols="7" class="mt-0 pt-0">
                                 </b-col>
-                                <b-col cols="1" class="mt-0 pt-0">
-                                    総計
+                                <b-col cols="2" class="mt-2 pt-2">
+                                    総計（税抜）
                                 </b-col>
-                                <b-col cols="3" class="mt-0 pt-0" align="right">
-                                    ￥999,999,999
+                                <b-col cols="3" class="mt-2 pt-2" align="right">
+                                    ￥{{ salesData.sales_service_detail_total_price }}
                                 </b-col>
+                                <!-- <b-col cols="7" class="mt-0 pt-0">
+                                </b-col>
+                                <b-col cols="2" class="mt-2 pt-2">
+                                    総計（税込）
+                                </b-col>
+                                <b-col cols="3" class="mt-2 pt-2" align="right">
+                                    ￥{{ salesData.sales_service_detail_total_tax_price }}
+                                </b-col> -->
                             </b-row>
-                            <b-row>
+                            <b-row class="mt-3 pt-3 sales_detail_separate">
                                 <b-card-text>
                                     指名情報
                                 </b-card-text>
@@ -244,16 +313,16 @@
 
 
                                 </b-table>
-                                <b-col cols="8" class="mt-0 pt-0">
+                                <b-col cols="7" class="mt-0 pt-0">
                                 </b-col>
-                                <b-col cols="1" class="mt-0 pt-0">
-                                    総計
+                                <b-col cols="2" class="mt-2 pt-2">
+                                    総計（税抜）
                                 </b-col>
-                                <b-col cols="3" class="mt-0 pt-0" align="right">
-                                    ￥999,999,999
+                                <b-col cols="3" class="mt-2 pt-2" align="right">
+                                    ￥{{ salesData.sales_appoint_detail_total_price }}
                                 </b-col>
                             </b-row>
-                            <b-row>
+                            <b-row class="mt-3 pt-3 sales_detail_separate">
                                 <b-card-text>
                                     明細情報
                                 </b-card-text>
@@ -287,13 +356,13 @@
 
 
                                 </b-table>
-                                <b-col cols="8" class="mt-0 pt-0">
+                                <b-col cols="7" class="mt-0 pt-0">
                                 </b-col>
-                                <b-col cols="1" class="mt-0 pt-0">
-                                    総計
+                                <b-col cols="2" class="mt-2 pt-2">
+                                    総計（税抜）
                                 </b-col>
-                                <b-col cols="3" class="mt-0 pt-0" align="right">
-                                    ￥999,999,999
+                                <b-col cols="3" class="mt-2 pt-2" align="right">
+                                    ￥{{ salesData.sales_detail_total_price }}
                                 </b-col>
                             </b-row>
                         </b-container>
@@ -301,6 +370,15 @@
                 </b-tab>
             </b-tabs>
         </b-row>
+
+        <InputSalesDialog
+            ref="inputSalesDialog"
+            @update="salesData = $event"
+        />
+
+        <DeleteSalesDetailDialog
+            ref="deleteSalesDetailDialog"
+        />
     </div>
 </template>
 
@@ -308,9 +386,17 @@
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import utilsMixin from '@/mixins/utils'
+import DeleteSalesDetailDialog from '@/components/common/dialog/DeleteSalesDetailDialog'
+import InputSalesDialog from '@/components/common/dialog/InputSalesDialog'
 
 export default {
     name: 'SalesDetailItem',
+    props: {
+    },
+    components: {
+        DeleteSalesDetailDialog,
+        InputSalesDialog,
+    },
     data: () => ({
         salesData: {},
         editSalesData: {},
@@ -333,7 +419,7 @@ export default {
             },
             {
                 key: 'total_price',
-                label: '総計(税抜)'
+                label: '合計'
             },
         ],
         salesAppointDetailFields: [
@@ -359,7 +445,7 @@ export default {
             },
             {
                 key: 'total_price',
-                label: '総計(税抜)'
+                label: '合計'
             },
         ],
         salesDetailFields: [
@@ -389,14 +475,10 @@ export default {
             },
             {
                 key: 'total_price',
-                label: '総計(税抜)'
+                label: '合計'
             },
         ],
     }),
-    props: {
-    },
-    components: {
-    },
     computed: {
         ...mapGetters([
             'sales',
@@ -409,6 +491,12 @@ export default {
     mounted () {
     },
     methods: {
+        showEditSalesDialog () {
+            this.$refs.inputSalesDialog.open(this.salesData)
+        },
+        showDeleteSalesDetailDialog () {
+            this.$refs.deleteSalesDetailDialog.open(this.salesData)
+        },
     },
     mixins: [
         utilsMixin
@@ -463,6 +551,10 @@ export default {
                 padding-top: 10px;
                 border-top: 0.5px solid rgba(200, 200, 200, 0.1);
             }
+        }
+
+        .sales_detail_separate {
+            border-top: 1px solid rgba(100, 100, 100, 0.5);
         }
     }
 </style>

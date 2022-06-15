@@ -548,7 +548,23 @@
                             :filter-included-fields="filterOn"
                             @row-selected="onRowSelected"
                         >
+                            <template #cell(appoint)="data">
+                                <b v-if="data.value">
+                                    有
+                                </b>
+                                <b v-else>
+                                    フリー
+                                </b>
+                            </template>
 
+                            <template #cell(douhan)="data">
+                                <b v-if="data.value">
+                                    有
+                                </b>
+                                <b v-else>
+                                    無
+                                </b>
+                            </template>
                         </b-table>
                     </v-row>
                 </b-tab>
@@ -1204,6 +1220,10 @@ export default {
         filter: null,
         filterOn: [],
         fields: [
+            {
+                key: 'id',
+                label: '伝票NO'
+            },
             {
                 key: 'account_date',
                 label: '会計日'

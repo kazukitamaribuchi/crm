@@ -58,6 +58,7 @@
                                 <b-col cols="2" align-self="stretch">
                                     <b-button
                                         size="sm"
+                                        @click="showEditCustomerDialog"
                                     >
                                         <b-icon
                                             icon="pencil"
@@ -67,6 +68,7 @@
                                     <b-button
                                         size="sm"
                                         style="position: relative; left: 10px;"
+                                        @click="showDeleteCustomerDetailDialog"
                                     >
                                         <b-icon
                                             icon="trash"
@@ -100,11 +102,20 @@
                                                     {{ getStrInData(customerData.job) }}
                                                 </b-card-title>
                                                 <b-card-sub-title class="mt-4" style="font-size: 15px;">
-                                                    住所
+                                                    要注意人物
                                                 </b-card-sub-title>
-                                                <b-card-title style="font-size: 20px;">
-                                                    {{ getStrInData(customerData.address) }}
+                                                <b-card-title v-if="customerData.caution_flg" style="font-size: 20px; color: red;">
+                                                    要注意
                                                 </b-card-title>
+                                                <b-card-title v-else style="font-size: 20px;">
+                                                    -
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    備考
+                                                </b-card-sub-title>
+                                                <b-card-text style="font-size: 20px; white-space: pre-line;">
+                                                    {{ customerData.remarks }}
+                                                </b-card-text>
                                             </b-col>
                                             <b-col cols="5">
                                                 <b-card-sub-title class="mt-4" style="font-size: 15px;">
@@ -279,20 +290,29 @@
             </b-row>
         </b-card> -->
 
+        <CreateCustomerDialog
+            ref="createCustomer"
+            @update="customerData = $event"
+        />
 
-        <!-- <EditCustomerDialog
+        <EditCustomerDialog
             ref="editCustomer"
             @update="customerData = $event"
-        /> -->
+        />
 
+        <DeleteCustomerDetailDialog
+            ref="deleteCustomerDetailDialog"
+        />
     </div>
 </template>
 
 <script>
+import CreateCustomerDialog from '@/components/common/dialog/CreateCustomerDialog'
 import EditCustomerDialog from '@/components/common/dialog/EditCustomerDialog'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import utilsMixin from '@/mixins/utils'
+import DeleteCustomerDetailDialog from '@/components/common/dialog/DeleteCustomerDetailDialog'
 
 export default {
     name: 'CustomerDetailItem',
@@ -307,7 +327,9 @@ export default {
     props: {
     },
     components: {
+        CreateCustomerDialog,
         EditCustomerDialog,
+        DeleteCustomerDetailDialog,
     },
     computed: {
         ...mapGetters([
@@ -393,8 +415,11 @@ export default {
     // },
     methods: {
         showEditCustomerDialog () {
-            this.$refs.editCustomer.open(this.customerData)
-        }
+            this.$refs.createCustomer.open(this.customerData)
+        },
+        showDeleteCustomerDetailDialog () {
+            this.$refs.deleteCustomerDetailDialog.open(this.customerData)
+        },
     },
     mixins: [
         utilsMixin

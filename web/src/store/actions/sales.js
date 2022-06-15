@@ -16,6 +16,19 @@ const salesActions = {
                 reject(e)
             })
         })
+    },
+    deleteSalesListAction (ctx, kwargs) {
+        Vue.prototype.$axios({
+            url: `/api/sales/${kwargs.id}/`,
+            method: 'DELETE',
+        })
+        .then(res => {
+            console.log(res)
+            this.commit('deleteSalesList', kwargs)
+        })
+        .catch(e => {
+            console.log(e)
+        })
     }
 }
 

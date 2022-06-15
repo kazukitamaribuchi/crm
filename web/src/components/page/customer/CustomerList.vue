@@ -103,7 +103,17 @@
                                             </b-card-text>
                                             <b-row>
                                                 <b-col>
+                                                    <b-skeleton-img
+                                                        v-if="loadCustomerAge"
+                                                    ></b-skeleton-img>
+                                                    <!-- <b-skeleton-table
+                                                        v-if="loadCustomerAge"
+                                                        :rows="4"
+                                                        :columns="4"
+                                                        :table-props="{ bordered: true, striped: true }"
+                                                    ></b-skeleton-table> -->
                                                     <VueApexCharts
+                                                        v-else
                                                         height="280"
                                                         type="bar"
                                                         :options="customerAgeChartOptions"
@@ -121,7 +131,11 @@
                                                 ランク別会員数
                                             </b-card-text>
                                             <b-row>
+                                                <b-skeleton-img
+                                                    v-if="loadCustomerRank"
+                                                ></b-skeleton-img>
                                                 <VueApexCharts
+                                                    v-else
                                                     height="280"
                                                     type="bar"
                                                     :options="customerRankChartOptions"
@@ -536,13 +550,14 @@ export default {
         },
         totalCustomer: 0,
         customerAgeSeries: [{
-            // data: [1, 20, 45, 63, 55, 5, 3, 1]
             name: '年齢',
-            data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3]
+            data: []
+            // data: [0, 0, 1, 2, 5, 1, 1, 0, 0]
         }],
         customerRankSeries: [{
             name: 'ランク',
-            data: [78.0, 12.0, 5.0, 4.5, 0.5]
+            data: []
+            // data: [78.0, 12.0, 5.0, 4.5, 0.5]
         }],
         customerAgeChartOptions: {
 
@@ -564,7 +579,7 @@ export default {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val + "%";
+                    return val + "人";
                 },
                 offsetY: -20,
                 style: {
@@ -981,6 +996,9 @@ export default {
         perPage: 15,
         filter: null,
         filterOn: [],
+        loadCustomerAge: true,
+        loadCustomerRank: true,
+
     }),
     components: {
         // ListView,
@@ -1014,10 +1032,13 @@ export default {
         }
     },
     created () {
+        this.getCustomerRank()
+
     },
     mounted () {
         this.totalCustomer = this.customer.length
         this.totalRows = this.customer.length
+        this.getCustomerAge()
     },
     methods: {
         ...mapMutations([
@@ -1054,6 +1075,36 @@ export default {
         // Trigger pagination to update the number of buttons/pages due to filtering
             this.totalRows = filteredItems.length
             this.currentPage = 1
+        },
+        getCustomerAge () {
+            this.$axios({
+                method: 'GET',
+                url: '/api/customer/get_customer_age/',
+            })
+            .then(res => {
+                console.log(res)
+                this.customerAgeSeries[0].data = res.data.data
+                this.loadCustomerAge = false
+            })
+            .catch(e => {
+                console.log(e)
+                this.loadCustomerAge = false
+            })
+        },
+        getCustomerRank () {
+            this.$axios({
+                method: 'GET',
+                url: '/api/customer/get_customer_rank/',
+            })
+            .then(res => {
+                console.log(res)
+                this.customerRankSeries[0].data = res.data.data
+                this.loadCustomerRank = false
+            })
+            .catch(e => {
+                console.log(e)
+                this.loadCustomerRank = false
+            })
         }
     }
 }
@@ -1117,7 +1168,7 @@ export default {
 
         .customer_list_area3_header {
             text-align: center;
-            padding: 20px
+            padding: 20px;
         }
 
         .customer_list_area4 {

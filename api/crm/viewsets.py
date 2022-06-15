@@ -149,6 +149,8 @@ class CustomerViewSet(BaseModelViewSet):
         queryset = self.queryset.get(pk=pk)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data)
+        logger.debug(serializer)
+        logger.debug(serializer.is_valid())
         if serializer.is_valid():
             self.perform_update(serializer)
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -217,6 +219,25 @@ class CustomerViewSet(BaseModelViewSet):
             return Response({'status': 'success', 'result': True}, status=status.HTTP_200_OK)
 
 
+    @action(methods=['get'], detail=False)
+    def get_customer_age(self, request):
+
+        res = [
+            MCustomer.objects.filter(age__gte=bottom*10+10, age__lte=top).count() for bottom, top in enumerate(range(19, 90, 10))
+        ]
+
+        return Response({'status': 'success', 'data': res}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def get_customer_rank(self, request):
+
+        res = [
+            MCustomer.objects.filter(rank=rank).count() for rank in range(1, 6)
+        ]
+
+        return Response({'status': 'success', 'data': res}, status=status.HTTP_200_OK)
+
+
 class RankViewSet(BaseModelViewSet):
     """
     """
@@ -274,6 +295,7 @@ class ProductViewSet(BaseModelViewSet):
                 1: {},
                 2: {},
                 3: {},
+                4: {},
             },
         }
 
@@ -314,6 +336,7 @@ class ProductViewSet(BaseModelViewSet):
                 4: ProductSerializer(MProduct.objects.filter(category__large_category=2, category__middle_category=1)[:12], many=True).data,
                 5: ProductSerializer(MProduct.objects.filter(category__large_category=2, category__middle_category=2)[:12], many=True).data,
                 6: ProductSerializer(MProduct.objects.filter(category__large_category=2, category__middle_category=3)[:12], many=True).data,
+                7: ProductSerializer(MProduct.objects.filter(category__large_category=2, category__middle_category=4)[:12], many=True).data,
             }
             return Response({
                 'status': 'success',
@@ -380,7 +403,10 @@ class SalesViewSet(BaseModelViewSet):
         visit_time = datetime.strptime(visit_time_str, '%Y-%m-%d %H:%M')
         leave_time_str = request.data['leave_time']
         leave_time = datetime.strptime(leave_time_str, '%Y-%m-%d %H:%M')
-        move_time = datetime.strptime(request.data['move_time'], '%Y-%m-%d %H:%M')  if request.data['move_time'] != None else None
+        move_diff_seat = request.data['move_diff_seat']
+
+        move_time_str = request.data['move_time']
+        move_time = datetime.strptime(move_time_str, '%Y-%m-%d %H:%M')  if move_diff_seat else None
 
         type = request.data['payment_type']
         payment = MPayment.objects.get(type=0)
@@ -402,12 +428,19 @@ class SalesViewSet(BaseModelViewSet):
         total_sales = request.data['total_sales']
         total_tax_sales = request.data['total_tax_sales']
 
+        is_charterd = request.data['is_charterd']
+        tax_rate = request.data['tax_rate']
+        total_visitors = request.data['total_visitors']
 
         header = SalesHeader.objects.create(
             customer=customer,
             payment=payment,
             appoint=appoint,
+            total_visitors=total_visitors,
+            is_charterd=is_charterd,
+            tax_rate=tax_rate,
             booking=booking,
+            move_diff_seat=move_diff_seat,
             basic_plan_type=basic_plan_type,
             stay_hour=stay_hour,
             stay_hour_other=stay_hour_other,
@@ -416,6 +449,7 @@ class SalesViewSet(BaseModelViewSet):
             total_tax_sales=total_tax_sales,
             visit_time=visit_time,
             leave_time=leave_time,
+            move_time=move_time,
             account_date=account_date
         )
 
@@ -521,7 +555,6 @@ class SalesViewSet(BaseModelViewSet):
             SalesDetail.objects.bulk_create(sales_detail_list)
 
         customer.total_visit = customer.total_visit + 1
-        customer.total_sales = customer.total_sales + total_tax_sales
 
         if customer.first_visit == None:
             customer.first_visit = account_date
@@ -529,6 +562,7 @@ class SalesViewSet(BaseModelViewSet):
         customer.save()
 
         return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
+
 
 
 class BookingViewSet(BaseModelViewSet):

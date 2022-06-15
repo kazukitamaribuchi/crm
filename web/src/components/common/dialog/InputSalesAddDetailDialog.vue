@@ -72,24 +72,42 @@
                             class="productCard"
                             @click="selectProduct(item)"
                             @dblclick="addStack(item)"
+                            body-class="product_body"
                         >
+                            <!-- <div align="center">
+                                <b-img
+                                    :src="defaultIcon"
+                                    height=110
+                                    width=110
+                                    class="product_img"
+                                ></b-img>
+                            </div>
+                            <b-card-text class="product_name">
+                                {{ item.name }}
+                            </b-card-text> -->
                             <b-card-img
                                 :src="apiPath + item.thumbnail"
                                 alt="productImage"
                                 top
-                                height="100px"
                                 v-if="item.thumbnail != null"
                             ></b-card-img>
                             <b-card-img
                                 :src="defaultIcon"
                                 alt="productImage"
                                 top
-                                height="100px"
                                 v-else
                             ></b-card-img>
-                            <b-card-text>
-                                {{ item.name }}
-                            </b-card-text>
+                            <div class="product_name_area">
+                                <b-card-text class="product_long_name" v-if="item.name.length > 20">
+                                    {{ item.name }}
+                                </b-card-text>
+                                <b-card-text class="product_name" v-else>
+                                    {{ item.name }}
+                                </b-card-text>
+                            </div>
+                            <div class="product_price_area">
+                                {{ item.price }} 円
+                            </div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -111,24 +129,31 @@
                             class="productCard"
                             @click="selectProduct(item)"
                             @dblclick="addStack(item)"
+                            body-class="product_body"
                         >
                             <b-card-img
                                 :src="apiPath + item.thumbnail"
                                 alt="productImage"
                                 top
-                                height="100px"
                                 v-if="item.thumbnail != null"
                             ></b-card-img>
                             <b-card-img
                                 :src="defaultIcon"
                                 alt="productImage"
                                 top
-                                height="100px"
                                 v-else
                             ></b-card-img>
-                            <b-card-text>
-                                {{ item.name }}
-                            </b-card-text>
+                            <div class="product_name_area">
+                                <b-card-text class="product_long_name" v-if="item.name.length > 20">
+                                    {{ item.name }}
+                                </b-card-text>
+                                <b-card-text class="product_name" v-else>
+                                    {{ item.name }}
+                                </b-card-text>
+                            </div>
+                            <div class="product_price_area">
+                                {{ item.price }} 円
+                            </div>
                         </b-card>
                     </b-col>
                 </b-row>
@@ -180,7 +205,7 @@
                                     class="add_sales_detail_quantity_wrap"
                                 >
                                     <SelectForm
-                                        :optionType=7
+                                        :optionType=99
                                         v-model="quantity"
                                     />
                                 </b-form-group>
@@ -649,10 +674,12 @@ export default {
 
 .productCard {
     cursor: pointer;
+    height: 170px;
 }
 
 .productCard:hover {
     box-shadow: 1px 1px 2px 1px rgba(150, 150, 150, 0.5);
+    transition: 0.5s;
 }
 
 .add_sales_detail_footer_col {
@@ -660,9 +687,34 @@ export default {
     padding: 0;
 }
 
+
 .btn_close {
     display: inline-block;
     margin-right: 8px;
+}
+
+.product_name_area {
+    min-height: 35px;
+    max-height: 35px;
+}
+
+.product_price_area {
+    height: 25px;
+    font-size: 13px;
+    text-align: right;
+}
+
+.product_name {
+    font-size: 12px;
+}
+
+.product_long_name {
+    font-size: 10px;
+}
+
+.product_body {
+    margin-top: 10px;
+    padding-top: 0;
 }
 
 .selected_product_area {

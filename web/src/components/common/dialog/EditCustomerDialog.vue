@@ -1,5 +1,221 @@
 <template>
-    <v-dialog
+    <b-modal
+        v-model="dialog"
+        size="lg"
+        screenable
+        title="顧客入力"
+        header-bg-variant="primary"
+        header-text-variant="light"
+        ok-title="登録"
+        cancel-title="閉じる"
+        @ok="update"
+        @cancel="close"
+    >
+    <!-- :ok-disabled=isDisabled -->
+        <b-form class="create_customer_form">
+            <b-container fluid>
+                <b-row>
+                    <b-col cols="4">
+                        <b-form-group
+                            label="会員No"
+                        >
+                            <b-input-group>
+                                <b-form-input
+                                    v-model="updateCustomerData.customer_no"
+                                    type="text"
+                                    placeholder="会員No"
+                                    required
+                                ></b-form-input>
+                                <b-form-invalid-feedback :state="updateCustomerData.length == 0">
+                                    <!-- {{ customerNoError }} -->
+                                </b-form-invalid-feedback>
+                            </b-input-group>
+                        </b-form-group>
+                    </b-col>
+                    <b-col cols="4">
+                    </b-col>
+                    <b-col cols="4">
+                        <!-- <b-form-group
+                            label="来店日"
+                        >
+                            <b-form-datepicker
+                                v-model="updateCustomerData.first_visit"
+                                placeholder="来店日を選択してください"
+                            ></b-form-datepicker>
+                        </b-form-group> -->
+                    </b-col>
+                </b-row>
+                <b-card class="mt-4" bg-variant="light">
+                    <b-card-title>
+                        顧客情報
+                    </b-card-title>
+                    <b-row class="mb-0 pb-0 mt-0 pt-0">
+                        <b-col cols="12" class="mb-1 pb-0">
+                            <b-form-group
+                                label="名前"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.name"
+                                        type="text"
+                                        placeholder="名前"
+                                        required
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row class="mt-0 pt-0">
+                        <b-col cols="12" class="mt-0 pt-0">
+                            <b-form-group>
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.name_kana"
+                                        type="text"
+                                        placeholder="名前(カナ)"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <!-- <b-col>
+                            <b-form-group
+                                label="誕生日"
+                            >
+                                <BirthdaySelectForm
+                                    :year=createCustomerData.birthday_year
+                                    :month=createCustomerData.birthday_month
+                                    :day=createCustomerData.birthday_day
+                                />
+                            </b-form-group>
+                        </b-col> -->
+                        <b-col cols="4">
+                            <b-form-group
+                                label="年齢"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.age"
+                                        type="number"
+                                        placeholder="年齢"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="12">
+                            <b-form-group
+                                label="誕生日"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.birthday_year"
+                                        type="text"
+                                        placeholder="YYYY"
+                                    ></b-form-input>
+                                    <b-form-input
+                                        v-model="updateCustomerData.birthday_month"
+                                        type="text"
+                                        placeholder="MM"
+                                    ></b-form-input>
+                                    <b-form-input
+                                        v-model="updateCustomerData.birthday_day"
+                                        type="text"
+                                        placeholder="DD"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="5">
+                            <b-form-group
+                                label="電話番号"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.phone"
+                                        type="tel"
+                                        placeholder="電話番号"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="8">
+                            <b-form-group
+                                label="メールアドレス"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.mail"
+                                        type="text"
+                                        placeholder="メールアドレス"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="5">
+                            <b-form-group
+                                label="職業"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.job"
+                                        type="text"
+                                        placeholder="職業"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="12">
+                            <b-form-group
+                                label="会社"
+                            >
+                                <b-input-group>
+                                    <b-form-input
+                                        v-model="updateCustomerData.company"
+                                        type="text"
+                                        placeholder="会社"
+                                    ></b-form-input>
+                                </b-input-group>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                    <b-row>
+                        <b-form-group
+                            label="要注意人物"
+                        >
+                            <b-form-checkbox
+                                v-model="updateCustomerData.caution_flg"
+                            ></b-form-checkbox>
+                        </b-form-group>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="12">
+                            <b-form-group
+                                label="備考"
+                            >
+                                <b-form-textarea
+                                    rows="2"
+                                    no-resize
+                                    v-model="updateCustomerData.remarks"
+                                ></b-form-textarea>
+                            </b-form-group>
+                        </b-col>
+                    </b-row>
+                </b-card>
+            </b-container>
+        </b-form>
+    </b-modal>
+    <!-- <v-dialog
         v-model="dialog"
         max-width="1000px"
     >
@@ -124,7 +340,6 @@
                                 </v-col>
                             </v-row>
 
-                            <!-- こんぽーねんとかしてselectでvalueはint -->
                             <v-row>
                                 <v-col cols="12">
                                     <vs-input
@@ -156,7 +371,7 @@
                 </v-row>
             </v-container>
         </v-card>
-    </v-dialog>
+    </v-dialog> -->
 </template>
 
 <script>
@@ -185,6 +400,9 @@ export default {
         },
     },
     methods: {
+        ...mapMutations([
+            'updateCustomerList',
+        ]),
         open (customer) {
             this.customer = _.cloneDeep(customer)
             let updateCustomerData = _.cloneDeep(customer)
@@ -208,10 +426,14 @@ export default {
         },
         update () {
             const data = this.updateCustomerData
-            const birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            // const birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
             console.log(data)
+            let birthday = ''
+            // 誕生日は後々セレクトに置き換える
+            if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
+                birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            }
 
-            this.close()
             this.$axios({
                 url: `/api/customer/${this.$route.params['id']}/`,
                 method: 'PUT',
@@ -222,20 +444,27 @@ export default {
                     age: data.age,
                     birthday_str: birthday,
                     job: data.job,
+                    mail: data.mail,
+                    phone: data.phone,
                     company: data.company,
                     customer_no: data.customer_no,
-                    first_visit: data.first_visit,
+                    caution_flg: data.caution_flg,
+                    remarks: data.remarks,
+                    // first_visit: data.first_visit,
                     rank_id: 1,
                 }
             })
             .then(res => {
                 console.log(res)
+                this.updateCustomerList(res.data)
                 this.$emit('update', res.data)
                 this.close()
             })
             .catch(e => {
                 console.log(e)
             })
+
+            this.close()
         }
     }
 }
@@ -243,22 +472,31 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.container.form-wrap {
-  padding: 0px 40px;
-}
 
-.vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
-    width: 100%;
-}
-.vs-input-parent::v-deep {
-    width: 100%;
-    .vs-input {
-        width: 100%;
+.create_customer_form {
+    .input-group-text {
+        height: 100%;
+        border-radius: 5px 0 0 5px !important;
     }
 }
 
-.edit-customer-dialog-right {
-    padding-top: 86px;
-}
+
+// .container.form-wrap {
+//   padding: 0px 40px;
+// }
+
+// .vs-component.vs-con-input-label.vs-input.vs-input-primary::v-deep {
+//     width: 100%;
+// }
+// .vs-input-parent::v-deep {
+//     width: 100%;
+//     .vs-input {
+//         width: 100%;
+//     }
+// }
+//
+// .edit-customer-dialog-right {
+//     padding-top: 86px;
+// }
 
 </style>

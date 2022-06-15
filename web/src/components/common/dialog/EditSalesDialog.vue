@@ -37,7 +37,7 @@
                                 >
                                     <b-input-group>
                                         <b-form-input
-                                            v-model="inputSalesData.totalVisitors"
+                                            v-model="inputSalesData.total_visitors"
                                             type="number"
                                             required
                                         ></b-form-input>
@@ -91,7 +91,7 @@
                                                         style="margin-top: 14px;"
                                                         v-model="inputSalesData.isChartered"
                                                         :options=charterOptions
-                                                        :disabled="inputSalesData.totalVisitors >= 5"
+                                                        :disabled="inputSalesData.total_visitors >= 5"
                                                         buttons
                                                         button-variant="primary"
                                                     ></b-form-checkbox-group>
@@ -739,7 +739,7 @@ const Con = new Const()
 import utilsMixin from '@/mixins/utils'
 
 export default {
-    name: 'InputSalesDialogItem',
+    name: 'EditSalesDialogItem',
     props: {
     },
     components: {
@@ -755,7 +755,6 @@ export default {
         inputSalesData: {
             basicPlanType: 0, // 選択されている料金タイプの種類
             customerNo: null,
-            totalVisitors: null,
             accountDate: now,
             visitTimeHour: null, // 来店時間（時）
             visitTimeMinute: null, // 来店時間（分）
@@ -890,7 +889,7 @@ export default {
         isDisabled () {
             // 席移動選択時には席移動のもののチェックも必要
             if (!this.isPositiveNumber(this.inputSalesData.customerNo)
-                || !this.isPositiveNumber(this.inputSalesData.totalVisitors)) {
+                || !this.isPositiveNumber(this.inputSalesData.total_visitors)) {
                     return true
                 }
             return false
@@ -993,8 +992,8 @@ export default {
             if (this.inputSalesData.isChartered.length > 0) {
                 return Con.CHARTER_PRICE_VIP_SEAT
             }
-            if (this.inputSalesData.totalVisitors > 0) {
-                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.totalVisitors
+            if (this.inputSalesData.total_visitors > 0) {
+                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.total_visitors
             }
             return Con.BASIC_PRICE_VIP_SEAT
         },
@@ -1002,8 +1001,8 @@ export default {
             if (this.inputSalesData.isCharteredOther.length > 0) {
                 return Con.CHARTER_PRICE_VIP_SEAT
             }
-            if (this.inputSalesData.totalVisitors > 0) {
-                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.totalVisitors
+            if (this.inputSalesData.total_visitors > 0) {
+                return Con.BASIC_PRICE_VIP_SEAT * this.inputSalesData.total_visitors
             }
             return Con.BASIC_PRICE_VIP_SEAT
         },
@@ -1076,7 +1075,7 @@ export default {
                 this.inputSalesData.basicPlanTypeOther = 0
             }
         },
-        'inputSalesData.totalVisitors': function (val) {
+        'inputSalesData.total_visitors': function (val) {
             if (this.inputSalesData.basicPlanType == 1) {
                 if (val != '' && val >= Con.CHARTER_TOTAL_NUM) {
                     this.inputSalesData.isChartered = [1]
@@ -1298,16 +1297,15 @@ export default {
 
             // 明細情報の追加
             for (const i in this.inputSalesDetailData) {
-                const salesDetailItem = this.inputSalesDetailData[i]
-                const actually_price = salesDetailItem.actuallyPrice
-                const actually_tax_price = salesDetailItem.actuallyTaxPrice
-                const product_id = salesDetailItem.product.id
-                const quantity = salesDetailItem.quantity
-                const bottle = salesDetailItem.bottle
-                const remark = salesDetailItem.remark
-                const taxRate = salesDetailItem.taxRate
-                const totalPrice = salesDetailItem.totalPrice
-                const totalTaxPrice = salesDetailItem.totalTaxPrice
+                const actually_price = this.inputSalesDetailData[i].actuallyPrice
+                const actually_tax_price = this.inputSalesDetailData[i].actuallyTaxPrice
+                const product_id = this.inputSalesDetailData[i].product.id
+                const quantity = this.inputSalesDetailData[i].quantity
+                const bottle = this.inputSalesDetailData[i].bottle
+                const remark = this.inputSalesDetailData[i].remark
+                const taxRate = this.inputSalesDetailData[i].taxRate
+                const totalPrice = this.inputSalesDetailData[i].totalPrice
+                const totalTaxPrice = this.inputSalesDetailData[i].totalTaxPrice
                 // 後に商品にキャストを紐づける用
                 const cast_id = null
 
@@ -1354,24 +1352,13 @@ export default {
 
 
             if (this.showDiffBasicPlan) {
-                let basicPlanOtherList = this.createBasicPlanOther()
+                let basicPlanOtherList = this.createBasicPlan()
                 for (const planOther of basicPlanOtherList) {
                     sales_detail_service_list.push(planOther)
                 }
             }
             let stayHourOther = (this.showDiffBasicPlan) ? this.inputSalesData.stayHourOther : 0
             let totalStayHour = (this.showDiffBasicPlan) ? this.inputSalesData.stayHour + this.inputSalesData.stayHourOther : this.inputSalesData.stayHour
-
-            let isCharted = false
-            if (this.showDiffBasicPlan) {
-                if (this.inputSalesData.isCharteredOther.length > 0) {
-                    isCharted = true
-                }
-            } else {
-                if (this.inputSalesData.isChartered.length > 0) {
-                    isCharted = true
-                }
-            }
 
             const data = {
                 'customer_no': this.inputSalesData.customerNo,
@@ -1383,9 +1370,6 @@ export default {
                 'payment_type': (this.inputSalesData.cardPayment) ? 1 : 0,
                 'appoint': this.appointedCastDataList.length != 0,
                 'douhan': douhanFlg,
-                'total_visitors': this.inputSalesData.totalVisitors,
-                'is_charterd': isCharted,
-                'tax_rate': this.inputSalesData.totalSalesTax,
                 // 後々↓
                 'booking': false,
                 'basic_plan_type': this.inputSalesData.basicPlanType,
@@ -1426,7 +1410,7 @@ export default {
             const middle_category = this.inputSalesData.selectedBasicPlan
             const quantity = this.inputSalesData.selectedBasicPlanNum
             // 将来的には可変に
-            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[basic_plan_type][middle_category] * quantity
+            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[large_category][middle_category] * quantity
             const fixed_tax_price = this.calcAddTaxPrice(fixed_price, Con.TAX_DEFAULT)
             let data = {
                 basic_plan_type: basic_plan_type,
@@ -1456,7 +1440,7 @@ export default {
             }
 
             if (basic_plan_type == 1) {
-                let VipSeatPrice = this.inputSalesData.vipSeatNum * this.vipSeatPrice
+                let VipSeatPrice = this.inputSalesData.vipSeatNum * Con.BASIC_PRICE_VIP_SEAT
                 let VipSeatTaxPrice = this.calcAddTaxPrice(VipSeatPrice, Con.TAX_DEFAULT)
                 result.push({
                     basic_plan_type: basic_plan_type,
@@ -1478,7 +1462,7 @@ export default {
             const middle_category = this.inputSalesData.selectedBasicPlanOther
             const quantity = this.inputSalesData.selectedBasicPlanOtherNum
             // 将来的には可変に
-            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[basic_plan_type][middle_category] * quantity
+            const fixed_price = Con.BASIC_PLAN_PRICE_DICT[large_category][middle_category] * quantity
             const fixed_tax_price = this.calcAddTaxPrice(fixed_price, Con.TAX_DEFAULT)
             let data = {
                 basic_plan_type: basic_plan_type,
@@ -1508,7 +1492,7 @@ export default {
             }
 
             if (basic_plan_type == 1) {
-                let VipSeatPrice = this.inputSalesData.vipSeatNumOther * this.vipSeatPriceOther
+                let VipSeatPrice = this.inputSalesData.vipSeatNumOther * Con.BASIC_PRICE_VIP_SEAT
                 let VipSeatTaxPrice = this.calcAddTaxPrice(VipSeatPrice, Con.TAX_DEFAULT)
                 result.push({
                     basic_plan_type: basic_plan_type,
@@ -1552,7 +1536,6 @@ export default {
             this.inputSalesData = {
                 basicPlanType: 0, // 選択されている料金タイプの種類
                 customerNo: null,
-                totalVisitors: null,
                 accountDate: now,
                 visitTimeHour: null, // 来店時間（時）
                 visitTimeMinute: null, // 来店時間（分）
@@ -1592,13 +1575,8 @@ export default {
         test () {
             console.log('test')
         },
-        open (data) {
+        open () {
             this.dialog = true
-            if (data) {
-                this.convertData(data)
-            } else {
-                console.log('dataなし')
-            }
         },
         close () {
             this.dialog = false
@@ -1652,8 +1630,8 @@ export default {
             //             'text': '会員Noを正しく入力してください'
             //         })
             //     }
-            // if (this.inputSalesData.totalVisitors == null
-            //     || !this.isPositiveNumber(this.inputSalesData.totalVisitors)) {
+            // if (this.inputSalesData.total_visitors == null
+            //     || !this.isPositiveNumber(this.inputSalesData.total_visitors)) {
             //         this.errorMsg.push({
             //             'text': '来店人数を正しく入力してください'
             //         })
@@ -1661,73 +1639,6 @@ export default {
             // if (this.errorMsg.length > 0) {
             //     this.$refs.errorModal.open()
             // }
-        },
-        convertData (data) {
-            // 編集用にデータを置き換える処理
-            console.log('convertData', data)
-            this.inputSalesData.basicPlanType = data.basic_plan_type
-            this.inputSalesData.customerNo = data.customer.customer_no
-            this.inputSalesData.totalVisitors = Number(data.total_visitors)
-            this.inputSalesData.accountDate = data.account_date.replaceAll('/', '-')
-            this.inputSalesData.stayHour = data.stay_hour
-            this.inputSalesData.stayHourOther = data.stay_hour_other
-
-            let visitTime = data.visit_time.split(' ')[1]
-            let leaveTime = data.leave_time.split(' ')[1]
-
-            let visitTimeHour = Number(visitTime.split(':')[0])
-            let visitTimeMinute = Number(visitTime.split(':')[1])
-            let leaveTimeHour = Number(leaveTime.split(':')[0])
-            let leaveTimeMinute = Number(leaveTime.split(':')[1])
-
-            this.inputSalesData.visitTimeHour = visitTimeHour
-            this.inputSalesData.visitTimeMinute = visitTimeMinute
-
-            let moveTime = leaveTime
-            let moveTimeHour = null
-            let moveTimeMinute = null
-
-            if (data.move_diff_seat) {
-                moveTime = data.move_time.split(' ')[1]
-                moveTimeHour = Number(moveTime.split(':')[0])
-                moveTimeMinute = Number( moveTime.split(':')[1])
-
-                this.inputSalesData.leaveTimeHour = moveTimeHour
-                this.inputSalesData.leaveTimeMinute = moveTimeMinute
-                this.inputSalesData.leaveTimeHourAfterMove = leaveTimeHour
-                this.inputSalesData.leaveTimeMinuteAfterMove = leaveTimeMinute
-
-            } else {
-                this.inputSalesData.leaveTimeHour = leaveTimeHour
-                this.inputSalesData.leaveTimeMinute = leaveTimeMinute
-            }
-
-            if (data.basic_plan_type == 0 && data.move_diff_seat) {
-                // 席移動で貸し切り
-                this.inputSalesData.isCharteredOther = (data.is_charterd) ? [1] : []
-            } else if (data.basic_plan_type == 1) {
-                // 貸し切り
-                this.inputSalesData.isChartered = (data.is_charterd) ? [1] : []
-            }
-
-            this.inputSalesData.totalSalesTax = data.tax_rate
-            this.inputSalesData.cardPayment = (data.payment == 1) ? true : false
-            this.inputSalesData.isAppointed = (data.appoint) ? 1 : 0
-            this.showDiffBasicPlan = data.move_diff_seat
-
-            for (const i in data.sales_detail) {
-                const salesDetailItem = data.sales_detail[i]
-
-                // this.inputSalesDetailData.push()
-            }
-
-
-
-            for (const i in data.sales_appoint_detail) {
-                const salesAppointItem = data.sales_detail[i]
-
-                // this.appointedCastDataList.push()
-            }
         }
     },
     mixins: [

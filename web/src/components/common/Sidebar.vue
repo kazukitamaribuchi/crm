@@ -68,6 +68,7 @@
 
 <script>
 import SearchCustomerNoDialog from '@/components/common/dialog/SearchCustomerNoDialog'
+import { mapMutations } from 'vuex'
 
 export default {
     name: 'SidebarItem',
@@ -82,30 +83,35 @@ export default {
                 link: 'CustomerList',
                 type: 'Page',
                 text: '顧客管理',
+                active: 0,
             },
             {
                 icon: 'credit-card',
                 link: 'SalesList',
                 type: 'Page',
                 text: '売上管理',
+                active: 1,
             },
             {
                 icon: 'person-square',
                 link: 'CastList',
                 type: 'Page',
                 text: 'キャスト管理',
+                active: 2,
             },
             {
                 icon: 'calendar2-date',
                 link: 'AttendanceList',
                 type: 'Page',
                 text: '勤怠管理',
+                active: 3,
             },
             {
                 icon: 'clipboard-check',
                 link: 'BookingList',
                 type: 'Page',
                 text: '予約管理',
+                active: 4,
             },
             // ボトルのアイコンどうするか・・・
             // {
@@ -115,7 +121,8 @@ export default {
                 icon: 'search',
                 ref: 'searchCustomerNo',
                 type: 'Dialog',
-                text: '顧客検索'
+                text: '顧客検索',
+                active: 99,
             },
         ],
         // menus: [
@@ -172,7 +179,25 @@ export default {
         // ]
     }),
     methods: {
+        ...mapMutations([
+            'setCustomerTopActive',
+            'setSalesTopActive',
+            'setCastTopActive',
+        ]),
         toPage (item) {
+            switch (item.active) {
+                case 0:
+                    this.setCustomerTopActive(0)
+                    break
+                case 1:
+                    this.setSalesTopActive(0)
+                    break
+                case 2:
+                    this.setCastTopActive(0)
+                    break
+                default:
+                    break
+            }
             if (item.type == 'Dialog') {
                 this.$refs[item.ref].open()
             } else {

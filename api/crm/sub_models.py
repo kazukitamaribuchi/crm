@@ -160,6 +160,11 @@ class SalesHeader(AbstractBaseModel):
         related_name='sales_header'
     )
 
+    is_charterd = models.BooleanField(
+        _('貸し切りフラグ'),
+        default=False,
+    )
+
     appoint = models.BooleanField(
         _('指名フラグ'),
         default=False,
@@ -204,6 +209,11 @@ class SalesHeader(AbstractBaseModel):
     total_tax_sales = models.IntegerField(
         _('総計（税込）'),
         default=0,
+    )
+
+    tax_rate = models.SmallIntegerField(
+        _('税率'),
+        default=35,
     )
 
     def __str__(self):
@@ -264,6 +274,9 @@ class SalesServiceDetail(AbstractBaseModel):
         _('総計（税込）')
     )
 
+    def __str__(self):
+        service = self.service.name
+        return service
 
 
 class SalesAppointDetail(AbstractBaseModel):
@@ -313,6 +326,14 @@ class SalesAppointDetail(AbstractBaseModel):
     total_tax_price = models.IntegerField(
         _('総計（税込）')
     )
+
+    def __str__(self):
+        cast_name = self.cast.name
+        service = self.service
+        return '指名キャスト: ' + cast_name + ' ' + service.name
+
+    class Meta:
+        verbose_name_plural = '売上明細'
 
 
 class SalesDetail(AbstractBaseModel):
@@ -374,8 +395,7 @@ class SalesDetail(AbstractBaseModel):
 
     def __str__(self):
         product_name = self.product.name
-        price = str(self.fixed_tax_price)
-        return '売上No.' + str(self.header.id) + ' ' + product_name + ' ' + price + '円'
+        return '売上No.' + str(self.header.id) + ' ' + product_name
 
     class Meta:
         verbose_name_plural = '売上明細'

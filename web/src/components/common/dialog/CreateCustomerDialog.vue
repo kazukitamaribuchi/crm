@@ -9,7 +9,7 @@
             header-text-variant="light"
             ok-title="登録"
             cancel-title="閉じる"
-            @ok="register"
+            @ok="createOrUpdate"
             :ok-disabled=isDisabled
             @cancel="close"
         >
@@ -36,14 +36,14 @@
                         <b-col cols="4">
                         </b-col>
                         <b-col cols="4">
-                            <b-form-group
+                            <!-- <b-form-group
                                 label="来店日"
                             >
                                 <b-form-datepicker
                                     v-model="createCustomerData.first_visit"
                                     placeholder="来店日を選択してください"
                                 ></b-form-datepicker>
-                            </b-form-group>
+                            </b-form-group> -->
                         </b-col>
                     </b-row>
                     <b-card class="mt-4" bg-variant="light">
@@ -133,6 +133,36 @@
                         <b-row>
                             <b-col cols="5">
                                 <b-form-group
+                                    label="電話番号"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.phone"
+                                            type="tel"
+                                            placeholder="電話番号"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="8">
+                                <b-form-group
+                                    label="メールアドレス"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="createCustomerData.mail"
+                                            type="text"
+                                            placeholder="メールアドレス"
+                                        ></b-form-input>
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="5">
+                                <b-form-group
                                     label="職業"
                                 >
                                     <b-input-group>
@@ -177,7 +207,7 @@
                                     <b-form-textarea
                                         rows="2"
                                         no-resize
-                                        v-model="createCustomerData.remark"
+                                        v-model="createCustomerData.remarks"
                                     ></b-form-textarea>
                                 </b-form-group>
                             </b-col>
@@ -223,6 +253,7 @@ export default {
         year: Con.SELECT_BIRTHDAY_YEAR,
         dialog: false,
         customerNoError: '',
+        mode: 0,
     }),
     computed: {
         isDisabled () {
@@ -247,12 +278,20 @@ export default {
         }
     },
     created () {
-        this.createCustomerData.first_visit = this.today
+        // this.createCustomerData.first_visit = this.today
     },
     methods: {
         ...mapMutations([
             'addCustomerList',
+            'updateCustomerList',
         ]),
+        createOrUpdate () {
+            if (this.mode == 0) {
+                this.register()
+            } else if (this.mode == 1) {
+                this.update()
+            }
+        },
         register () {
             console.log('register', this.createCustomerData)
             const data = this.createCustomerData
@@ -271,8 +310,12 @@ export default {
                     age: data.age,
                     birthday_str: birthday,
                     job: data.job,
+                    mail: data.mail,
+                    phone: data.phone,
                     company: data.company,
                     customer_no: data.customer_no,
+                    caution_flg: data.caution_flg,
+                    remarks: data.remarks,
                     // ランクは最初から上位で作る事も許容させるか? => マスタでやらせる。
                     rank_id: 1,
                 }
@@ -285,6 +328,47 @@ export default {
             .catch(e => {
                 console.log(e)
             })
+        },
+        update () {
+            const data = this.createCustomerData
+            // const birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            let birthday = ''
+            // 誕生日は後々セレクトに置き換える
+            if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
+                birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            }
+
+            this.$axios({
+                url: `/api/customer/${this.$route.params['id']}/`,
+                method: 'PUT',
+                data: {
+                    id: this.$route.params['id'],
+                    name: data.name,
+                    name_kana: data.name_kana,
+                    age: data.age,
+                    birthday_str: birthday,
+                    job: data.job,
+                    mail: data.mail,
+                    phone: data.phone,
+                    company: data.company,
+                    customer_no: data.customer_no,
+                    caution_flg: data.caution_flg,
+                    remarks: data.remarks,
+                    // first_visit: data.first_visit,
+                    rank_id: 1,
+                }
+            })
+            .then(res => {
+                console.log(res)
+                this.updateCustomerList(res.data)
+                this.$emit('update', res.data)
+                this.close()
+            })
+            .catch(e => {
+                console.log(e)
+            })
+
+            this.close()
         },
         init () {
             this.createCustomerData = {
@@ -299,8 +383,14 @@ export default {
             this.init()
             this.dialog = false
         },
-        open () {
+        open (data) {
             this.dialog = true
+            if (data) {
+                this.createCustomerData = data
+                this.mode = 1
+            } else {
+                this.mode = 0
+            }
         },
         checkCustomerNoDuplicate: _.debounce(function checkCustomerNoDuplicate (customerNo) {
             this.$axios({

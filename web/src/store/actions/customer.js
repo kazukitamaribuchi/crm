@@ -16,6 +16,19 @@ const customerActions = {
                 reject(e)
             })
         })
+    },
+    deleteCustomerListAction (ctx, kwargs) {
+        Vue.prototype.$axios({
+            url: `/api/customer/${kwargs.id}/`,
+            method: 'DELETE',
+        })
+        .then(res => {
+            console.log(res)
+            this.commit('deleteCustomerList', kwargs)
+        })
+        .catch(e => {
+            console.log(e)
+        })
     }
 }
 

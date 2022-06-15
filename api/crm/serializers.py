@@ -41,6 +41,10 @@ from datetime import (
     timedelta
 )
 
+from django.db import (
+    models
+)
+
 
 import logging
 import pytz
@@ -129,8 +133,10 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     first_visit = serializers.SerializerMethodField(allow_null=True)
     birthday = serializers.SerializerMethodField(allow_null=True)
     birthday_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
-    job = serializers.SerializerMethodField(default='', allow_null=True)
-    company = serializers.SerializerMethodField(default='', allow_null=True)
+    job = serializers.CharField(default='', allow_null=True)
+    mail = serializers.EmailField(default='', allow_null=True)
+    phone = serializers.CharField(default='', allow_null=True)
+    company = serializers.CharField(default='', allow_null=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
     total_visit = serializers.IntegerField(default=0, allow_null=True)
@@ -138,6 +144,7 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     customer_no = serializers.IntegerField(source='card.customer_no', allow_null=True)
     delete_flg = serializers.BooleanField(default=False)
     caution_flg = serializers.BooleanField(default=False)
+    remarks = serializers.CharField(default='', allow_null=True)
 
     rank_id = serializers.IntegerField(source='rank.rank_id', allow_null=True)
     rank_name = serializers.CharField(
@@ -164,6 +171,7 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             'address',
             'rank_id',
             'rank_name',
+            'remarks',
             # 'card',
             'first_visit',
             'total_visit',
@@ -189,6 +197,16 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
         if obj.job == None:
             return ''
         return obj.job
+
+    def get_phone(self, obj):
+        if obj.phone == None:
+            return ''
+        return obj.phone
+
+    def get_mail(self, obj):
+        if obj.mail == None:
+            return ''
+        return obj.mail
 
     def get_company(self, obj):
         if obj.company == None:
@@ -220,21 +238,29 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             customer_no = validated_data['card']['customer_no']
         )
 
+        name = get_val_in_validated_data('name', validated_data)
         name_kana = get_val_in_validated_data('name_kana', validated_data)
         age = get_val_in_validated_data('age', validated_data)
         birthday_str = get_val_in_validated_data('birthday_str', validated_data)
         birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != None else None
         job = get_val_in_validated_data('job', validated_data)
+        mail = get_val_in_validated_data('mail', validated_data)
+        phone = get_val_in_validated_data('phone', validated_data)
         company = get_val_in_validated_data('company', validated_data)
+        caution_flg = get_val_in_validated_data('caution_flg', validated_data)
+        remarks = get_val_in_validated_data('remarks', validated_data)
 
         customer = MCustomer.objects.create(
-            name=validated_data['name'],
-            name_kana=validated_data,
+            name=name,
+            name_kana=name_kana,
             age=age,
             birthday=birthday,
             job=job,
+            mail=mail,
+            phone=phone,
             company=company,
-            caution_flg=validated_data['caution_flg'],
+            caution_flg=caution_flg,
+            remarks=remarks,
             rank=rank,
             card=card,
         )
@@ -266,18 +292,27 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
         )
 
         birthday_str = get_val_in_validated_data('birthday_str', validated_data)
-        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != '' else None
+        logger.debug(birthday_str)
+        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != None else None
         job = get_val_in_validated_data('job', validated_data)
+        mail = get_val_in_validated_data('mail', validated_data)
+        phone = get_val_in_validated_data('phone', validated_data)
         company = get_val_in_validated_data('company', validated_data)
+        remarks = get_val_in_validated_data('remarks', validated_data)
+        caution_flg = get_val_in_validated_data('caution_flg', validated_data)
 
+        instance.card = card
         instance.name = validated_data['name']
         instance.name_kana = validated_data['name_kana']
+        instance.rank = rank
         instance.age = validated_data['age']
         instance.birthday = birthday
         instance.job = job
+        instance.mail = mail
+        instance.phone = phone
         instance.company = company
-        instance.card = card
-        instance.rank = rank
+        instance.caution_flg = caution_flg
+        instance.remarks = remarks
         instance.save()
         return instance
 
@@ -386,12 +421,12 @@ class ProductCategorySerializer(DynamicFieldsModelSerializer):
                 'アルコール',
                 {
                     0: 'シャンパン',
-                    1: 'ワイン',
+                    1: 'ウイスキー',
                     2: '焼酎',
-                    3: 'サワー',
-                    4: 'カクテル',
-                    5: '日本酒',
-                    6: 'ビール',
+                    3: 'ワイン（赤）',
+                    4: 'ワイン（白）',
+                    5: '顧客ドリンク',
+                    6: 'キャストドリンク',
                 },
             ],
             1: 'ノンアルコール',
@@ -400,9 +435,9 @@ class ProductCategorySerializer(DynamicFieldsModelSerializer):
         2: {
             0: 'メイン',
             1: 'サラダ',
-            2: 'おかず',
-            3: 'おつまみ',
-            4: 'デザート',
+            2: '前菜',
+            3: '揚げ物',
+            4: '吸い物、御飯物',
         }
     }
 
@@ -614,6 +649,12 @@ class SalesSerializer(DynamicFieldsModelSerializer):
     visit_time = serializers.SerializerMethodField()
     leave_time = serializers.SerializerMethodField()
     move_time = serializers.SerializerMethodField()
+    sales_detail_total_price = serializers.SerializerMethodField()
+    sales_detail_total_tax_price = serializers.SerializerMethodField()
+    sales_appoint_detail_total_price = serializers.SerializerMethodField()
+    sales_appoint_detail_total_tax_price = serializers.SerializerMethodField()
+    sales_service_detail_total_price = serializers.SerializerMethodField()
+    sales_service_detail_total_tax_price = serializers.SerializerMethodField()
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -632,6 +673,8 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             'payment',
             'appoint',
             'douhan',
+            'is_charterd',
+            'tax_rate',
             'booking',
             'basic_plan_type',
             'stay_hour',
@@ -645,6 +688,12 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             'sales_detail',
             'sales_appoint_detail',
             'sales_service_detail',
+            'sales_detail_total_price',
+            'sales_detail_total_tax_price',
+            'sales_appoint_detail_total_price',
+            'sales_appoint_detail_total_tax_price',
+            'sales_service_detail_total_price',
+            'sales_service_detail_total_tax_price',
         ]
 
     def get_sales_detail(self, obj):
@@ -684,6 +733,24 @@ class SalesSerializer(DynamicFieldsModelSerializer):
         if obj.move_time == None:
             return ''
         return utc_to_jst(obj.move_time).strftime('%Y/%m/%d %H:%M')
+
+    def get_sales_detail_total_price(self, obj):
+        return obj.sales_detail.all().aggregate(models.Sum('total_price'))['total_price__sum']
+
+    def get_sales_detail_total_tax_price(self, obj):
+        return obj.sales_detail.all().aggregate(models.Sum('total_tax_price'))['total_tax_price__sum']
+
+    def get_sales_appoint_detail_total_price(self, obj):
+        return obj.sales_appoint_detail.all().aggregate(models.Sum('total_price'))['total_price__sum']
+
+    def get_sales_appoint_detail_total_tax_price(self, obj):
+        return obj.sales_appoint_detail.all().aggregate(models.Sum('total_tax_price'))['total_tax_price__sum']
+
+    def get_sales_service_detail_total_price(self, obj):
+        return obj.sales_service_detail.all().aggregate(models.Sum('total_price'))['total_price__sum']
+
+    def get_sales_service_detail_total_tax_price(self, obj):
+        return obj.sales_service_detail.all().aggregate(models.Sum('total_tax_price'))['total_tax_price__sum']
 
 
 class AttendanceSerializer(DynamicFieldsModelSerializer):
