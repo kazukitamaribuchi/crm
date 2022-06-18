@@ -11,7 +11,10 @@
                         <b-tab title="本日" active>
                             <b-row class="sales_list_area_top">
                                 <b-col cols="8" class="sales_list_area_top_left pb-2">
-                                    <b-card class="sales_list_area">
+                                    <CustomerSalesAnalytics
+
+                                    />
+                                    <!-- <b-card class="sales_list_area">
                                         <b-card-text class="mb-1">
                                             顧客別売上
                                         </b-card-text>
@@ -21,7 +24,7 @@
                                             :options="customerSalesChartOptions"
                                             :series="customerSalesSeries"
                                         />
-                                    </b-card>
+                                    </b-card> -->
                                 </b-col>
                                 <b-col cols="4" class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
@@ -580,6 +583,7 @@
 
 <script>
 import InputSalesDialog from '@/components/common/dialog/InputSalesDialog'
+import CustomerSalesAnalytics from '@/components/common/analytics/CustomerSalesAnalytics'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween';
@@ -1226,7 +1230,7 @@ export default {
             },
             {
                 key: 'account_date',
-                label: '会計日'
+                label: '来店日'
             },
             {
                 key: 'customer.customer_no',
@@ -1264,6 +1268,7 @@ export default {
     }),
     components: {
         InputSalesDialog,
+        CustomerSalesAnalytics,
     },
     computed: {
         ...mapGetters([

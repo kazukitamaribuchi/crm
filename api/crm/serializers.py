@@ -694,6 +694,7 @@ class SalesSerializer(DynamicFieldsModelSerializer):
             'sales_appoint_detail_total_tax_price',
             'sales_service_detail_total_price',
             'sales_service_detail_total_tax_price',
+            'remarks',
         ]
 
     def get_sales_detail(self, obj):
@@ -751,6 +752,15 @@ class SalesSerializer(DynamicFieldsModelSerializer):
 
     def get_sales_service_detail_total_tax_price(self, obj):
         return obj.sales_service_detail.all().aggregate(models.Sum('total_tax_price'))['total_tax_price__sum']
+
+
+class CustomerSalesSerializer(serializers.Serializer):
+
+    customer = serializers.SerializerMethodField()
+    total = serializers.IntegerField()
+
+    def get_customer(self, obj):
+        return CustomerSerializer(MCustomer.objects.get(pk=obj['customer'])).data
 
 
 class AttendanceSerializer(DynamicFieldsModelSerializer):

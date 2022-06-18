@@ -280,6 +280,7 @@
                                 </b-col> -->
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">
+                                <!-- 指名情報のロジック考える -->
                                 <b-card-text>
                                     指名情報
                                 </b-card-text>
@@ -363,6 +364,22 @@
                                 </b-col>
                                 <b-col cols="3" class="mt-2 pt-2" align="right">
                                     ￥{{ salesData.sales_detail_total_price }}
+                                </b-col>
+                            </b-row>
+                            <b-row class="mt-3 pt-3 sales_detail_separate">
+                                <b-card-text>
+                                    備考
+                                </b-card-text>
+                                <b-col cols="12" class="mt-0 pt-0">
+                                    <b-card-text style="font-size: 20px; white-space: pre-line;">
+                                        {{ salesData.remarks }}
+                                    </b-card-text>
+                                    <!-- <b-form-textarea
+                                        rows="2"
+                                        no-resize
+                                        disabled
+                                        v-model="salesData.remarks"
+                                    ></b-form-textarea> -->
                                 </b-col>
                             </b-row>
                         </b-container>

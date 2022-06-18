@@ -242,7 +242,7 @@
                                 ></b-form-checkbox-group>
                             </b-form-group>
                         </b-col>
-                        <b-col align="center" class="add_sales_detail_footer_col">
+                        <!-- <b-col align="center" class="add_sales_detail_footer_col">
                             <b-card-sub-title>ボトル登録</b-card-sub-title>
                             <b-form-group>
                                 <b-form-checkbox-group
@@ -253,7 +253,7 @@
                                     bg-variant="success"
                                 ></b-form-checkbox-group>
                             </b-form-group>
-                        </b-col>
+                        </b-col> -->
                         <b-col align="center" class="add_sales_detail_footer_col">
                             <b-card-sub-title>まとめて追加</b-card-sub-title>
                             <b-icon
@@ -273,7 +273,7 @@
                     <b-form-textarea
                         rows="2"
                         no-resize
-                        v-model="remark"
+                        v-model="remarks"
                     ></b-form-textarea>
                 </b-col>
             </b-row>
@@ -323,7 +323,7 @@
                                     <td>{{ item.actuallyPrice }}</td>
                                     <td>{{ item.taxation }}</td>
                                     <td>{{ item.bottle }}</td>
-                                    <td>{{ item.remark }}</td>
+                                    <td>{{ item.remarks }}</td>
                                     <td>
                                         <b-icon
                                             icon="dash-square"
@@ -426,7 +426,7 @@ export default {
         productByCategoryList: [],
         selectedProduct: null,
         selectedProductList: [],
-        remark: '',
+        remarks: '',
         tax: 35,
         taxation: [1],
         apiPath: Con.API_PATH,
@@ -474,10 +474,12 @@ export default {
 
             // 商品毎にtaxが設定されている場合も考慮
             for (const i in this.selectedProductList) {
-                let q = new Decimal(this.selectedProductList[i].quantity)
+                // let q = new Decimal(this.selectedProductList[i].quantity)
+                let q = this.selectedProductList[i].quantity
                 if (!this.selectedProductList[i].taxation) {
                     // TAX無しの場合
-                    total += Math.ceil(q.times(this.selectedProductList[i].actuallyPrice).toNumber())
+                    total += Math.ceil(q * this.selectedProductList[i].actuallyPrice)
+                    // total += Math.ceil(q.times(this.selectedProductList[i].actuallyPrice).toNumber())
                 } else {
                     // TAX有の場合
                     total += this.calcAddTaxPrice(
@@ -559,11 +561,12 @@ export default {
                 bottle: this.isBottle.length != 0,
                 thumbnail: product.thumbnail,
                 category: product.category,
-                remark: this.remark,
+                remarks: this.remarks,
                 product: product,
             }
             this.init()
             this.$eventHub.$emit('addSalesDetail', data)
+            console.log('★', data)
             this.close()
         },
         init () {
@@ -574,7 +577,7 @@ export default {
             this.selectedProductType = null
             this.selectedProduct = null
             this.selectedProductList = []
-            this.remark = ''
+            this.remarks = ''
             this.actuallyPrice = 0
             this.isBottle = []
             this.quantity = 1
@@ -644,11 +647,11 @@ export default {
                 bottle: this.isBottle.length != 0,
                 thumbnail: product.thumbnail,
                 category: product.category,
-                remark: this.remark,
+                remarks: this.remarks,
             }
             this.selectedProductList.push(data)
             this.selectedProduct = null
-            this.remark = ''
+            this.remarks = ''
             this.quantity = 1
             this.tax = 35
             this.isBottle = []

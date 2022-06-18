@@ -6,7 +6,8 @@ export default {
             return price + Math.ceil(taxRate.times(price))
         },
         calcQuantityPrice (price, quantity) {
-            return Math.ceil(new Decimal(quantity).times(price).toNumber())
+            // return Math.ceil(new Decimal(quantity).times(price).toNumber())
+            return Math.ceil(quantity * price)
         },
         roundDown (value) {
             var digitVal = Math.pow(10, -2)

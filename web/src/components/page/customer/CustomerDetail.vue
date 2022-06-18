@@ -295,10 +295,10 @@
             @update="customerData = $event"
         />
 
-        <EditCustomerDialog
+        <!-- <EditCustomerDialog
             ref="editCustomer"
             @update="customerData = $event"
-        />
+        /> -->
 
         <DeleteCustomerDetailDialog
             ref="deleteCustomerDetailDialog"
@@ -399,7 +399,7 @@ export default {
         //     console.log(e)
         // })
         // 検索から詳細きてうまくいかせるやり方わかったら、↓の様にstoreから取得する方法に切り替え
-        this.customerData = _.cloneDeep(this.customer.find(c => c.id == this.$route.params['id']))
+        this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == this.$route.params['id']))
     },
     mounted () {
         // console.log(this.$router.referrer)
@@ -415,6 +415,7 @@ export default {
     // },
     methods: {
         showEditCustomerDialog () {
+            console.log('this.customerData', this.customerData)
             this.$refs.createCustomer.open(this.customerData)
         },
         showDeleteCustomerDetailDialog () {

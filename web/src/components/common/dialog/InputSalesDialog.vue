@@ -620,7 +620,7 @@
                             <td>{{ item.taxation }}</td>
                             <td>{{ item.totalPrice }}</td>
                             <td>{{ item.totalTaxPrice }}</td>
-                            <td>{{ item.remark }}</td>
+                            <td>{{ item.remarks }}</td>
                             <td>
                                 <b-icon
                                     icon="dash-square"
@@ -632,6 +632,21 @@
                             </td>
                         </tr>
                     </table>
+                </b-card>
+                <b-card bg-variant="light" class="mt-3">
+                    <b-form-group
+                        label-cols-lg="3"
+                        label="備考"
+                        label-size="lg"
+                        label-class="font-weight-bold pt-0"
+                        class="mb-0"
+                    >
+                        <b-form-textarea
+                            rows="2"
+                            no-resize
+                            v-model="inputSalesData.remarks"
+                        ></b-form-textarea>
+                    </b-form-group>
                 </b-card>
             </b-form>
             <template #modal-footer>
@@ -786,6 +801,8 @@ export default {
             totalSalesTax: Con.TAX_DEFAULT,
             cardPayment: false,
             isAppointed: 0,
+
+            remarks: '',
         },
 
         showDiffBasicPlan: false, // 席移動入力状態。trueは席移動したと見なす
@@ -1304,10 +1321,10 @@ export default {
                 const product_id = salesDetailItem.product.id
                 const quantity = salesDetailItem.quantity
                 const bottle = salesDetailItem.bottle
-                const remark = salesDetailItem.remark
-                const taxRate = salesDetailItem.taxRate
                 const totalPrice = salesDetailItem.totalPrice
                 const totalTaxPrice = salesDetailItem.totalTaxPrice
+                const taxRate = salesDetailItem.taxRate
+                const remarks = salesDetailItem.remarks
                 // 後に商品にキャストを紐づける用
                 const cast_id = null
 
@@ -1320,7 +1337,7 @@ export default {
                     fixed_tax_price: actually_tax_price,
                     total_price: totalPrice,
                     total_tax_price: totalTaxPrice,
-                    remark: remark,
+                    remarks: remarks,
                     tax_rate: taxRate,
                 }
 
@@ -1397,6 +1414,7 @@ export default {
                 'sales_detail_service_list': sales_detail_service_list,
                 'sales_detail_appoint_list': sales_detail_appoint_list,
                 'sales_detail_list': sales_detail_list,
+                'remarks': this.inputSalesData.remarks,
             }
 
             console.log('register', data)
@@ -1583,6 +1601,8 @@ export default {
                 totalSalesTax: Con.TAX_DEFAULT,
                 cardPayment: false,
                 isAppointed: 0,
+
+                remarks: '',
             }
             this.showDiffBasicPlan = false
             this.inputSalesDetailData = []
@@ -1671,6 +1691,7 @@ export default {
             this.inputSalesData.accountDate = data.account_date.replaceAll('/', '-')
             this.inputSalesData.stayHour = data.stay_hour
             this.inputSalesData.stayHourOther = data.stay_hour_other
+            this.inputSalesData.remarks = data.remarks
 
             let visitTime = data.visit_time.split(' ')[1]
             let leaveTime = data.leave_time.split(' ')[1]
@@ -1715,19 +1736,45 @@ export default {
             this.inputSalesData.isAppointed = (data.appoint) ? 1 : 0
             this.showDiffBasicPlan = data.move_diff_seat
 
+            let service_detail_list = []
+            let service_appoint_list = []
             for (const i in data.sales_detail) {
                 const salesDetailItem = data.sales_detail[i]
-
-                // this.inputSalesDetailData.push()
+                service_detail_list.push({
+                    actuallyPrice: salesDetailItem.fixed_price,
+                    actuallyTaxPrice: salesDetailItem.fixed_tax_price,
+                    bottle: false,
+                    category: salesDetailItem.product.category,
+                    name: salesDetailItem.product.name,
+                    price: salesDetailItem.product.price,
+                    product: salesDetailItem.product,
+                    quantity: Number(salesDetailItem.quantity),
+                    remarks: '',
+                    taxRate: 35,
+                    taxation: false,
+                    thumbnail: null,
+                    totalPrice: salesDetailItem.total_price,
+                    totalTaxPrice: salesDetailItem.total_tax_price,
+                })
             }
 
 
 
             for (const i in data.sales_appoint_detail) {
-                const salesAppointItem = data.sales_detail[i]
+                // 同伴料のロジック考える
 
-                // this.appointedCastDataList.push()
+                const salesAppointItem = data.sales_appoint_detail[i]
+                service_appoint_list.push({
+                    cast: salesAppointItem.cast,
+                    appointType: 0,
+                    appointPrice: 1000,
+                    isDouhan: false,
+                    douhanPrice: 0,
+                    quantity: Number(salesAppointItem.quantity),
+                })
             }
+            this.inputSalesDetailData = service_detail_list
+            this.appointedCastDataList = service_appoint_list
         }
     },
     mixins: [
