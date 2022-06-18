@@ -1,6 +1,9 @@
 <template>
     <div id="sales_list_wrap">
         <b-row>
+            <!-- <div align="right" style="color: white; position: absolute; top: 105px; right: 80px; font-size: 15px; float: right; width: 300px;">
+                現在時刻: {{ now.format('YYYY年MM月DD日 HH時MM分') }}
+            </div> -->
             <b-tabs pill card>
                 <b-tab
                     title="管理画面"
@@ -8,13 +11,13 @@
                     @click="setSalesTopActive(0)"
                 >
                     <b-tabs pills card fill>
-                        <b-tab title="本日" active @click="resetKey++">
+                        <b-tab title="本日" active @click="dResetKey++">
                             <b-row class="sales_list_area_top">
                                 <b-col cols="8" class="sales_list_area_top_left pb-2">
                                     <b-card class="sales_list_area sales_list_area_top_left">
                                         <CustomerDaySalesAnalytics
                                             :targetDate=today
-                                            :key="resetKey"
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -22,13 +25,13 @@
                                     <b-card class="sales_list_area sales_list_area_top_right1">
                                         <TotalSalesAnalytics
                                             :targetDate=today
-                                            :key="resetKey"
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
                                         <TotalVisitorsAnalytics
                                             :targetDate=today
-                                            :key="resetKey"
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -38,7 +41,7 @@
                                     <b-card class="sales_list_area sales_list_area_middle_left">
                                         <BasicPlanTypeRatioAnalytics
                                             :targetDate=today
-                                            :key="resetKey"
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -46,20 +49,15 @@
                                     <b-card class="sales_list_area sales_list_area_middle_left">
                                         <AppointRatioAnalytics
                                             :targetDate=today
-                                            :key="resetKey"
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
                                 <b-col cols="6" style="max-height: 100%;">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            顧客別滞在時間
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="rangeBar"
-                                            :options="visitTimeChartOptions"
-                                            :series="visitTimeSeries"
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <CustomerDayStayHourAnalytics
+                                            :targetDate=today
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -67,14 +65,9 @@
                             <b-row>
                                 <b-col cols="12">
                                     <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            商品別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="bar"
-                                            :options="productSalesChartOptions"
-                                            :series="productSalesSeries"
+                                        <ProductDaySalesAnalytics
+                                            :targetDate=today
+                                            :key="dResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -93,56 +86,53 @@
                                 </b-col> -->
                             </b-row>
                         </b-tab>
-                        <b-tab title="前日" @click="resetKey++">
+                        <b-tab title="前日" @click="yResetKey++">
                             <b-row class="sales_list_area_top">
                                 <b-col cols="8" class="sales_list_area_top_left pb-2">
-                                    <CustomerDaySalesAnalytics
-                                        :targetDate=yesterday
-                                        :key="resetKey"
-                                    />
+                                    <b-card class="sales_list_area sales_list_area_top_left">
+                                        <CustomerDaySalesAnalytics
+                                            :targetDate=yesterday
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
                                 </b-col>
                                 <b-col cols="4" class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
                                         <TotalSalesAnalytics
                                             :targetDate=yesterday
-                                            :key="resetKey"
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
                                         <TotalVisitorsAnalytics
                                             :targetDate=yesterday
-                                            :key="resetKey"
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                 </b-col>
                             </b-row>
                             <b-row class="sales_list_area_middle">
-                                <b-col cols="3">
+                                <b-col cols="3" style="max-height: 100%;">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
                                         <BasicPlanTypeRatioAnalytics
                                             :targetDate=yesterday
-                                            :key="resetKey"
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="3">
+                                <b-col cols="3" style="max-height: 100%;">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
                                         <AppointRatioAnalytics
                                             :targetDate=yesterday
-                                            :key="resetKey"
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="6">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            顧客別滞在時間
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="rangeBar"
-                                            :options="visitTimeChartOptions"
-                                            :series="visitTimeSeries"
+                                <b-col cols="6" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <CustomerDayStayHourAnalytics
+                                            :targetDate=yesterday
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -150,14 +140,9 @@
                             <b-row>
                                 <b-col cols="12">
                                     <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            商品別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="bar"
-                                            :options="productSalesChartOptions"
-                                            :series="productSalesSeries"
+                                        <ProductDaySalesAnalytics
+                                            :targetDate=yesterday
+                                            :key="yResetKey"
                                         />
                                     </b-card>
                                 </b-col>
@@ -176,7 +161,7 @@
                                 </b-col> -->
                             </b-row>
                         </b-tab>
-                        <b-tab title="週">
+                        <b-tab title="1週間" @click="wResetKey++">
                             <b-row>
                                 <b-col cols="8">
                                     <b-card class="sales_list_area sales_list_area1">
@@ -198,76 +183,23 @@
                                 </b-col>
                                 <b-col cols="4">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
-                                        <b-container fluid>
-                                            <!-- <b-card-text class="mb-1">
-                                                総売上
-                                            </b-card-text>
-                                            <b-card-sub-title>
-                                                (本日)
-                                            </b-card-sub-title>
-                                            <b-card-text align="center" style="font-size: 20px;">
-                                                ￥1,243,200
-                                            </b-card-text>
-                                            <VueApexCharts
-                                                height="150"
-                                                type="area"
-                                                :options="totalSalesChartOptions2"
-                                                :series="totalSalesSeries2"
-                                            /> -->
-                                            <b-card-text class="mb-1">
-                                                総売上 (週)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series=[129]
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="total_sales_content mt-2">
-                                                        ￥1,298,400
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        sales
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalSalesAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                総来店数 (週)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series="[8]"
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="mt-2">
-                                                        8
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        customers
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalVisitorsAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
                                     </b-card>
                                 </b-col>
                             </b-row>
                         </b-tab>
-                        <b-tab title="月">
+                        <b-tab title="1ヵ月間" @click="mResetKey++">
                             <b-row>
                                 <b-col cols="8">
                                     <b-card class="sales_list_area sales_list_area1">
@@ -289,76 +221,23 @@
                                 </b-col>
                                 <b-col cols="4">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
-                                        <b-container fluid>
-                                            <!-- <b-card-text class="mb-1">
-                                                総売上
-                                            </b-card-text>
-                                            <b-card-sub-title>
-                                                (本日)
-                                            </b-card-sub-title>
-                                            <b-card-text align="center" style="font-size: 20px;">
-                                                ￥1,243,200
-                                            </b-card-text>
-                                            <VueApexCharts
-                                                height="150"
-                                                type="area"
-                                                :options="totalSalesChartOptions2"
-                                                :series="totalSalesSeries2"
-                                            /> -->
-                                            <b-card-text class="mb-1">
-                                                総売上 (月)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series=[129]
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="total_sales_content mt-2">
-                                                        ￥1,298,400
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        sales
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalSalesAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                総来店数 (月)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series="[8]"
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="mt-2">
-                                                        8
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        customers
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalVisitorsAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
                                     </b-card>
                                 </b-col>
                             </b-row>
                         </b-tab>
-                        <b-tab title="年" disabled>
+                        <b-tab title="年" disabled @click="resetKey++">
                         </b-tab>
                     </b-tabs>
 
@@ -454,10 +333,12 @@
 <script>
 import InputSalesDialog from '@/components/common/dialog/InputSalesDialog'
 import CustomerDaySalesAnalytics from '@/components/common/analytics/CustomerDaySalesAnalytics'
+import CustomerDayStayHourAnalytics from '@/components/common/analytics/CustomerDayStayHourAnalytics'
 import TotalSalesAnalytics from '@/components/common/analytics/TotalSalesAnalytics'
 import TotalVisitorsAnalytics from '@/components/common/analytics/TotalVisitorsAnalytics'
 import BasicPlanTypeRatioAnalytics from '@/components/common/analytics/BasicPlanTypeRatioAnalytics'
 import AppointRatioAnalytics from '@/components/common/analytics/AppointRatioAnalytics'
+import ProductDaySalesAnalytics from '@/components/common/analytics/ProductDaySalesAnalytics'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween';
@@ -467,9 +348,10 @@ dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isBetween)
 import utilsMixin from '@/mixins/utils'
-// dayjs.extend(require('dayjs/plugin/timezone'))
-// dayjs.extend(require('dayjs/plugin/utc'))
-// dayjs.tz.setDefault('Asia/Tokyo')
+
+dayjs.extend(require('dayjs/plugin/timezone'))
+dayjs.extend(require('dayjs/plugin/utc'))
+dayjs.tz.setDefault('Asia/Tokyo')
 
 export default {
     name: 'SalesListItem',
@@ -799,56 +681,6 @@ export default {
                 data: [47, 45, 54, 38, 56, 24, 65, 31, 37, 39, 62, 51, 35, 41, 35, 27, 93, 53, 61, 27, 54, 43, 19, 46]
             }
         ],
-        visitTimeChartOptions: {
-            chart: {
-                height: 350,
-                type: 'rangeBar',
-                // toolbar: {
-                //     show: false,
-                // }
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: true
-                }
-            },
-            xaxis: {
-                type: 'datetime',
-                labels: {
-                    datetimeUTC: false,
-                },
-            }
-        },
-        visitTimeSeries: [
-            {
-                data: [
-                    {
-                        x: '斎藤一',
-                        y: [
-                            dayjs('2022-07-01 20:30:00').valueOf(),
-                            dayjs('2022-07-01 22:51:00').valueOf(),
-                        ],
-                        fillColor: '#008FFB'
-                    },
-                    {
-                        x: '斎藤一1',
-                        y: [
-                            dayjs('2022-07-01 20:50:00').valueOf(),
-                            dayjs('2022-07-01 23:51:00').valueOf(),
-                        ],
-                        fillColor: '#008FFB'
-                    },
-                    {
-                        x: '斎藤一2',
-                        y: [
-                            dayjs('2022-07-01 21:20:00').valueOf(),
-                            dayjs('2022-07-02 00:15:00').valueOf(),
-                        ],
-                        fillColor: '#CAA846'
-                    },
-                ]
-            }
-        ],
         appointChartOptions: {
             chart: {
               type: 'bar',
@@ -929,7 +761,7 @@ export default {
                 offsetY: -20,
                 style: {
                     fontSize: '12px',
-                    colors: ["#304758"]
+                    colors: ["#ffffff"]
                 }
             },
             xaxis: {
@@ -1028,20 +860,28 @@ export default {
                 label: '同伴'
             }
         ],
-        resetKey: 0,
+        dResetKey: 0,
+        yResetKey: 0,
+        tResetKey: 0,
+        wResetKey: 0,
+        mResetKey: 0,
+        YResetKey: 0,
     }),
     components: {
         InputSalesDialog,
         CustomerDaySalesAnalytics,
+        CustomerDayStayHourAnalytics,
         TotalSalesAnalytics,
         TotalVisitorsAnalytics,
         BasicPlanTypeRatioAnalytics,
         AppointRatioAnalytics,
+        ProductDaySalesAnalytics,
     },
     computed: {
         ...mapGetters([
             'sales',
-            'salesTopActive'
+            'salesTopActive',
+            'currentTime',
         ]),
         topActive () {
             if (this.salesTopActive == undefined || this.salesTopActive == 0) {
@@ -1050,21 +890,29 @@ export default {
             return false
         },
         now () {
-            return dayjs()
+            return dayjs(this.currentTime)
+        },
+        target_day () {
+            let border_line = dayjs(this.now.format('YYYY-MM-DD') + ' 07:00:00')
+            if (this.now.isAfter(border_line)) {
+                return this.now
+            }
+            return this.now.subtract(1, 'd')
         },
         today () {
-            let border_line = dayjs(this.now.format('YYYY-MM-DD') + ' 07:00:00')
-            if (this.now.isAfter(border_line)) {
-                return this.now.format('YYYY-MM-DD')
-            }
-            return this.now.subtract(1, 'd').format('YYYY-MM-DD')
+            return this.target_day.format('YYYY-MM-DD')
         },
         yesterday () {
-            let border_line = dayjs(this.now.format('YYYY-MM-DD') + ' 07:00:00')
-            if (this.now.isAfter(border_line)) {
-                return this.now.subtract(1, 'd').format('YYYY-MM-DD')
-            }
-            return this.now.subtract(2, 'd').format('YYYY-MM-DD')
+            return this.target_day.subtract(1, 'd').format('YYYY-MM-DD')
+        },
+        weekAgo () {
+            return this.target_day.subtract(7, 'd').format('YYYY-MM-DD')
+        },
+        monthAgo () {
+            return this.target_day.subtract(31, 'd').format('YYYY-MM-DD')
+        },
+        yearAgo () {
+            return this.target_day.subtract(365, 'd').format('YYYY-MM-DD')
         },
     },
     created () {
@@ -1131,6 +979,10 @@ export default {
             height: 350px;
 
             .sales_list_area_middle_left {
+                height: 100%;
+            }
+
+            .sales_list_area_middle_right {
                 height: 100%;
             }
         }

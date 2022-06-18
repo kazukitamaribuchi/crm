@@ -9,7 +9,7 @@
                 基本プラン比率
             </b-card-text>
             <VueApexCharts
-                style="position: relative; top: 25px;"
+                style="position: relative; top: 50px;"
                 :width="width"
                 type="pie"
                 :options="basicPlanTypeChartOptions"
@@ -112,7 +112,6 @@
                         this.ratio = [item.data[1].total, item.data[0].total]
                     }
                 }
-                console.log('★', this.ratio)
                 this.loading = false
             }
         },

@@ -636,7 +636,6 @@ class SalesAppointDetailSerializer(DynamicFieldsModelSerializer):
             'total_tax_price',
         ]
 
-
 class SalesSerializer(DynamicFieldsModelSerializer):
 
     customer = CustomerSerializer()
@@ -761,6 +760,16 @@ class CustomerSalesSerializer(serializers.Serializer):
 
     def get_customer(self, obj):
         return CustomerSerializer(MCustomer.objects.get(pk=obj['customer'])).data
+
+
+class ProductSalesSerializer(serializers.Serializer):
+
+    sales_detail = serializers.SerializerMethodField()
+    total = serializers.IntegerField()
+    total_cnt = serializers.IntegerField()
+
+    def get_sales_detail(self, obj):
+        return ProductSerializer(MProduct.objects.get(pk=obj['sales_detail__product'])).data
 
 
 class AttendanceSerializer(DynamicFieldsModelSerializer):

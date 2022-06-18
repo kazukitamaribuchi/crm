@@ -7,6 +7,9 @@
         <b-row class="content_wrap">
             <Sidebar/>
             <div class="content">
+                <div align="right" style="color: white; position: absolute; top: 105px; right: 80px; font-size: 15px; float: right; width: 300px;">
+                    システム時刻: {{ currentTime }}
+                </div>
                 <router-view/>
             </div>
         </b-row>
@@ -16,6 +19,7 @@
 <script>
 import Header from '@/components/common/Header'
 import Sidebar from '@/components/common/Sidebar'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
     name: 'AttendanceItem',
@@ -24,6 +28,19 @@ export default {
     components: {
         Header,
         Sidebar,
+    },
+    computed: {
+        ...mapGetters([
+            'currentTime'
+        ]),
+    },
+    created () {
+        this.getCurrentTime()
+    },
+    methods: {
+        ...mapActions([
+            'getCurrentTime',
+        ]),
     }
 }
 </script>

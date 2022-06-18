@@ -146,7 +146,7 @@
                                         総計（税抜）
                                     </b-card-sub-title>
                                     <b-card-title>
-                                        ￥{{ salesData.total_sales }}
+                                        <b-icon icon="currency-yen"></b-icon> {{ salesData.total_sales }}
                                     </b-card-title>
                                 </b-col>
                                 <b-col cols="2">
@@ -154,7 +154,7 @@
                                         総計（税込）
                                     </b-card-sub-title>
                                     <b-card-title>
-                                        ￥{{ salesData.total_tax_sales }}
+                                        <b-icon icon="currency-yen"></b-icon> {{ salesData.total_tax_sales }}
                                     </b-card-title>
 
                                 </b-col>
@@ -268,7 +268,7 @@
                                     総計（税抜）
                                 </b-col>
                                 <b-col cols="3" class="mt-2 pt-2" align="right">
-                                    ￥{{ salesData.sales_service_detail_total_price }}
+                                    <b-icon icon="currency-yen"></b-icon> {{ salesData.sales_service_detail_total_price }}
                                 </b-col>
                                 <!-- <b-col cols="7" class="mt-0 pt-0">
                                 </b-col>
@@ -276,7 +276,7 @@
                                     総計（税込）
                                 </b-col>
                                 <b-col cols="3" class="mt-2 pt-2" align="right">
-                                    ￥{{ salesData.sales_service_detail_total_tax_price }}
+                                    <b-icon icon="currency-yen"></b-icon> {{ salesData.sales_service_detail_total_tax_price }}
                                 </b-col> -->
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">
@@ -320,7 +320,7 @@
                                     総計（税抜）
                                 </b-col>
                                 <b-col cols="3" class="mt-2 pt-2" align="right">
-                                    ￥{{ salesData.sales_appoint_detail_total_price }}
+                                    <b-icon icon="currency-yen"></b-icon> {{ salesData.sales_appoint_detail_total_price }}
                                 </b-col>
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">
@@ -363,7 +363,7 @@
                                     総計（税抜）
                                 </b-col>
                                 <b-col cols="3" class="mt-2 pt-2" align="right">
-                                    ￥{{ salesData.sales_detail_total_price }}
+                                    <b-icon icon="currency-yen"></b-icon> {{ salesData.sales_detail_total_price }}
                                 </b-col>
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">

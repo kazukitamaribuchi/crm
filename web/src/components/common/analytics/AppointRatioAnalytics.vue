@@ -9,7 +9,7 @@
                 指名比率
             </b-card-text>
             <VueApexCharts
-                style="position: relative; top: 25px;"
+                style="position: relative; top: 50px;"
                 :width="width"
                 type="pie"
                 :options="appointChartOptions"

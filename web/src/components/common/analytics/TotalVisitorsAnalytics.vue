@@ -3,6 +3,7 @@
         <b-skeleton-img
             v-if="loading"
             style="position: relative; top: -10px;"
+            height="180px"
         ></b-skeleton-img>
         <div v-else>
             <b-card-text class="mb-1">
@@ -60,6 +61,11 @@
                 type: String,
                 require: false,
                 default: now,
+            },
+            range: {
+                type: Number,
+                require: false,
+                default: 1,
             }
         },
         data: () => ({
@@ -147,15 +153,19 @@
         beforeCreate () {
         },
         created () {
+            // console.log('target_date', this.targetDate)
+            // console.log('range', this.range)
             this.$axios({
                 method: 'GET',
                 url: '/api/sales/get_total_visitors_analytics/',
                 params: {
                     target_date: this.targetDate,
+                    range: this.range,
                 }
             })
             .then(res => {
                 this.setTotalVisitorsData(res.data)
+                // console.log('setTotalVisitorsData', res)
             })
             .catch(e => {
                 console.log(e)

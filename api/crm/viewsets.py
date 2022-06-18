@@ -34,6 +34,7 @@ from .serializers import (
     BookingSerializer,
     QuestionSerializer,
     CustomerSalesSerializer,
+    ProductSalesSerializer,
 )
 
 from .models import (
@@ -574,6 +575,70 @@ class SalesViewSet(BaseModelViewSet):
 
         return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
 
+    @action(methods=['get'], detail=False)
+    def get_day_sales_analytics(self, request):
+        """
+        指定した日から~間の売上を取得（日単位）
+            => target_date=2022/6/18, range=3
+                => 2022/6/18 (2022/6/18 20:30 ~ 2022/6/19:7:00)
+                => 2022/6/19 (2022/6/19 20:30 ~ 2022/6/20:7:00)
+                => 2022/6/20 (2022/6/20 20:30 ~ 2022/6/21:7:00)
+
+        全期間は死ぬからNG, 最高3ヵ月くらい?かな
+        """
+
+        target_date_str = request.query_params['target_date'].split('-')
+        target_date_year = int(target_date_str[0])
+        target_date_hour = int(target_date_str[1])
+        target_date_minute = int(target_date_str[2])
+        range = int(request.query_params['range'])
+
+        start_time = datetime(
+            target_date_year,
+            target_date_hour,
+            target_date_minute,
+            OPEN_HOUR,
+            OPEN_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+
+        end_date = start_time + timedelta(days=range)
+        end_time = datetime(
+            end_date.year,
+            end_date.month,
+            end_date.day,
+            CLOSE_HOUR,
+            CLOSE_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+
+        logger.debug(start_time)
+        logger.debug(end_time)
+
+        data = SalesHeader.objects.filter(
+            visit_time__range=[
+                start_time,
+                end_time,
+            ],
+            leave_time__range=[
+                start_time,
+                end_time,
+            ]).values(
+                'visit_time__year',
+                'visit_time__month',
+                'visit_time__day',
+            ).annotate(
+                total=models.Sum('total_tax_sales'),
+                # total_visitors=models.Count('customer')
+            )
+
+        logger.debug('★＾＾＾')
+        logger.debug(data)
+
+        return Response({
+            'status': 'success',
+            'data': data,
+        })
+
+
 
     @action(methods=['get'], detail=False)
     def get_customer_day_sales_analytics(self, request):
@@ -584,8 +649,8 @@ class SalesViewSet(BaseModelViewSet):
             => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
         """
 
-        logger.debug('★')
-        logger.debug(request.query_params)
+        # logger.debug('★')
+        # logger.debug(request.query_params)
 
         target_date_str = request.query_params['target_date'].split('-')
         target_date_year = int(target_date_str[0])
@@ -619,8 +684,8 @@ class SalesViewSet(BaseModelViewSet):
             ]).values(
                 'customer'
             ).annotate(
-                total=models.Sum('total_sales')
-            ).order_by('-total_sales')
+                total=models.Sum('total_tax_sales')
+            ).order_by('-total_tax_sales')
 
         serializer = CustomerSalesSerializer(data, many=True)
 
@@ -637,16 +702,21 @@ class SalesViewSet(BaseModelViewSet):
         ・target_date
             => 2022/6/18 ・・・ 2022/6/18 20:30 ~ 2022/6/19 07:00
             => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
+        ・range => これがある場合、target_dateからrange(日)分取得する
+            => target_date=2022/06/18, range=3 => 2022/06/18 20:30 ~ 2022/06/21 09:00
 
-            日付指定なしならば全期間
+        ・日付指定なしならば全期間
         """
 
         if 'target_date' in request.query_params:
-            logger.debug(request.query_params['target_date'] + 'の売上総計を取得します。')
+            # logger.debug(request.query_params['target_date'] + 'の売上総計を取得します。')
             target_date_str = request.query_params['target_date'].split('-')
             target_date_year = int(target_date_str[0])
             target_date_hour = int(target_date_str[1])
             target_date_minute = int(target_date_str[2])
+            result_target_date = target_date_str
+
+            range = int(request.query_params['range'])
 
             start_time = datetime(
                 target_date_year,
@@ -655,7 +725,8 @@ class SalesViewSet(BaseModelViewSet):
                 OPEN_HOUR,
                 OPEN_MINUTE,
             ).astimezone(timezone('Asia/Tokyo'))
-            end_date = start_time + timedelta(days=1)
+
+            end_date = start_time + timedelta(days=range)
             end_time = datetime(
                 end_date.year,
                 end_date.month,
@@ -673,12 +744,12 @@ class SalesViewSet(BaseModelViewSet):
                     start_time,
                     end_time,
                 ]).aggregate(
-                    total_price=models.Sum('total_sales'),
+                    total_price=models.Sum('total_tax_sales'),
                 )
         else:
-            logger.debug('全期間の売上総計を取得します')
+            # logger.debug('全期間の売上総計を取得します')
             data = SalesHeader.objects.aggregate(
-                total_price=models.Sum('total_sales'),
+                total_price=models.Sum('total_tax_sales'),
             )
 
         return Response({
@@ -699,12 +770,14 @@ class SalesViewSet(BaseModelViewSet):
         result_target_date = '全期間'
 
         if 'target_date' in request.query_params:
-            logger.debug(request.query_params['target_date'] + 'の来店数を取得します。')
+            # logger.debug(request.query_params['target_date'] + 'の来店数を取得します。')
             target_date_str = request.query_params['target_date'].split('-')
             target_date_year = int(target_date_str[0])
             target_date_hour = int(target_date_str[1])
             target_date_minute = int(target_date_str[2])
             result_target_date = target_date_str
+
+            range = int(request.query_params['range'])
 
             start_time = datetime(
                 target_date_year,
@@ -713,7 +786,7 @@ class SalesViewSet(BaseModelViewSet):
                 OPEN_HOUR,
                 OPEN_MINUTE,
             ).astimezone(timezone('Asia/Tokyo'))
-            end_date = start_time + timedelta(days=1)
+            end_date = start_time + timedelta(days=range)
             end_time = datetime(
                 end_date.year,
                 end_date.month,
@@ -737,7 +810,7 @@ class SalesViewSet(BaseModelViewSet):
                     models.Count('customer')
                 ).values('customer').count()
         else:
-            logger.debug('全期間の来店数を取得します')
+            # logger.debug('全期間の来店数を取得します')
             data = SalesHeader.objects.values(
                 'customer'
             ).annotate(
@@ -766,7 +839,7 @@ class SalesViewSet(BaseModelViewSet):
         result_target_date = '全期間'
 
         if 'target_date' in request.query_params:
-            logger.debug(request.query_params['target_date'] + 'の基本料金比率を取得します。')
+            # logger.debug(request.query_params['target_date'] + 'の基本料金比率を取得します。')
             target_date_str = request.query_params['target_date'].split('-')
             target_date_year = int(target_date_str[0])
             target_date_hour = int(target_date_str[1])
@@ -806,7 +879,7 @@ class SalesViewSet(BaseModelViewSet):
                     total=models.Count('basic_plan_type')
                 )
         else:
-            logger.debug('全期間の基本料金比率を取得します')
+            # logger.debug('全期間の基本料金比率を取得します')
             data = SalesHeader.objects.values(
                     'basic_plan_type'
                 ).annotate(
@@ -843,7 +916,7 @@ class SalesViewSet(BaseModelViewSet):
         result_target_date = '全期間'
 
         if 'target_date' in request.query_params:
-            logger.debug(request.query_params['target_date'] + 'の指名比率を取得します。')
+            # logger.debug(request.query_params['target_date'] + 'の指名比率を取得します。')
             target_date_str = request.query_params['target_date'].split('-')
             target_date_year = int(target_date_str[0])
             target_date_hour = int(target_date_str[1])
@@ -883,7 +956,7 @@ class SalesViewSet(BaseModelViewSet):
                     total=models.Count('appoint')
                 )
         else:
-            logger.debug('全期間の指名比率を取得します')
+            # logger.debug('全期間の指名比率を取得します')
             data = SalesHeader.objects.values(
                     'appoint'
                 ).annotate(
@@ -907,7 +980,57 @@ class SalesViewSet(BaseModelViewSet):
         })
 
     @action(methods=['get'], detail=False)
-    def get_product_sales_analytics(self, request):
+    def get_customer_day_stay_hour_analytics(self, request):
+        """
+        顧客ごとの滞在時間 => その日で絞るだけ？・・・それだけだったらいらんかも。将来的になくすか検討
+        """
+        target_date_str = request.query_params['target_date'].split('-')
+        target_date_year = int(target_date_str[0])
+        target_date_hour = int(target_date_str[1])
+        target_date_minute = int(target_date_str[2])
+
+        start_time = datetime(
+            target_date_year,
+            target_date_hour,
+            target_date_minute,
+            OPEN_HOUR,
+            OPEN_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+        end_date = start_time + timedelta(days=1)
+        end_time = datetime(
+            end_date.year,
+            end_date.month,
+            end_date.day,
+            CLOSE_HOUR,
+            CLOSE_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+
+        data = SalesHeader.objects.filter(
+            visit_time__range=[
+                start_time,
+                end_time,
+            ],
+            leave_time__range=[
+                start_time,
+                end_time,
+            ])
+
+        # logger.debug(data)
+
+        return Response({
+            'status': 'success',
+            'target_date': start_time.strftime('%Y-%m-%d'),
+            # 'data': serializer.data,
+            'data': SalesSerializer(
+                data,
+                many=True,
+                fields=['id', 'customer', 'visit_time', 'leave_time']
+            ).data,
+        })
+
+
+    @action(methods=['get'], detail=False)
+    def get_product_day_sales_analytics(self, request):
         """
         指定した日の商品ごとの売上を取得
         ・target_date
@@ -944,20 +1067,41 @@ class SalesViewSet(BaseModelViewSet):
             leave_time__range=[
                 start_time,
                 end_time,
-            ]).values(
-                'sales_detail__product'
+            ],
+            sales_detail__isnull=False
+            ).values(
+                'sales_detail__product',
             ).annotate(
-                total=models.Sum('total_sales'),
-                total_cnt=models.Count('total_sales')
-            ).order_by('-total_sales')
+                total=models.Sum('sales_detail__total_tax_price'),
+                total_cnt=models.Count('sales_detail__product')
+            ).order_by('-sales_detail__total_tax_price')
 
-        # serializer = CustomerSalesSerializer(data, many=True)
+        data = SalesHeader.objects.filter(
+            visit_time__range=[
+                start_time,
+                end_time,
+            ],
+            leave_time__range=[
+                start_time,
+                end_time,
+            ],
+            sales_detail__isnull=False
+            ).values(
+                'sales_detail__product',
+            ).annotate(
+                total=models.Sum('sales_detail__total_tax_price'),
+                total_cnt=models.Count('sales_detail__product')
+            ).order_by('-total')
+
+        # logger.debug('★★★★★★')
+        # logger.debug(data)
+
+        serializer = ProductSalesSerializer(data, many=True)
 
         return Response({
             'status': 'success',
             'target_date': start_time.strftime('%Y-%m-%d'),
-            # 'data': serializer.data,
-            'data': data,
+            'data': serializer.data,
         })
 
 
@@ -978,3 +1122,19 @@ class AttendanceViewSet(BaseModelViewSet):
     permission_classes = (permissions.AllowAny,)
     queryset = AttendanceManagement.objects.all()
     serializer_class = AttendanceSerializer
+
+
+class TimeViewSet(viewsets.ViewSet):
+
+    permission_classes = (permissions.AllowAny,)
+    queryset = MCustomer.objects.all()
+    serializer_class = CustomerSerializer
+
+    @action(methods=['get'], detail=False)
+    def get_current_time(self, request):
+        now = datetime.now().astimezone(timezone('Asia/Tokyo'))
+        data = now.strftime('%Y-%m-%d %H:%M')
+        return Response({
+            'status': 'success',
+            'data': data,
+        })

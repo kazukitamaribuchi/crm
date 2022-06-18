@@ -657,7 +657,7 @@
                                 総計(税抜)
                             </b-card-sub-title>
                             <b-card-title class="mb-0">
-                                ￥ {{ totalPrice }}
+                                <b-icon icon="currency-yen"></b-icon> {{ totalPrice }}
                             </b-card-title>
                         </b-col>
                         <b-col cols="2">
@@ -665,7 +665,7 @@
                                 総計(税込)
                             </b-card-sub-title>
                             <b-card-title class="mb-0">
-                                ￥ {{ totalTaxPrice }}
+                                <b-icon icon="currency-yen"></b-icon> {{ totalTaxPrice }}
                             </b-card-title>
                         </b-col>
                         <b-col

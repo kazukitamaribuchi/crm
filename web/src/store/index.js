@@ -26,6 +26,7 @@ const initialState = {
     isAuth: false,
     token: '',
     loginUser: '',
+    currentTime: '',
     customer: [],
     customerTopActive: 0,
     sales: [],
@@ -52,6 +53,7 @@ export default new Vuex.Store({
         isAuth: state => state.isAuth,
         token: state => state.token,
         loginUser: state => state.loginUser,
+        currentTime: state => state.currentTime,
         customer: state => state.customer,
         customerTopActive: state => state.customerTopActive,
         sales: state => state.sales,
@@ -85,6 +87,9 @@ export default new Vuex.Store({
             state.isAuth = false
             state.token = ''
             state.loginUser = ''
+        },
+        setCurrentTime (state, payload) {
+            state.currentTime = payload
         }
     },
     actions: {
@@ -116,6 +121,23 @@ export default new Vuex.Store({
                 })
             })
         },
+        getCurrentTime (ctx, kwargs) {
+            return new Promise((resolve, reject) => {
+                Vue.prototype.$axios({
+                    method: 'GET',
+                    url: '/api/time/get_current_time/',
+                    data: kwargs
+                })
+                .then(res => {
+                    this.commit('setCurrentTime', res.data.data)
+                    resolve(res)
+                })
+                .catch(e => {
+                    console.log(e)
+                    reject(e)
+                })
+            })
+        }
     },
     modules: {
     },

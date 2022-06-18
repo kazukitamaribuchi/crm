@@ -3,6 +3,7 @@
         <b-skeleton-img
             v-if="loading"
             style="position: relative; top: -6px;"
+            height="180px"
         ></b-skeleton-img>
         <div v-else>
             <b-card-text class="mb-1">
@@ -20,7 +21,7 @@
                 </b-col>
                 <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
                     <b-card-title class="total_sales_content mt-2">
-                        {{ totalSalesStr }}
+                        ￥{{ totalSalesStr }}
                     </b-card-title>
                     <b-card-sub-title>
                         sales
@@ -60,6 +61,11 @@
                 type: String,
                 require: false,
                 default: now,
+            },
+            range: {
+                type: Number,
+                require: false,
+                default: 1,
             }
         },
         data: () => ({
@@ -148,15 +154,19 @@
         beforeCreate () {
         },
         created () {
+            // console.log('target_date', this.targetDate)
+            // console.log('range', this.range)
             this.$axios({
                 method: 'GET',
                 url: '/api/sales/get_total_sales_analytics/',
                 params: {
                     target_date: this.targetDate,
+                    range: this.range,
                 }
             })
             .then(res => {
                 this.setTotalSalesData(res.data)
+                // console.log('setTotalSalesData', res)
             })
             .catch(e => {
                 console.log(e)
