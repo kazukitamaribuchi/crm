@@ -576,74 +576,46 @@ class SalesViewSet(BaseModelViewSet):
 
 
     @action(methods=['get'], detail=False)
-    def get_customer_sales_analytics(self, request):
+    def get_customer_day_sales_analytics(self, request):
         """
-        target: 取得する単位
-            0: 当日
-            1: 前日
-            2: 現在から1週間
-            3: 現在から1ヵ月
-            4: 現在から1年
+        指定した日の顧客ごとの売上を取得
+        ・target_date
+            => 2022/6/18 ・・・ 2022/6/18 20:30 ~ 2022/6/19 07:00
+            => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
         """
 
-        target = int(request.query_params['target'])
+        logger.debug('★')
+        logger.debug(request.query_params)
 
-        # 現在時刻
-        now = datetime.now().astimezone(timezone('Asia/Tokyo')) + timedelta(days=1)
+        target_date_str = request.query_params['target_date'].split('-')
+        target_date_year = int(target_date_str[0])
+        target_date_hour = int(target_date_str[1])
+        target_date_minute = int(target_date_str[2])
 
-
-        # 今日のOPEN時刻
-        start_line = datetime(
-            now.year,
-            now.month,
-            now.day,
+        start_time = datetime(
+            target_date_year,
+            target_date_hour,
+            target_date_minute,
             OPEN_HOUR,
             OPEN_MINUTE,
         ).astimezone(timezone('Asia/Tokyo'))
-
-        # 今日のOPEN時刻の前だったら基準となるのは前日~本日のCLOSE
-        target_date = start_line
-        if now < start_line:
-            target_date = start_line + timedelta(days=-1)
-
-
-
-        target_end_date = target_date + timedelta(days=1)
-        target_end_line = datetime(
-            target_end_date.year,
-            target_end_date.month,
-            target_end_date.day,
+        end_date = start_time + timedelta(days=1)
+        end_time = datetime(
+            end_date.year,
+            end_date.month,
+            end_date.day,
             CLOSE_HOUR,
             CLOSE_MINUTE,
         ).astimezone(timezone('Asia/Tokyo'))
 
-        if target == 0:
-            # 当日
-            logger.debug('当日')
-            pass
-        elif target == 1:
-            # 前日
-            logger.debug('★前日')
-            target_date = target_date + timedelta(days=-1)
-            target_end_line = target_end_line + timedelta(days=-1)
-        elif target == 2:
-            target_date = target_date + timedelta(weeks=-1)
-        else:
-            pass
-
-        logger.debug('target_date')
-        logger.debug(target_date)
-        logger.debug('target_end_date')
-        logger.debug(target_end_line)
-
         data = SalesHeader.objects.filter(
             visit_time__range=[
-                target_date,
-                target_end_line,
+                start_time,
+                end_time,
             ],
             leave_time__range=[
-                target_date,
-                target_end_line,
+                start_time,
+                end_time,
             ]).values(
                 'customer'
             ).annotate(
@@ -654,11 +626,12 @@ class SalesViewSet(BaseModelViewSet):
 
         return Response({
             'status': 'success',
+            'target_date': start_time.strftime('%Y-%m-%d'),
             'data': serializer.data,
         })
 
     @action(methods=['get'], detail=False)
-    def get_total_sales(self, request):
+    def get_total_sales_analytics(self, request):
         """
         指定した日の売上の総計を取得
         ・target_date
@@ -700,12 +673,12 @@ class SalesViewSet(BaseModelViewSet):
                     start_time,
                     end_time,
                 ]).aggregate(
-                    total_price=models.Sum('total_sales')
+                    total_price=models.Sum('total_sales'),
                 )
         else:
             logger.debug('全期間の売上総計を取得します')
             data = SalesHeader.objects.aggregate(
-                total_price=models.Sum('total_sales')
+                total_price=models.Sum('total_sales'),
             )
 
         return Response({
@@ -714,7 +687,7 @@ class SalesViewSet(BaseModelViewSet):
         })
 
     @action(methods=['get'], detail=False)
-    def get_total_visitors(self, request):
+    def get_total_visitors_analytics(self, request):
         """
         指定した日の来店数を取得（団体単位）
         ・target_date
@@ -723,6 +696,7 @@ class SalesViewSet(BaseModelViewSet):
 
             日付指定なしならば全期間
         """
+        result_target_date = '全期間'
 
         if 'target_date' in request.query_params:
             logger.debug(request.query_params['target_date'] + 'の来店数を取得します。')
@@ -730,6 +704,7 @@ class SalesViewSet(BaseModelViewSet):
             target_date_year = int(target_date_str[0])
             target_date_hour = int(target_date_str[1])
             target_date_minute = int(target_date_str[2])
+            result_target_date = target_date_str
 
             start_time = datetime(
                 target_date_year,
@@ -769,9 +744,220 @@ class SalesViewSet(BaseModelViewSet):
                 models.Count('customer')
             ).values('customer').count()
 
+
+
         return Response({
             'status': 'success',
-            'data': {'total_visitors': data},
+            'target_date': '-'.join(result_target_date),
+            'data': data
+        })
+
+    @action(methods=['get'], detail=False)
+    def get_basic_plan_type_ratio_analytics(self, request):
+        """
+        指定した日の基本料金比率
+        ・target_date
+            => 2022/6/18 ・・・ 2022/6/18 20:30 ~ 2022/6/19 07:00
+            => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
+
+            日付指定なしならば全期間
+        """
+
+        result_target_date = '全期間'
+
+        if 'target_date' in request.query_params:
+            logger.debug(request.query_params['target_date'] + 'の基本料金比率を取得します。')
+            target_date_str = request.query_params['target_date'].split('-')
+            target_date_year = int(target_date_str[0])
+            target_date_hour = int(target_date_str[1])
+            target_date_minute = int(target_date_str[2])
+            result_target_date = target_date_str
+
+            start_time = datetime(
+                target_date_year,
+                target_date_hour,
+                target_date_minute,
+                OPEN_HOUR,
+                OPEN_MINUTE,
+            ).astimezone(timezone('Asia/Tokyo'))
+            end_date = start_time + timedelta(days=1)
+            end_time = datetime(
+                end_date.year,
+                end_date.month,
+                end_date.day,
+                CLOSE_HOUR,
+                CLOSE_MINUTE,
+            ).astimezone(timezone('Asia/Tokyo'))
+
+            logger.debug('open : ' + start_time.strftime('%Y-%m-%d %H:%M'))
+            logger.debug('end : ' + end_time.strftime('%Y-%m-%d %H:%M'))
+
+            data = SalesHeader.objects.filter(
+                visit_time__range=[
+                    start_time,
+                    end_time,
+                ],
+                leave_time__range=[
+                    start_time,
+                    end_time,
+                ]).values(
+                    'basic_plan_type'
+                ).annotate(
+                    total=models.Count('basic_plan_type')
+                )
+        else:
+            logger.debug('全期間の基本料金比率を取得します')
+            data = SalesHeader.objects.values(
+                    'basic_plan_type'
+                ).annotate(
+                    total=models.Count('basic_plan_type')
+                )
+
+        # if len(data) == 0:
+        #     data = [{'basic_plan_type':0, 'total': 0}, {'basic_plan_type':0, 'total': 0}]
+        # if len(data) == 1:
+        #     type = 0
+        #     if data[0]['basic_plan_type'] == 0:
+        #         type = 1
+        #     data.({'basic_plan_type': type, 'total': 0})
+
+        # 一旦0件でも1件も変える可能性があるやつで・・querysetに突っ込み方が分からん
+        # 取得方法考えるか、突っ込み方考える
+        return Response({
+            'status': 'success',
+            'target_date': '-'.join(result_target_date),
+            'data': data
+        })
+
+    @action(methods=['get'], detail=False)
+    def get_appoint_ratio_analytics(self, request):
+        """
+        指定した日の指名比率
+        ・target_date
+            => 2022/6/18 ・・・ 2022/6/18 20:30 ~ 2022/6/19 07:00
+            => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
+
+            日付指定なしならば全期間
+        """
+
+        result_target_date = '全期間'
+
+        if 'target_date' in request.query_params:
+            logger.debug(request.query_params['target_date'] + 'の指名比率を取得します。')
+            target_date_str = request.query_params['target_date'].split('-')
+            target_date_year = int(target_date_str[0])
+            target_date_hour = int(target_date_str[1])
+            target_date_minute = int(target_date_str[2])
+            result_target_date = target_date_str
+
+            start_time = datetime(
+                target_date_year,
+                target_date_hour,
+                target_date_minute,
+                OPEN_HOUR,
+                OPEN_MINUTE,
+            ).astimezone(timezone('Asia/Tokyo'))
+            end_date = start_time + timedelta(days=1)
+            end_time = datetime(
+                end_date.year,
+                end_date.month,
+                end_date.day,
+                CLOSE_HOUR,
+                CLOSE_MINUTE,
+            ).astimezone(timezone('Asia/Tokyo'))
+
+            logger.debug('open : ' + start_time.strftime('%Y-%m-%d %H:%M'))
+            logger.debug('end : ' + end_time.strftime('%Y-%m-%d %H:%M'))
+
+            data = SalesHeader.objects.filter(
+                visit_time__range=[
+                    start_time,
+                    end_time,
+                ],
+                leave_time__range=[
+                    start_time,
+                    end_time,
+                ]).values(
+                    'appoint'
+                ).annotate(
+                    total=models.Count('appoint')
+                )
+        else:
+            logger.debug('全期間の指名比率を取得します')
+            data = SalesHeader.objects.values(
+                    'appoint'
+                ).annotate(
+                    total=models.Count('appoint')
+                )
+
+        # if len(data) == 0:
+        #     data = [{'basic_plan_type':0, 'total': 0}, {'basic_plan_type':0, 'total': 0}]
+        # if len(data) == 1:
+        #     type = 0
+        #     if data[0]['basic_plan_type'] == 0:
+        #         type = 1
+        #     data.({'basic_plan_type': type, 'total': 0})
+
+        # 一旦0件でも1件も変える可能性があるやつで・・querysetに突っ込み方が分からん
+        # 取得方法考えるか、突っ込み方考える
+        return Response({
+            'status': 'success',
+            'target_date': '-'.join(result_target_date),
+            'data': data
+        })
+
+    @action(methods=['get'], detail=False)
+    def get_product_sales_analytics(self, request):
+        """
+        指定した日の商品ごとの売上を取得
+        ・target_date
+            => 2022/6/18 ・・・ 2022/6/18 20:30 ~ 2022/6/19 07:00
+            => 2021/12/31 ・・・ 2021/12/31 20:30 ~ 2022/1/1 07:00
+        """
+
+        target_date_str = request.query_params['target_date'].split('-')
+        target_date_year = int(target_date_str[0])
+        target_date_hour = int(target_date_str[1])
+        target_date_minute = int(target_date_str[2])
+
+        start_time = datetime(
+            target_date_year,
+            target_date_hour,
+            target_date_minute,
+            OPEN_HOUR,
+            OPEN_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+        end_date = start_time + timedelta(days=1)
+        end_time = datetime(
+            end_date.year,
+            end_date.month,
+            end_date.day,
+            CLOSE_HOUR,
+            CLOSE_MINUTE,
+        ).astimezone(timezone('Asia/Tokyo'))
+
+        data = SalesHeader.objects.filter(
+            visit_time__range=[
+                start_time,
+                end_time,
+            ],
+            leave_time__range=[
+                start_time,
+                end_time,
+            ]).values(
+                'sales_detail__product'
+            ).annotate(
+                total=models.Sum('total_sales'),
+                total_cnt=models.Count('total_sales')
+            ).order_by('-total_sales')
+
+        # serializer = CustomerSalesSerializer(data, many=True)
+
+        return Response({
+            'status': 'success',
+            'target_date': start_time.strftime('%Y-%m-%d'),
+            # 'data': serializer.data,
+            'data': data,
         })
 
 

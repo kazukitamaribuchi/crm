@@ -42,7 +42,7 @@ export default {
 
             .content {
                 width: $content-width;
-                height: $content-height;
+                // height: $content-height;
             }
         }
     }

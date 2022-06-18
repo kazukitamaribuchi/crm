@@ -8,150 +8,49 @@
                     @click="setSalesTopActive(0)"
                 >
                     <b-tabs pills card fill>
-                        <b-tab title="本日" active>
+                        <b-tab title="本日" active @click="resetKey++">
                             <b-row class="sales_list_area_top">
                                 <b-col cols="8" class="sales_list_area_top_left pb-2">
-                                    <CustomerSalesAnalytics
-
-                                    />
-                                    <!-- <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            顧客別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="330"
-                                            type="bar"
-                                            :options="customerSalesChartOptions"
-                                            :series="customerSalesSeries"
+                                    <b-card class="sales_list_area sales_list_area_top_left">
+                                        <CustomerDaySalesAnalytics
+                                            :targetDate=today
+                                            :key="resetKey"
                                         />
-                                    </b-card> -->
+                                    </b-card>
                                 </b-col>
                                 <b-col cols="4" class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
-                                        <b-container fluid>
-                                            <!-- <b-card-text class="mb-1">
-                                                総売上
-                                            </b-card-text>
-                                            <b-card-sub-title>
-                                                (本日)
-                                            </b-card-sub-title>
-                                            <b-card-text align="center" style="font-size: 20px;">
-                                                ￥1,243,200
-                                            </b-card-text>
-                                            <VueApexCharts
-                                                height="150"
-                                                type="area"
-                                                :options="totalSalesChartOptions2"
-                                                :series="totalSalesSeries2"
-                                            /> -->
-                                            <b-card-text class="mb-1">
-                                                総売上 (本日)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series=[129]
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="total_sales_content mt-2">
-                                                        ￥1,298,400
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        sales
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalSalesAnalytics
+                                            :targetDate=today
+                                            :key="resetKey"
+                                        />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                総来店数 (本日)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series="[8]"
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="mt-2">
-                                                        8
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        customers
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalVisitorsAnalytics
+                                            :targetDate=today
+                                            :key="resetKey"
+                                        />
                                     </b-card>
                                 </b-col>
                             </b-row>
                             <b-row class="sales_list_area_middle">
-                                <b-col cols="3">
+                                <b-col cols="3" style="max-height: 100%;">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
-                                        <b-card-text>
-                                            基本プラン比率
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="pie"
-                                            :options="normalVipChartOptions"
-                                            :series="[90, 10]"
+                                        <BasicPlanTypeRatioAnalytics
+                                            :targetDate=today
+                                            :key="resetKey"
                                         />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="3">
+                                <b-col cols="3" style="max-height: 100%;">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
-                                        <b-card-text>
-                                            指名比率
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="pie"
-                                            :options="appointTypeChartOptions"
-                                            :series="[75, 25]"
+                                        <AppointRatioAnalytics
+                                            :targetDate=today
+                                            :key="resetKey"
                                         />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="6">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text>
-                                            キャスト別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="bar"
-                                            :options="appointChartOptions"
-                                            :series="appointSeries"
-                                        />
-                                    </b-card>
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col cols="7">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            商品別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="bar"
-                                            :options="productSalesChartOptions"
-                                            :series="productSalesSeries"
-                                        />
-                                    </b-card>
-                                </b-col>
-                                <b-col cols="5">
+                                <b-col cols="6" style="max-height: 100%;">
                                     <b-card class="sales_list_area">
                                         <b-card-text class="mb-1">
                                             顧客別滞在時間
@@ -164,134 +63,77 @@
                                         />
                                     </b-card>
                                 </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="12">
+                                    <b-card class="sales_list_area">
+                                        <b-card-text class="mb-1">
+                                            商品別売上
+                                        </b-card-text>
+                                        <VueApexCharts
+                                            height="250"
+                                            type="bar"
+                                            :options="productSalesChartOptions"
+                                            :series="productSalesSeries"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <!-- <b-col cols="5">
+                                    <b-card class="sales_list_area">
+                                        <b-card-text>
+                                            キャスト別売上
+                                        </b-card-text>
+                                        <VueApexCharts
+                                            height="200"
+                                            type="bar"
+                                            :options="appointChartOptions"
+                                            :series="appointSeries"
+                                        />
+                                    </b-card>
+                                </b-col> -->
                             </b-row>
                         </b-tab>
-                        <b-tab title="前日">
+                        <b-tab title="前日" @click="resetKey++">
                             <b-row class="sales_list_area_top">
                                 <b-col cols="8" class="sales_list_area_top_left pb-2">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            顧客別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="330"
-                                            type="bar"
-                                            :options="customerSalesChartOptions"
-                                            :series="customerSalesSeries"
-                                        />
-                                    </b-card>
+                                    <CustomerDaySalesAnalytics
+                                        :targetDate=yesterday
+                                        :key="resetKey"
+                                    />
                                 </b-col>
                                 <b-col cols="4" class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                総売上 (前日)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series=[129]
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="total_sales_content mt-2">
-                                                        ￥1,298,400
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        sales
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalSalesAnalytics
+                                            :targetDate=yesterday
+                                            :key="resetKey"
+                                        />
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
-                                        <b-container fluid>
-                                            <b-card-text class="mb-1">
-                                                総来店数 (前日)
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col cols="6">
-                                                    <VueApexCharts
-                                                        width="150"
-                                                        height="150"
-                                                        type="radialBar"
-                                                        :options="totalSalesChartOptions"
-                                                        :series="[8]"
-                                                    />
-                                                </b-col>
-                                                <b-col cols="6" align="right" class="pt-4 ml-0 pl-0">
-                                                    <b-card-title class="mt-2">
-                                                        8
-                                                    </b-card-title>
-                                                    <b-card-sub-title>
-                                                        customers
-                                                    </b-card-sub-title>
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                                        <TotalVisitorsAnalytics
+                                            :targetDate=yesterday
+                                            :key="resetKey"
+                                        />
                                     </b-card>
                                 </b-col>
                             </b-row>
                             <b-row class="sales_list_area_middle">
                                 <b-col cols="3">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
-                                        <b-card-text>
-                                            基本プラン比率
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="pie"
-                                            :options="normalVipChartOptions"
-                                            :series="[90, 10]"
+                                        <BasicPlanTypeRatioAnalytics
+                                            :targetDate=yesterday
+                                            :key="resetKey"
                                         />
                                     </b-card>
                                 </b-col>
                                 <b-col cols="3">
                                     <b-card class="sales_list_area sales_list_area_middle_left">
-                                        <b-card-text>
-                                            指名比率
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="pie"
-                                            :options="appointTypeChartOptions"
-                                            :series="[75, 25]"
+                                        <AppointRatioAnalytics
+                                            :targetDate=yesterday
+                                            :key="resetKey"
                                         />
                                     </b-card>
                                 </b-col>
                                 <b-col cols="6">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text>
-                                            キャスト別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="200"
-                                            type="bar"
-                                            :options="appointChartOptions"
-                                            :series="appointSeries"
-                                        />
-                                    </b-card>
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col cols="7">
-                                    <b-card class="sales_list_area">
-                                        <b-card-text class="mb-1">
-                                            商品別売上
-                                        </b-card-text>
-                                        <VueApexCharts
-                                            height="250"
-                                            type="bar"
-                                            :options="productSalesChartOptions"
-                                            :series="productSalesSeries"
-                                        />
-                                    </b-card>
-                                </b-col>
-                                <b-col cols="5">
                                     <b-card class="sales_list_area">
                                         <b-card-text class="mb-1">
                                             顧客別滞在時間
@@ -304,6 +146,34 @@
                                         />
                                     </b-card>
                                 </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="12">
+                                    <b-card class="sales_list_area">
+                                        <b-card-text class="mb-1">
+                                            商品別売上
+                                        </b-card-text>
+                                        <VueApexCharts
+                                            height="250"
+                                            type="bar"
+                                            :options="productSalesChartOptions"
+                                            :series="productSalesSeries"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <!-- <b-col cols="5">
+                                    <b-card class="sales_list_area">
+                                        <b-card-text>
+                                            キャスト別売上
+                                        </b-card-text>
+                                        <VueApexCharts
+                                            height="200"
+                                            type="bar"
+                                            :options="appointChartOptions"
+                                            :series="appointSeries"
+                                        />
+                                    </b-card>
+                                </b-col> -->
                             </b-row>
                         </b-tab>
                         <b-tab title="週">
@@ -583,7 +453,11 @@
 
 <script>
 import InputSalesDialog from '@/components/common/dialog/InputSalesDialog'
-import CustomerSalesAnalytics from '@/components/common/analytics/CustomerSalesAnalytics'
+import CustomerDaySalesAnalytics from '@/components/common/analytics/CustomerDaySalesAnalytics'
+import TotalSalesAnalytics from '@/components/common/analytics/TotalSalesAnalytics'
+import TotalVisitorsAnalytics from '@/components/common/analytics/TotalVisitorsAnalytics'
+import BasicPlanTypeRatioAnalytics from '@/components/common/analytics/BasicPlanTypeRatioAnalytics'
+import AppointRatioAnalytics from '@/components/common/analytics/AppointRatioAnalytics'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween';
@@ -592,6 +466,7 @@ import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
 dayjs.extend(isSameOrAfter)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isBetween)
+import utilsMixin from '@/mixins/utils'
 // dayjs.extend(require('dayjs/plugin/timezone'))
 // dayjs.extend(require('dayjs/plugin/utc'))
 // dayjs.tz.setDefault('Asia/Tokyo')
@@ -946,146 +821,34 @@ export default {
         },
         visitTimeSeries: [
             {
-            data: [
-            {
-            x: '斎藤一',
-            y: [
-            dayjs('2022-07-01 20:30:00').valueOf(),
-            dayjs('2022-07-01 22:51:00').valueOf(),
-            ],
-            fillColor: '#008FFB'
-            },
-            {
-            x: '斎藤一1',
-            y: [
-            dayjs('2022-07-01 20:50:00').valueOf(),
-            dayjs('2022-07-01 23:51:00').valueOf(),
-            ],
-            fillColor: '#008FFB'
-            },
-            {
-            x: '斎藤一2',
-            y: [
-            dayjs('2022-07-01 21:20:00').valueOf(),
-            dayjs('2022-07-02 00:15:00').valueOf(),
-            ],
-            fillColor: '#CAA846'
-            },
-            {
-            x: '斎藤一3',
-            y: [
-            dayjs('2022-07-02 00:05:00').valueOf(),
-            dayjs('2022-07-02 01:30:00').valueOf(),
-            ],
-            fillColor: '#008FFB'
-            },
-            {
-            x: '斎藤一4',
-            y: [
-            dayjs('2022-07-01 20:30:00').valueOf(),
-            dayjs('2022-07-01 22:51:00').valueOf(),
-            ],
-            fillColor: '#CAA846'
-            },
-            {
-            x: '斎藤一5',
-            y: [
-            dayjs('2022-07-01 20:50:00').valueOf(),
-            dayjs('2022-07-01 23:51:00').valueOf(),
-            ],
-            fillColor: '#008FFB'
-            },
-            ]
+                data: [
+                    {
+                        x: '斎藤一',
+                        y: [
+                            dayjs('2022-07-01 20:30:00').valueOf(),
+                            dayjs('2022-07-01 22:51:00').valueOf(),
+                        ],
+                        fillColor: '#008FFB'
+                    },
+                    {
+                        x: '斎藤一1',
+                        y: [
+                            dayjs('2022-07-01 20:50:00').valueOf(),
+                            dayjs('2022-07-01 23:51:00').valueOf(),
+                        ],
+                        fillColor: '#008FFB'
+                    },
+                    {
+                        x: '斎藤一2',
+                        y: [
+                            dayjs('2022-07-01 21:20:00').valueOf(),
+                            dayjs('2022-07-02 00:15:00').valueOf(),
+                        ],
+                        fillColor: '#CAA846'
+                    },
+                ]
             }
         ],
-        customerSalesSeries: [
-            {
-            name: 'PRODUCT A',
-            data: [44, 55, 41, 67, 22, 43]
-            }, {
-            name: 'PRODUCT B',
-            data: [13, 23, 20, 8, 13, 27]
-            }, {
-            name: 'PRODUCT C',
-            data: [11, 17, 15, 15, 21, 14]
-            }, {
-            name: 'PRODUCT D',
-            data: [21, 7, 25, 13, 22, 8]
-            }
-        ],
-        customerSalesChartOptions: {
-            chart: {
-              type: 'bar',
-              height: 350,
-              stacked: true,
-              toolbar: {
-                show: true
-              },
-              zoom: {
-                enabled: true
-              }
-            },
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                legend: {
-                  position: 'bottom',
-                  offsetX: -10,
-                  offsetY: 0
-                }
-              }
-            }],
-            plotOptions: {
-              bar: {
-                horizontal: false,
-                borderRadius: 10
-              },
-            },
-            xaxis: {
-              categories: ['斎藤一', '斎藤一1', '斎藤一2', '斎藤一3', '斎藤一4', '斎藤一5'],
-            },
-            legend: {
-              position: 'right',
-              offsetY: 40
-            },
-            fill: {
-              opacity: 1
-            }
-        },
-        normalVipChartOptions: {
-            chart: {
-              type: 'pie',
-            },
-            labels: ['Normal', 'VIP'],
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200
-                },
-                legend: {
-                  position: 'bottom'
-                }
-              }
-            }]
-        },
-        appointTypeChartOptions: {
-            chart: {
-              type: 'pie',
-            },
-            labels: ['指名', 'フリー'],
-            responsive: [{
-              breakpoint: 480,
-              options: {
-                chart: {
-                  width: 200
-                },
-                legend: {
-                  position: 'bottom'
-                }
-              }
-            }]
-        },
         appointChartOptions: {
             chart: {
               type: 'bar',
@@ -1264,11 +1027,16 @@ export default {
                 key: 'douhan',
                 label: '同伴'
             }
-        ]
+        ],
+        resetKey: 0,
     }),
     components: {
         InputSalesDialog,
-        CustomerSalesAnalytics,
+        CustomerDaySalesAnalytics,
+        TotalSalesAnalytics,
+        TotalVisitorsAnalytics,
+        BasicPlanTypeRatioAnalytics,
+        AppointRatioAnalytics,
     },
     computed: {
         ...mapGetters([
@@ -1280,7 +1048,24 @@ export default {
                 return true
             }
             return false
-        }
+        },
+        now () {
+            return dayjs()
+        },
+        today () {
+            let border_line = dayjs(this.now.format('YYYY-MM-DD') + ' 07:00:00')
+            if (this.now.isAfter(border_line)) {
+                return this.now.format('YYYY-MM-DD')
+            }
+            return this.now.subtract(1, 'd').format('YYYY-MM-DD')
+        },
+        yesterday () {
+            let border_line = dayjs(this.now.format('YYYY-MM-DD') + ' 07:00:00')
+            if (this.now.isAfter(border_line)) {
+                return this.now.subtract(1, 'd').format('YYYY-MM-DD')
+            }
+            return this.now.subtract(2, 'd').format('YYYY-MM-DD')
+        },
     },
     created () {
     },
@@ -1298,8 +1083,11 @@ export default {
                     id: item[0].id
                 }
             })
-        }
-    }
+        },
+    },
+    mixins: [
+        utilsMixin
+    ]
 }
 </script>
 
@@ -1340,7 +1128,7 @@ export default {
         }
 
         .sales_list_area_middle {
-            height: 300px;
+            height: 350px;
 
             .sales_list_area_middle_left {
                 height: 100%;
