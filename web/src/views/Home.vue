@@ -45,6 +45,7 @@ export default {
         if (!this.initStatus) {
             this.appInitAction()
             .then(res => {
+                this.getCurrentTime()
                 this.setInitStatus(true)
             })
             .catch(e => {
@@ -106,6 +107,7 @@ export default {
         ]),
         ...mapActions([
             'appInitAction',
+            'getCurrentTime',
             // 'getProductList',
             // 'getProductByCategoryList',
             // 'getPopularProductList',

@@ -1,19 +1,19 @@
 <template>
-    <div id="customer_day_sales_analytics">
+    <div id="customer_day_total_sales_analytics">
         <!-- <b-card class="customer_day_sales_analytics_area"> -->
             <b-skeleton-img
                 v-if="loading"
-                height="380px"
+                height="290px"
             ></b-skeleton-img>
             <div v-else>
                 <b-card-text class="mb-1 mt-1">
-                    顧客別売上
+                    顧客別売上総計
                 </b-card-text>
                 <VueApexCharts
                     :height=height
                     type="bar"
-                    :options="customerDaySalesChartOptions"
-                    :series="customerDaySalesSeries"
+                    :options="customerDayTotalSalesChartOptions"
+                    :series="customerDayTotalSalesSeries"
                 />
             </div>
         <!-- </b-card> -->
@@ -31,14 +31,14 @@
     const now = dayjs().format('YYYY-MM-DD')
 
     export default {
-        name: 'CustomerDaySalesAnalyticsItem',
+        name: 'CustomerDayTotalSalesAnalyticsItem',
         components: {
         },
         props: {
             height: {
                 type: Number,
                 required: false,
-                default: 330,
+                default: 270,
             },
             targetDate: {
                 type: String,
@@ -52,7 +52,7 @@
             }
         },
         data: () => ({
-            customerDaySalesChartOptions: {
+            customerDayTotalSalesChartOptions: {
                 // title: {
                 //     text: '顧客別売上',
                 //     align: 'left',
@@ -65,7 +65,6 @@
                 // },
                 chart: {
                   type: 'bar',
-                  height: 350,
                   stacked: true,
                   toolbar: {
                       show: false,
@@ -161,7 +160,7 @@
                 }
                 // colors: ['#546E7A']
             },
-            customerDaySalesSeries: [
+            customerDayTotalSalesSeries: [
                 {
                     name: '売上',
                     data: [44, 55, 41, 67, 22, 43]
@@ -181,7 +180,7 @@
                 }
             })
             .then(res => {
-                this.setCustomerDaySalesData(res.data)
+                this.setCustomerDayTotalSalesData(res.data)
             })
             .catch(e => {
                 console.log(e)
@@ -208,7 +207,7 @@
         computed: {
         },
         methods: {
-            setCustomerDaySalesData (item) {
+            setCustomerDayTotalSalesData (item) {
                 const data = item.data
                 let series = []
                 let categories = []
@@ -218,9 +217,9 @@
                     categories.push(data[i].customer.name)
                     colors.push('#ffffff')
                 }
-                this.customerDaySalesSeries[0].data = series
-                this.customerDaySalesChartOptions.xaxis.categories = categories
-                this.customerDaySalesChartOptions.xaxis.labels.style.colors = colors
+                this.customerDayTotalSalesSeries[0].data = series
+                this.customerDayTotalSalesChartOptions.xaxis.categories = categories
+                this.customerDayTotalSalesChartOptions.xaxis.labels.style.colors = colors
                 this.loading = false
             }
         },

@@ -1,5 +1,5 @@
 <template>
-    <div id="customer_day_sales_analytics">
+    <div id="product_day_sales_analytics">
         <!-- <b-card class="customer_day_sales_analytics_area"> -->
             <b-skeleton-img
                 v-if="loading"
@@ -7,13 +7,13 @@
             ></b-skeleton-img>
             <div v-else>
                 <b-card-text class="mb-1 mt-1">
-                    顧客別売上
+                    商品別売上総計
                 </b-card-text>
                 <VueApexCharts
                     :height=height
                     type="bar"
-                    :options="customerDaySalesChartOptions"
-                    :series="customerDaySalesSeries"
+                    :options="productDayTotalSalesChartOptions"
+                    :series="productDayTotalSalesSeries"
                 />
             </div>
         <!-- </b-card> -->
@@ -31,14 +31,14 @@
     const now = dayjs().format('YYYY-MM-DD')
 
     export default {
-        name: 'CustomerDaySalesAnalyticsItem',
+        name: 'ProductDayTotalSalesAnalyticsItem',
         components: {
         },
         props: {
             height: {
                 type: Number,
                 required: false,
-                default: 330,
+                default: 300,
             },
             targetDate: {
                 type: String,
@@ -52,27 +52,17 @@
             }
         },
         data: () => ({
-            customerDaySalesChartOptions: {
-                // title: {
-                //     text: '顧客別売上',
-                //     align: 'left',
-                //     style: {
-                //         fontSize:  '14px',
-                //         fontWeight:  'bold',
-                //         fontFamily:  undefined,
-                //         color:  '#ffffff'
-                //     },
-                // },
+            productDayTotalSalesChartOptions: {
                 chart: {
                   type: 'bar',
                   height: 350,
-                  stacked: true,
-                  toolbar: {
-                      show: false,
-                  },
+                  // stacked: true,
                   // zoom: {
                   //   enabled: true
                   // }
+                  toolbar: {
+                      show: false,
+                  },
                 },
                 // responsive: [{
                 //   breakpoint: 480,
@@ -88,6 +78,8 @@
                     bar: {
                         horizontal: false,
                         borderRadius: 10,
+                        columnWidth: '55%',
+                        // endingShape: 'rounded',
                         dataLabels: {
                             position: 'bottom', // top, center, bottom
                         },
@@ -127,18 +119,62 @@
                         }
                     }
                 },
-                yaxis: {
-                    labels: {
-                        style: {
-                            fontSize: '12px',
-                            colors: ["#ffffff"]
-                        }
-                    }
-                },
+                yaxis: [
+                    {
+                        seriesName: '総計',
+                        // opposite: true,
+                        axisTicks: {
+                            show: true,
+                        },
+                        axisBorder: {
+                            show: true,
+                            color: '#008FFB'
+                        },
+                        labels: {
+                            style: {
+                                fontSize: '12px',
+                                colors: ["#ffffff"]
+                            }
+                        },
+                        title: {
+                            text: "総計",
+                            style: {
+                                color: '#008FFB',
+                            }
+                        },
+                    },
+                    {
+                        seriesName: '売上数',
+                        opposite: true,
+                        axisTicks: {
+                            show: true,
+                        },
+                        axisBorder: {
+                            show: true,
+                            color: '#00E396'
+                        },
+                        labels: {
+                            style: {
+                                fontSize: '12px',
+                                colors: ["#ffffff"]
+                            }
+                        },
+                        title: {
+                            text: "売上数",
+                            style: {
+                                color: '#00E396',
+                            }
+                        },
+                    },
+                ],
                 dataLabels: {
                     enabled: true,
-                    formatter: function (val) {
-                        return val.toLocaleString() + "円";
+                    formatter: function (a, b) {
+                        if (b.seriesIndex == 0) {
+                            return a.toLocaleString() + "円"
+                        } else if (b.seriesIndex == 1) {
+                            return a.toLocaleString()
+                        }
                     },
                     offsetY: -20,
                     style: {
@@ -148,8 +184,13 @@
                 },
                 legend: {
                     position: 'right',
-                    offsetX: 0,
-                    offsetY: 50
+                    // offsetX: 0,
+                    // offsetY: 100,
+                    // horizontalAlign: 'left',
+                    // offsetX: 40
+                    labels: {
+                        colors: ['#ffffff', '#ffffff']
+                    }
                 },
                 fill: {
                     opacity: 0.9
@@ -158,13 +199,28 @@
                     theme: 'dark',
                     followCursor: true
                     // fillSeriesColor: true,
-                }
+                    // fixed: {
+                    //     enabled: true,
+                    //     position: 'topLeft', // topRight, topLeft, bottomRight, bottomLeft
+                    //     offsetY: 30,
+                    //     offsetX: 60
+                    // },
+                },
+                stroke: {
+                    show: true,
+                    width: 2,
+                    colors: ['transparent']
+                },
                 // colors: ['#546E7A']
             },
-            customerDaySalesSeries: [
+            productDayTotalSalesSeries: [
                 {
-                    name: '売上',
+                    name: '総計',
                     data: [44, 55, 41, 67, 22, 43]
+                },
+                {
+                    name: '売上数',
+                    data: [2, 5, 3, 1, 1, 9]
                 }
             ],
             loading: true,
@@ -174,14 +230,14 @@
         created () {
             this.$axios({
                 method: 'GET',
-                url: '/api/sales/get_customer_day_sales_analytics/',
+                url: '/api/sales/get_product_day_sales_analytics/',
                 params: {
                     target_date: this.targetDate,
-                    range: this.range,
+                    range: this.range
                 }
             })
             .then(res => {
-                this.setCustomerDaySalesData(res.data)
+                this.setProductDayTotalSalesData(res.data)
             })
             .catch(e => {
                 console.log(e)
@@ -208,19 +264,22 @@
         computed: {
         },
         methods: {
-            setCustomerDaySalesData (item) {
+            setProductDayTotalSalesData (item) {
                 const data = item.data
-                let series = []
+                let total_sales_price_series = []
+                let total_sales_cnt_series = []
                 let categories = []
                 let colors = []
                 for (const i in data) {
-                    series.push(data[i].total)
-                    categories.push(data[i].customer.name)
+                    total_sales_price_series.push(data[i].total)
+                    total_sales_cnt_series.push(data[i].total_cnt)
+                    categories.push(data[i].sales_detail.name)
                     colors.push('#ffffff')
                 }
-                this.customerDaySalesSeries[0].data = series
-                this.customerDaySalesChartOptions.xaxis.categories = categories
-                this.customerDaySalesChartOptions.xaxis.labels.style.colors = colors
+                this.productDayTotalSalesSeries[0].data = total_sales_price_series
+                this.productDayTotalSalesSeries[1].data = total_sales_cnt_series
+                this.productDayTotalSalesChartOptions.xaxis.categories = categories
+                this.productDayTotalSalesChartOptions.xaxis.labels.style.colors = colors
                 this.loading = false
             }
         },

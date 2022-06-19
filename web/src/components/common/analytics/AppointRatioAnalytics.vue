@@ -43,6 +43,11 @@
                 type: String,
                 require: false,
                 default: now,
+            },
+            range: {
+                type: Number,
+                require: false,
+                default: 1
             }
         },
         data: () => ({
@@ -75,6 +80,7 @@
                 url: '/api/sales/get_appoint_ratio_analytics/',
                 params: {
                     target_date: this.targetDate,
+                    range: this.range,
                 }
             })
             .then(res => {

@@ -1,5 +1,5 @@
 <template>
-    <div id="customer_day_sales_analytics">
+    <div id="day_total_visitors_analytics">
         <!-- <b-card class="customer_day_sales_analytics_area"> -->
             <b-skeleton-img
                 v-if="loading"
@@ -7,13 +7,13 @@
             ></b-skeleton-img>
             <div v-else>
                 <b-card-text class="mb-1 mt-1">
-                    顧客別売上
+                    来店数遷移
                 </b-card-text>
                 <VueApexCharts
                     :height=height
-                    type="bar"
-                    :options="customerDaySalesChartOptions"
-                    :series="customerDaySalesSeries"
+                    type="line"
+                    :options="dayTotalVisitorsChartOptions"
+                    :series="dayTotalVisitorsSeries"
                 />
             </div>
         <!-- </b-card> -->
@@ -31,14 +31,14 @@
     const now = dayjs().format('YYYY-MM-DD')
 
     export default {
-        name: 'CustomerDaySalesAnalyticsItem',
+        name: 'DaySalesAnalyticsItem',
         components: {
         },
         props: {
             height: {
                 type: Number,
                 required: false,
-                default: 330,
+                default: 300,
             },
             targetDate: {
                 type: String,
@@ -52,7 +52,7 @@
             }
         },
         data: () => ({
-            customerDaySalesChartOptions: {
+            dayTotalVisitorsChartOptions: {
                 // title: {
                 //     text: '顧客別売上',
                 //     align: 'left',
@@ -64,15 +64,13 @@
                 //     },
                 // },
                 chart: {
-                  type: 'bar',
-                  height: 350,
-                  stacked: true,
+                  type: 'line',
                   toolbar: {
                       show: false,
                   },
-                  // zoom: {
-                  //   enabled: true
-                  // }
+                  zoom: {
+                    enabled: false
+                  }
                 },
                 // responsive: [{
                 //   breakpoint: 480,
@@ -84,21 +82,18 @@
                 //     }
                 //   }
                 // }],
-                plotOptions: {
-                    bar: {
-                        horizontal: false,
-                        borderRadius: 10,
-                        dataLabels: {
-                            position: 'bottom', // top, center, bottom
-                        },
-                    },
-                },
+                // plotOptions: {
+                //     bar: {
+                //         horizontal: false,
+                //         borderRadius: 10,
+                //         dataLabels: {
+                //             position: 'bottom', // top, center, bottom
+                //         },
+                //     },
+                // },
                 xaxis: {
-                    categories: ['斎藤一', '斎藤一1', '斎藤一2', '斎藤一3', '斎藤一4', '斎藤一5'],
-                    // title: {
-                    //     text: '顧客名'
-                    // },
-                    position: 'top',
+                    type: 'datetime',
+                    // position: 'top',
                     axisBorder: {
                         show: false
                     },
@@ -117,14 +112,21 @@
                             }
                         }
                     },
-                    // tooltip: {
-                    //     enabled: true,
-                    // }
+                    tooltip: {
+                        enabled: true,
+                    },
                     labels: {
                         style: {
                             fontSize: '12px',
                             colors: ["#ffffff"]
-                        }
+                        },
+                        datetimeFormatter: {
+                            year: 'yyyy年',
+                            month: "M月",
+                            day: 'M月dd日',
+                            hour: 'HH:mm',
+                        },
+                        datetimeUTC: false,
                     }
                 },
                 yaxis: {
@@ -133,10 +135,16 @@
                             fontSize: '12px',
                             colors: ["#ffffff"]
                         }
-                    }
+                    },
+                    title: {
+                        text: "来店数",
+                        style: {
+                            color: '#008FFB',
+                        }
+                    },
                 },
                 dataLabels: {
-                    enabled: true,
+                    enabled: false,
                     formatter: function (val) {
                         return val.toLocaleString() + "円";
                     },
@@ -146,25 +154,92 @@
                         colors: ["#ffffff"]
                     }
                 },
-                legend: {
-                    position: 'right',
-                    offsetX: 0,
-                    offsetY: 50
+                stroke: {
+                    curve: 'straight',
                 },
+                labels: [
+                    "13 Nov 2017",
+                    "14 Nov 2017",
+                    "15 Nov 2017",
+                    "16 Nov 2017",
+                    "17 Nov 2017",
+                    "20 Nov 2017",
+                    "21 Nov 2017",
+                    "22 Nov 2017",
+                    "23 Nov 2017",
+                    "24 Nov 2017",
+                    "27 Nov 2017",
+                    "28 Nov 2017",
+                    "29 Nov 2017",
+                    "30 Nov 2017",
+                    "01 Dec 2017",
+                    "04 Dec 2017",
+                    "05 Dec 2017",
+                    "06 Dec 2017",
+                    "07 Dec 2017",
+                    "08 Dec 2017"
+                ],
+                // title: {
+                //     text: 'Fundamental Analysis of Stocks',
+                //     align: 'left'
+                // },
+                // subtitle: {
+                //     text: 'Price Movements',
+                //     align: 'left'
+                // },
+
+                // legend: {
+                //     position: 'right',
+                //     offsetX: 0,
+                //     offsetY: 50
+                // },
+                // fill: {
+                //     opacity: 0.9
+                // },
                 fill: {
-                    opacity: 0.9
+                    type: 'gradient',
+                    gradient: {
+                        shade: 'dark',
+                        gradientToColors: [ '#FDD835'],
+                        shadeIntensity: 1,
+                        type: 'horizontal',
+                        opacityFrom: 1,
+                        opacityTo: 1,
+                        stops: [0, 100, 100, 100]
+                    },
                 },
                 tooltip: {
                     theme: 'dark',
                     followCursor: true
                     // fillSeriesColor: true,
-                }
+                },
                 // colors: ['#546E7A']
             },
-            customerDaySalesSeries: [
+            dayTotalVisitorsSeries: [
                 {
-                    name: '売上',
-                    data: [44, 55, 41, 67, 22, 43]
+                    name: '来店数',
+                    data:  [
+                        8107.85,
+                        8128.0,
+                        8122.9,
+                        8165.5,
+                        8340.7,
+                        8423.7,
+                        8423.5,
+                        8514.3,
+                        8481.85,
+                        8487.7,
+                        8506.9,
+                        8626.2,
+                        8668.95,
+                        8602.3,
+                        8607.55,
+                        8512.9,
+                        8496.25,
+                        8600.65,
+                        8881.1,
+                        9340.85
+                    ],
                 }
             ],
             loading: true,
@@ -174,14 +249,14 @@
         created () {
             this.$axios({
                 method: 'GET',
-                url: '/api/sales/get_customer_day_sales_analytics/',
+                url: '/api/sales/get_day_total_visitors_analytics/',
                 params: {
                     target_date: this.targetDate,
                     range: this.range,
                 }
             })
             .then(res => {
-                this.setCustomerDaySalesData(res.data)
+                this.setDayTotalVisitorsData(res.data)
             })
             .catch(e => {
                 console.log(e)
@@ -208,19 +283,19 @@
         computed: {
         },
         methods: {
-            setCustomerDaySalesData (item) {
+            setDayTotalVisitorsData (item) {
                 const data = item.data
                 let series = []
-                let categories = []
+                let labels = []
                 let colors = []
                 for (const i in data) {
+                    labels.push(data[i].date)
                     series.push(data[i].total)
-                    categories.push(data[i].customer.name)
                     colors.push('#ffffff')
                 }
-                this.customerDaySalesSeries[0].data = series
-                this.customerDaySalesChartOptions.xaxis.categories = categories
-                this.customerDaySalesChartOptions.xaxis.labels.style.colors = colors
+                this.dayTotalVisitorsSeries[0].data = series
+                this.dayTotalVisitorsChartOptions.labels = labels
+                this.dayTotalVisitorsChartOptions.xaxis.labels.style.colors = colors
                 this.loading = false
             }
         },

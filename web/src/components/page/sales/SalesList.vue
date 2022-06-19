@@ -13,7 +13,7 @@
                     <b-tabs pills card fill>
                         <b-tab title="本日" active @click="dResetKey++">
                             <b-row class="sales_list_area_top">
-                                <b-col cols="8" class="sales_list_area_top_left pb-2">
+                                <b-col cols="8" class="sales_list_area_top_left">
                                     <b-card class="sales_list_area sales_list_area_top_left">
                                         <CustomerDaySalesAnalytics
                                             :targetDate=today
@@ -88,7 +88,7 @@
                         </b-tab>
                         <b-tab title="前日" @click="yResetKey++">
                             <b-row class="sales_list_area_top">
-                                <b-col cols="8" class="sales_list_area_top_left pb-2">
+                                <b-col cols="8" class="sales_list_area_top_left">
                                     <b-card class="sales_list_area sales_list_area_top_left">
                                         <CustomerDaySalesAnalytics
                                             :targetDate=yesterday
@@ -162,26 +162,17 @@
                             </b-row>
                         </b-tab>
                         <b-tab title="1週間" @click="wResetKey++">
-                            <b-row>
-                                <b-col cols="8">
-                                    <b-card class="sales_list_area sales_list_area1">
-                                        <b-container fluid>
-                                            <b-card-text class="">
-                                                週売上
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col>
-                                                    <VueApexCharts
-                                                        height="300"
-                                                        :options="salesEachPeriodChartOptions"
-                                                        :series="salesEachPeriodSeries"
-                                                    />
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                            <b-row class="sales_list_area_top">
+                                <b-col cols="8"  class="sales_list_area_top_left">
+                                    <b-card class="sales_list_area sales_list_area_top_left">
+                                        <DaySalesAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="4">
+                                <b-col cols="4"  class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
                                         <TotalSalesAnalytics
                                             :targetDate=weekAgo
@@ -191,6 +182,55 @@
                                     </b-card>
                                     <b-card class="sales_list_area sales_list_area_top_right2">
                                         <TotalVisitorsAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                            <b-row class="sales_list_area_middle">
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <BasicPlanTypeRatioAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <AppointRatioAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <CustomerDayTotalSalesAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="5" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <DayTotalVisitorsAnalytics
+                                            :targetDate=weekAgo
+                                            :range=8
+                                            :key="wResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="7" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <ProductDayTotalSalesAnalytics
                                             :targetDate=weekAgo
                                             :range=8
                                             :key="wResetKey"
@@ -200,26 +240,17 @@
                             </b-row>
                         </b-tab>
                         <b-tab title="1ヵ月間" @click="mResetKey++">
-                            <b-row>
-                                <b-col cols="8">
-                                    <b-card class="sales_list_area sales_list_area1">
-                                        <b-container fluid>
-                                            <b-card-text class="">
-                                                月売上
-                                            </b-card-text>
-                                            <b-row>
-                                                <b-col>
-                                                    <VueApexCharts
-                                                        height="300"
-                                                        :options="salesEachPeriodChartOptions"
-                                                        :series="salesEachPeriodSeries"
-                                                    />
-                                                </b-col>
-                                            </b-row>
-                                        </b-container>
+                            <b-row class="sales_list_area_top">
+                                <b-col cols="8" class="sales_list_area_top_left">
+                                    <b-card class="sales_list_area sales_list_area_top_left">
+                                        <DaySalesAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
                                     </b-card>
                                 </b-col>
-                                <b-col cols="4">
+                                <b-col cols="4" class="sales_list_area_top_right">
                                     <b-card class="sales_list_area sales_list_area_top_right1">
                                         <TotalSalesAnalytics
                                             :targetDate=monthAgo
@@ -236,8 +267,133 @@
                                     </b-card>
                                 </b-col>
                             </b-row>
+                            <b-row class="sales_list_area_middle">
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <BasicPlanTypeRatioAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <AppointRatioAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <CustomerDayTotalSalesAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="5" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <DayTotalVisitorsAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="7" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <ProductDayTotalSalesAnalytics
+                                            :targetDate=monthAgo
+                                            :range=31
+                                            :key="mResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
                         </b-tab>
-                        <b-tab title="年" disabled @click="resetKey++">
+                        <b-tab title="年" @click="yResetKey++">
+                            <b-row class="sales_list_area_top">
+                                <b-col cols="8" class="sales_list_area_top_left">
+                                    <b-card class="sales_list_area sales_list_area_top_left">
+                                        <DaySalesAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="4" class="sales_list_area_top_right">
+                                    <b-card class="sales_list_area sales_list_area_top_right1">
+                                        <TotalSalesAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                    <b-card class="sales_list_area sales_list_area_top_right2">
+                                        <TotalVisitorsAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                            <b-row class="sales_list_area_middle">
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <BasicPlanTypeRatioAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="3" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_left">
+                                        <AppointRatioAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="6" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <CustomerDayTotalSalesAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
+                            <b-row>
+                                <b-col cols="5" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <DayTotalVisitorsAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                                <b-col cols="7" style="max-height: 100%;">
+                                    <b-card class="sales_list_area sales_list_area_middle_right">
+                                        <ProductDayTotalSalesAnalytics
+                                            :targetDate=yearAgo
+                                            :range=365
+                                            :key="yResetKey"
+                                        />
+                                    </b-card>
+                                </b-col>
+                            </b-row>
                         </b-tab>
                     </b-tabs>
 
@@ -333,12 +489,16 @@
 <script>
 import InputSalesDialog from '@/components/common/dialog/InputSalesDialog'
 import CustomerDaySalesAnalytics from '@/components/common/analytics/CustomerDaySalesAnalytics'
+import CustomerDayTotalSalesAnalytics from '@/components/common/analytics/CustomerDayTotalSalesAnalytics'
+import DaySalesAnalytics from '@/components/common/analytics/DaySalesAnalytics'
+import DayTotalVisitorsAnalytics from '@/components/common/analytics/DayTotalVisitorsAnalytics'
 import CustomerDayStayHourAnalytics from '@/components/common/analytics/CustomerDayStayHourAnalytics'
 import TotalSalesAnalytics from '@/components/common/analytics/TotalSalesAnalytics'
 import TotalVisitorsAnalytics from '@/components/common/analytics/TotalVisitorsAnalytics'
 import BasicPlanTypeRatioAnalytics from '@/components/common/analytics/BasicPlanTypeRatioAnalytics'
 import AppointRatioAnalytics from '@/components/common/analytics/AppointRatioAnalytics'
 import ProductDaySalesAnalytics from '@/components/common/analytics/ProductDaySalesAnalytics'
+import ProductDayTotalSalesAnalytics from '@/components/common/analytics/ProductDayTotalSalesAnalytics'
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import dayjs from 'dayjs'
 import isBetween from 'dayjs/plugin/isBetween';
@@ -870,12 +1030,16 @@ export default {
     components: {
         InputSalesDialog,
         CustomerDaySalesAnalytics,
+        CustomerDayTotalSalesAnalytics,
+        DaySalesAnalytics,
+        DayTotalVisitorsAnalytics,
         CustomerDayStayHourAnalytics,
         TotalSalesAnalytics,
         TotalVisitorsAnalytics,
         BasicPlanTypeRatioAnalytics,
         AppointRatioAnalytics,
         ProductDaySalesAnalytics,
+        ProductDayTotalSalesAnalytics,
     },
     computed: {
         ...mapGetters([
