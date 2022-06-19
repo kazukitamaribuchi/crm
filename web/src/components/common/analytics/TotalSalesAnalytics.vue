@@ -197,8 +197,13 @@
         },
         methods: {
             setTotalSalesData (item) {
-                this.totalSales = item.data.total_price / 10000
-                this.totalSalesStr = item.data.total_price.toLocaleString()
+                if (item.data.total_price == null) {
+                    this.totalSales = 0
+                    this.totalSalesStr = 0
+                } else {
+                    this.totalSales = item.data.total_price / 10000
+                    this.totalSalesStr = item.data.total_price.toLocaleString()
+                }
                 this.loading = false
             }
         },

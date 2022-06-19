@@ -110,7 +110,7 @@
         methods: {
             setAppointRatioData (item) {
                 if (item.data.length == 0) {
-                    this.ratio = [0, 0]
+                    this.ratio = [100, 0]
                 } else if (item.data.length == 1) {
                     if (!item.data[0].appoint) {
                         this.ratio = [item.data[0].total, 0]

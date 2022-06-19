@@ -17,7 +17,11 @@
                             type="text"
                             placeholder="username"
                             required
+                            :state="nameState"
                         ></b-form-input>
+                        <b-form-invalid-feedback id="input-live-feedback">
+                            {{ usernameError }}
+                        </b-form-invalid-feedback>
                     </b-input-group>
                 </b-form-group>
 
@@ -32,8 +36,12 @@
                             v-model="credentials.password"
                             type="password"
                             placeholder="password"
+                            :state="passState"
                             required
                         ></b-form-input>
+                        <b-form-invalid-feedback id="input-live-feedback">
+                            {{ passwordError }}
+                        </b-form-invalid-feedback>
                     </b-input-group>
                 </b-form-group>
 
@@ -50,33 +58,73 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapMutations, mapActions } from 'vuex'
 
 export default {
     name: 'LoginItem',
     data: () => ({
-        credentials: {},
+        credentials: {
+        },
+        usernameError: '',
+        passwordError: '',
     }),
     created () {
-        this.$axios({
-            method: 'GET',
-            url: 'api/customer/',
-        })
-        .then(res => {
-            console.log(res)
-        })
-        .catch(e => {
-            console.log(e)
-        })
+    },
+    computed: {
+        nameState () {
+            if (this.credentials.username == undefined) {
+                return false
+            }
+            if (this.credentials.username == '') {
+                this.setNameErrorMsg(0)
+                return false
+            }
+            return true
+        },
+        passState () {
+            if (this.credentials.password == undefined) {
+                return false
+            }
+            if (this.credentials.password == '') {
+                this.setPassErrorMsg(0)
+                return false
+            }
+            return true
+        }
     },
     methods: {
+        setNameErrorMsg (val) {
+            switch (val) {
+                case 0:
+                    this.usernameError = 'ユーザーネームを入力してください'
+                    break;
+                default:
+            }
+        },
+        setPassErrorMsg (val) {
+            switch (val) {
+                case 0:
+                    this.passwordError = 'パスワードを入力してください'
+                    break;
+                default:
+            }
+        },
+        ...mapMutations([
+            'initState',
+        ]),
         ...mapActions([
             'checkAuthToken',
         ]),
         login () {
+            // バリデーション
+            if (!this.nameState || !this.passState) {
+                return
+            }
             this.checkAuthToken(this.credentials)
             .then(res => {
-                this.credentials = {}
+                this.initState()
+                this.credentials = {
+                }
                 this.$router.push({name: 'Home'})
             })
             .catch(e => {

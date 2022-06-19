@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 const salesMutations = {
     setSalesList (state, payload) {
-        state.sales = payload.data
+        state.sales = payload
     },
     addSalesList (state, payload) {
         state.sales.push(payload.data)

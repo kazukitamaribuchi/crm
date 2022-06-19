@@ -1,6 +1,6 @@
 const questionMutations = {
     setQuestionList (state, payload) {
-        state.question = payload.data
+        state.question = payload
     }
 }
 

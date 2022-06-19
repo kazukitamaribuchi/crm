@@ -53,7 +53,7 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly',
     ],
     'DEFAULT_AUTHENTICATION_CLASSES' : [
-        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ],
@@ -75,8 +75,8 @@ JWT_AUTH = {
     'JWT_VERIFY': True,
     'JWT_VERIFY_EXPIRATION': True,
     'JWT_LEEWAY': 0,
-    # 'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=86400), # Sessionの保存期間を設定(24時間)
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=604800), # Sessionの保存期間を設定(1週間)
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=86400), # Sessionの保存期間を設定(24時間)
+    # 'JWT_EXPIRATION_DELTA': datetime.timedelta(seconds=604800), # Sessionの保存期間を設定(1週間)
     'JWT_ALLOW_REFRESH': True,
     'JWT_REFRESH_EXPIRATION_DELTA': datetime.timedelta(days=7),
 }

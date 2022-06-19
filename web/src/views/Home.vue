@@ -3,13 +3,24 @@
         id="home_wrap"
         fluid
     >
-        <Header/>
-        <b-row class="content_wrap">
-            <Sidebar/>
-            <div class="content">
-                <Top/>
+        <div v-if="!initStatus" class="loading">
+            <div class="loading_icon">
+                <b-spinner
+                    style="width: 6rem; height: 6rem; display: block; margin: 0 auto;"
+                    label="Large Spinner"
+                    variant="light"
+                ></b-spinner>
             </div>
-        </b-row>
+        </div>
+        <div v-else style="height: 100%;">
+            <Header/>
+            <b-row class="content_wrap">
+                <Sidebar/>
+                <div class="content">
+                    <Top/>
+                </div>
+            </b-row>
+        </div>
     </b-container>
 </template>
 
@@ -27,62 +38,81 @@ export default {
         Top
     },
     created () {
-        this.getCustomerList()
-        .then(res => {
-            this.setCustomerList(res)
-        })
+        if (!this.$store.state.isAuth) {
+            this.$router.push('/')
+        }
 
-        this.getProductList()
-        .then(res => {
-            this.setProductList(res)
-        })
+        if (!this.initStatus) {
+            this.appInitAction()
+            .then(res => {
+                this.setInitStatus(true)
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        }
 
-        this.getPopularProductList()
-        .then(res => {
-            this.setPopularProductList(res.data)
-        })
-
-        this.getProductByCategoryList()
-        .then(res => {
-            this.setProductByCategoryList(res)
-        })
-
-
-        this.getCastList()
-        .then(res => {
-            this.setCastList(res)
-        })
-
-        this.getSalesList()
-        .then(res => {
-            this.setSalesList(res)
-        })
-
-        this.getQuestionList()
-        .then(res => {
-            this.setQuestionList(res)
-        })
+        // this.getCustomerList()
+        // .then(res => {
+        //     this.setCustomerList(res)
+        // })
+        //
+        // this.getProductList()
+        // .then(res => {
+        //     this.setProductList(res)
+        // })
+        //
+        // this.getPopularProductList()
+        // .then(res => {
+        //     this.setPopularProductList(res.data)
+        // })
+        //
+        // this.getProductByCategoryList()
+        // .then(res => {
+        //     this.setProductByCategoryList(res)
+        // })
+        //
+        //
+        // this.getCastList()
+        // .then(res => {
+        //     this.setCastList(res)
+        // })
+        //
+        // this.getSalesList()
+        // .then(res => {
+        //     this.setSalesList(res)
+        // })
+        //
+        // this.getQuestionList()
+        // .then(res => {
+        //     this.setQuestionList(res)
+        // })
     },
     computed: {
+        ...mapGetters([
+            'initStatus',
+        ])
     },
     methods: {
         ...mapMutations([
-            'setProductList',
-            'setCustomerList',
-            'setCastList',
-            'setQuestionList',
-            'setSalesList',
-            'setProductByCategoryList',
-            'setPopularProductList',
+            'setInitStatus',
+            // 'setProductList',
+            // 'setCustomerList',
+            // 'setCastList',
+            // 'setQuestionList',
+            // 'setSalesList',
+            // 'setProductByCategoryList',
+            // 'setPopularProductList',
         ]),
         ...mapActions([
-            'getProductList',
-            'getProductByCategoryList',
-            'getPopularProductList',
-            'getCustomerList',
-            'getCastList',
-            'getQuestionList',
-            'getSalesList',
+            'appInitAction',
+            // 'getProductList',
+            // 'getProductByCategoryList',
+            // 'getPopularProductList',
+            // 'getCustomerList',
+            // 'getCastList',
+            // 'getQuestionList',
+            // 'getSalesList',
         ])
     }
 }
@@ -90,6 +120,10 @@ export default {
 
 <style lang="scss" scoped>
     #home_wrap {
+        // padding: 0;
+
+        background-color: $theme-color;
+
         height: $home-height;
         .content_wrap {
 
@@ -102,6 +136,16 @@ export default {
 
             .content {
                 width: $content-width;
+            }
+        }
+
+        .loading {
+            height: 100%;
+            width: 100%;
+            .loading_icon {
+                display: block;
+                margin: 0 auto;
+                padding-top: 20%;
             }
         }
     }

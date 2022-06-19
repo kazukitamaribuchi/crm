@@ -591,7 +591,11 @@ class SalesViewSet(BaseModelViewSet):
         target_date_year = int(target_date_str[0])
         target_date_hour = int(target_date_str[1])
         target_date_minute = int(target_date_str[2])
-        range = int(request.query_params['range'])
+
+        # このrangeは繰り返しのcnt
+        r = int(request.query_params['range'])
+
+        res = []
 
         start_time = datetime(
             target_date_year,
@@ -601,41 +605,33 @@ class SalesViewSet(BaseModelViewSet):
             OPEN_MINUTE,
         ).astimezone(timezone('Asia/Tokyo'))
 
-        end_date = start_time + timedelta(days=range)
-        end_time = datetime(
-            end_date.year,
-            end_date.month,
-            end_date.day,
-            CLOSE_HOUR,
-            CLOSE_MINUTE,
-        ).astimezone(timezone('Asia/Tokyo'))
+        for i in range(1, r+1):
 
-        logger.debug(start_time)
-        logger.debug(end_time)
+            end_date = start_time + timedelta(days=1)
+            end_time = datetime(
+                end_date.year,
+                end_date.month,
+                end_date.day,
+                CLOSE_HOUR,
+                CLOSE_MINUTE,
+            ).astimezone(timezone('Asia/Tokyo'))
 
-        data = SalesHeader.objects.filter(
-            visit_time__range=[
-                start_time,
-                end_time,
-            ],
-            leave_time__range=[
-                start_time,
-                end_time,
-            ]).values(
-                'visit_time__year',
-                'visit_time__month',
-                'visit_time__day',
-            ).annotate(
-                total=models.Sum('total_tax_sales'),
-                # total_visitors=models.Count('customer')
-            )
+            data = SalesHeader.objects.filter(
+                visit_time__range=[
+                    start_time,
+                    end_time,
+                ],
+                leave_time__range=[
+                    start_time,
+                    end_time,
+                ]).aggregate(total=models.Sum('total_tax_sales'))
 
-        logger.debug('★＾＾＾')
-        logger.debug(data)
+            res.append({start_time.strftime('%Y-%m-%d'): data['total'] if data['total'] is not None else 0})
+            start_time = start_time + timedelta(days=1)
 
         return Response({
             'status': 'success',
-            'data': data,
+            'data': res,
         })
 
 

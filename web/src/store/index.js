@@ -26,6 +26,7 @@ const initialState = {
     isAuth: false,
     token: '',
     loginUser: '',
+    initStatus: false,
     currentTime: '',
     customer: [],
     customerTopActive: 0,
@@ -53,6 +54,7 @@ export default new Vuex.Store({
         isAuth: state => state.isAuth,
         token: state => state.token,
         loginUser: state => state.loginUser,
+        initStatus: state => state.initStatus,
         currentTime: state => state.currentTime,
         customer: state => state.customer,
         customerTopActive: state => state.customerTopActive,
@@ -83,14 +85,34 @@ export default new Vuex.Store({
             state.token = payload.data.token
             state.loginUser = payload.requestData.username
         },
+        setInitStatus (state, payload) {
+            state.initStatus = true
+        },
         initAuthToken (state, payload) {
             state.isAuth = false
             state.token = ''
             state.loginUser = ''
         },
+        initState (state, payload) {
+            state.initStatus = false
+            state.currentTime = ''
+            state.customer = []
+            state.customerTopActive = 0
+            state.sales = []
+            state.salesTopActive = 0
+            state.attendance = []
+            state.cast = []
+            state.castTopActive = 0
+            state.question = []
+            state.booking = []
+            state.bottle = []
+            state.product = []
+            state.popularProduct = []
+            state.productByCategory = []
+        },
         setCurrentTime (state, payload) {
             state.currentTime = payload
-        }
+        },
     },
     actions: {
         ...customerActions,
@@ -137,7 +159,31 @@ export default new Vuex.Store({
                     reject(e)
                 })
             })
-        }
+        },
+        appInitAction (ctx, kwargs) {
+			return new Promise((resolve, reject) => {
+	        	Vue.prototype.$axios({
+	        		url: '/api/appinit/',
+	        		method: 'GET',
+	        	})
+	        	.then(res => {
+	        		console.log('アプリ初期描画', res)
+					this.commit('setCustomerList', res.data.customers)
+					this.commit('setProductList', res.data.product)
+					this.commit('setPopularProductList', res.data.popular)
+                    this.commit('setProductByCategoryList', res.data.product_by_category)
+                    this.commit('setCastList', res.data.cast)
+                    this.commit('setSalesList', res.data.sales)
+                    this.commit('setQuestionList', res.data.question)
+
+					resolve(res)
+	        	})
+	        	.catch(e => {
+	        		console.log('初期データ取得失敗:', e.response)
+	        		reject(e)
+	        	})
+			})
+		},
     },
     modules: {
     },

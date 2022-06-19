@@ -2,7 +2,7 @@ import Vue from 'vue'
 
 const castMutations = {
     setCastList (state, payload) {
-        state.cast = payload.data
+        state.cast = payload
     },
     addCastList (state, payload) {
         state.cast.push(payload.data)

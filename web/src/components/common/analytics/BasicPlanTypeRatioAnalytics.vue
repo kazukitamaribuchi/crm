@@ -98,7 +98,7 @@
         methods: {
             setBasicPlanTypeRatioData (item) {
                 if (item.data.length == 0) {
-                    this.ratio = [0, 0]
+                    this.ratio = [100, 0]
                 } else if (item.data.length == 1) {
                     if (item.data[0].basic_plan_type == 0) {
                         this.ratio = [item.data[0].total, 0]

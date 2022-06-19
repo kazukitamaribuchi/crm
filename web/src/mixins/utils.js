@@ -34,6 +34,12 @@ export default {
                 return '-'
             }
             return val
-        }
+        },
+        getNumInData (val) {
+            if (val == undefined || val == null || val == '') {
+                return '0'
+            }
+            return val
+        },
     }
 }

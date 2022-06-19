@@ -21,4 +21,5 @@ router.register('time', viewsets.TimeViewSet)
 app_name = 'crm'
 urlpatterns = [
     path('', include(router.urls)),
+    path('appinit/', views.AppInitView.as_view(), name='appinit'),
 ]
