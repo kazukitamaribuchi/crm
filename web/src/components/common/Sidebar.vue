@@ -99,20 +99,20 @@ export default {
                 text: 'キャスト管理',
                 active: 2,
             },
-            {
-                icon: 'calendar2-date',
-                link: 'AttendanceList',
-                type: 'Page',
-                text: '勤怠管理',
-                active: 3,
-            },
-            {
-                icon: 'clipboard-check',
-                link: 'BookingList',
-                type: 'Page',
-                text: '予約管理',
-                active: 4,
-            },
+            // {
+            //     icon: 'calendar2-date',
+            //     link: 'AttendanceList',
+            //     type: 'Page',
+            //     text: '勤怠管理',
+            //     active: 3,
+            // },
+            // {
+            //     icon: 'clipboard-check',
+            //     link: 'BookingList',
+            //     type: 'Page',
+            //     text: '予約管理',
+            //     active: 4,
+            // },
             // ボトルのアイコンどうするか・・・
             // {
             //     icon: 'calendar2-date',

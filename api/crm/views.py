@@ -94,9 +94,6 @@ class AppInitView(generics.ListAPIView):
             sales = SalesSerializer(SalesHeader.objects.all(), many=True).data
             question = QuestionSerializer(MQuestion.objects.all(), many=True).data
 
-            logger.debug(cast)
-            logger.debug(product_by_category)
-
             return Response({
                 'customers': customers,
                 'product': product,

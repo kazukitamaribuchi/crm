@@ -271,6 +271,23 @@ class MCast(AbstractHumanModel):
         default=0,
     )
 
+    mail = models.CharField(
+        _('メールアドレス'),
+        null=True,
+        blank=True,
+        max_length=200,
+    )
+    phone = models.CharField(
+        _('電話'),
+        null=True,
+        blank=True,
+        max_length=20,
+    )
+    experienced = models.BooleanField(
+        _('経験者フラグ'),
+        default=False,
+    )
+
     # qa = models.ManyToManyField(
     #     'crm.QuestionAnswer',
     #     blank=True,

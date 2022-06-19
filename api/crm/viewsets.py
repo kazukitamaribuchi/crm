@@ -119,6 +119,7 @@ class BaseModelViewSet(viewsets.ModelViewSet):
 class CustomerViewSet(BaseModelViewSet):
     """
     """
+    # permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,)
     queryset = MCustomer.objects.all()
     serializer_class = CustomerSerializer
@@ -250,7 +251,7 @@ class CustomerViewSet(BaseModelViewSet):
 class RankViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = MRank.objects.all()
     serializer_class = RankSerializer
 
@@ -258,14 +259,14 @@ class RankViewSet(BaseModelViewSet):
 class TaxViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = MTax.objects.all()
     serializer_class = TaxSerializer
 
 class QuestionViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = MQuestion.objects.all()
     serializer_class = QuestionSerializer
 
@@ -273,14 +274,77 @@ class QuestionViewSet(BaseModelViewSet):
 class CastViewSet(BaseModelViewSet):
     """
     """
+    # permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,)
     queryset = MCast.objects.all()
     serializer_class = CastSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        キャスト作成
+        　・必須項目
+            name
+            age
+
+            ※後は要望に応じて
+        """
+
+        logger.debug('★キャスト作成')
+        logger.debug(request.data)
+
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            self.perform_create(serializer)
+            return Response(self.get_serializer(serializer.instance).data,
+                status=status.HTTP_201_CREATED)
+
+        logger.debug(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+    def update(self, request, pk=None):
+        logger.debug("★UPDATE")
+        logger.debug(request.data)
+        logger.debug(request.data['id'])
+
+        queryset = self.queryset.get(pk=pk)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data)
+        logger.debug(serializer)
+        logger.debug(serializer.is_valid())
+        if serializer.is_valid():
+            self.perform_update(serializer)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=['get'], detail=False)
+    def get_cast_avg_age(self, request):
+
+        res = MCast.objects.aggregate(avg=models.Avg('age'))
+
+        return Response({'status': 'success', 'data': res}, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def get_cast_age(self, request):
+
+        res = [
+            MCast.objects.filter(age__lt=20).count(),
+            MCast.objects.filter(age__gte=20, age__lt=25).count(),
+            MCast.objects.filter(age__gte=25, age__lt=30).count(),
+            MCast.objects.filter(age__gte=30, age__lt=35).count(),
+            MCast.objects.filter(age__gte=35, age__lt=40).count(),
+            MCast.objects.filter(age__gte=40).count(),
+        ]
+
+        return Response({'status': 'success', 'data': res}, status=status.HTTP_200_OK)
+
 
 
 class ProductViewSet(BaseModelViewSet):
     """
     """
+    # permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,)
     queryset = MProduct.objects.all()
     serializer_class = ProductSerializer
@@ -336,7 +400,7 @@ class ProductViewSet(BaseModelViewSet):
         # 人気商品の算出ロジックは後で。とりあえず固定で
 
         try:
-            res = MProduct.objects.all()[:12]
+            res = MProduct.objects.filter(delete_flg=False)[:12]
             top = {
                 0: ProductSerializer(MProduct.objects.filter(category__large_category=1, category__middle_category=0)[:12], many=True).data,
                 1: ProductSerializer(MProduct.objects.filter(category__large_category=1, category__middle_category=1)[:12], many=True).data,
@@ -363,7 +427,7 @@ class ProductViewSet(BaseModelViewSet):
 class SeatViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = MSeat.objects.all()
     serializer_class = SeatSerializer
 
@@ -371,7 +435,7 @@ class SeatViewSet(BaseModelViewSet):
 class CardViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = CardManagement.objects.all()
     serializer_class = CardSerializer
 
@@ -379,7 +443,7 @@ class CardViewSet(BaseModelViewSet):
 class BottleViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = BottleManagement.objects.all()
     serializer_class = BottleSerializer
 
@@ -387,6 +451,7 @@ class BottleViewSet(BaseModelViewSet):
 class SalesViewSet(BaseModelViewSet):
     """
     """
+    # permission_classes = (permissions.IsAuthenticated,)
     permission_classes = (permissions.AllowAny,)
     queryset = SalesHeader.objects.all()
     serializer_class = SalesSerializer
@@ -538,6 +603,247 @@ class SalesViewSet(BaseModelViewSet):
                 logger.error('キャストが取得出来ません')
 
             # ボトル登録フラグ立ってたらボトル登録
+            # ★開封日は会計日で良いか？
+            if data['bottle']:
+                BottleManagement.objects.create(
+                    customer=customer,
+                    product=product,
+                    open_date=account_date
+                )
+                logger.debug('★ボトル登録 : ' + customer.name)
+
+            logger.debug('＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿')
+
+            sales_detail_list.append(
+                SalesDetail(
+                    header=header,
+                    product=product,
+                    cast=cast,
+                    quantity=data['quantity'],
+                    fixed_price=data['fixed_price'],
+                    fixed_tax_price=data['fixed_tax_price'],
+                    total_price=data['total_price'],
+                    total_tax_price=data['total_tax_price'],
+                    remarks=data['remarks'],
+                )
+            )
+
+        logger.debug('★★★★★★最終局面★★★★★★')
+
+        if len(sales_service_detail_list) > 0:
+            SalesServiceDetail.objects.bulk_create(sales_service_detail_list)
+        if len(sales_appoint_detail_list) > 0:
+            SalesAppointDetail.objects.bulk_create(sales_appoint_detail_list)
+        if len(sales_detail_list) > 0:
+            SalesDetail.objects.bulk_create(sales_detail_list)
+
+        return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
+
+    @transaction.atomic
+    @action(methods=['put'], detail=False)
+    def update_sales_data(self, request):
+
+        logger.debug('★update_sales_data')
+        logger.debug(request.data)
+
+        sales_header_id = request.data['id']
+
+        customer_no = request.data['customer_no']
+        try:
+            customer = MCustomer.objects.get(card__customer_no=customer_no)
+        except MCustomer.DoesNotExist:
+            logger.error('顧客情報が取得出来ません。')
+            return Response(status.status.HTTP_400_BAD_REQUEST)
+
+        account_date_str = request.data['account_date']
+        account_date = datetime.strptime(account_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
+
+        visit_time_str = request.data['visit_time']
+        visit_time = datetime.strptime(visit_time_str, '%Y-%m-%d %H:%M').astimezone(timezone('Asia/Tokyo'))
+        leave_time_str = request.data['leave_time']
+        leave_time = datetime.strptime(leave_time_str, '%Y-%m-%d %H:%M').astimezone(timezone('Asia/Tokyo'))
+        move_diff_seat = request.data['move_diff_seat']
+
+        move_time_str = request.data['move_time']
+        move_time = datetime.strptime(move_time_str, '%Y-%m-%d %H:%M').astimezone(timezone('Asia/Tokyo'))  if move_diff_seat else None
+
+        type = request.data['payment_type']
+        payment = MPayment.objects.get(type=0)
+        logger.debug(type)
+        try:
+            payment = MPayment.objects.get(type=type)
+        except:
+            logger.error('支払い方法が取得出来ません')
+
+        appoint = request.data['appoint']
+        # 後々
+        booking = False
+
+        basic_plan_type = request.data['basic_plan_type']
+        stay_hour = request.data['stay_hour']
+        stay_hour_other = request.data['stay_hour_other']
+        total_stay_hour = request.data['total_stay_hour']
+
+        total_sales = request.data['total_sales']
+        total_tax_sales = request.data['total_tax_sales']
+
+        is_charterd = request.data['is_charterd']
+        tax_rate = request.data['tax_rate']
+        total_visitors = request.data['total_visitors']
+        remarks = request.data['remarks']
+
+        try:
+            header = SalesHeader.objects.get(id=sales_header_id)
+        except:
+            logger.error('売上ヘッダーを取得出来ません')
+
+        header.customer = customer
+        header.payment = payment
+        header.appoint = appoint
+        header.total_visitors = total_visitors
+        header.is_charterd = is_charterd
+        header.tax_rate = tax_rate
+        header.booking = booking
+        header.move_diff_seat = move_diff_seat
+        header.basic_plan_type = basic_plan_type
+        header.stay_hour = stay_hour
+        header.stay_hour_other = stay_hour_other
+        header.total_sales = total_sales
+        header.total_tax_sales = total_tax_sales
+        header.visit_time = visit_time
+        header.leave_time = leave_time
+        header.move_time = move_time
+        header.account_date = account_date
+        header.remarks = remarks
+
+        # header = SalesHeader.objects.create(
+        #     customer=customer,
+        #     payment=payment,
+        #     appoint=appoint,
+        #     total_visitors=total_visitors,
+        #     is_charterd=is_charterd,
+        #     tax_rate=tax_rate,
+        #     booking=booking,
+        #     move_diff_seat=move_diff_seat,
+        #     basic_plan_type=basic_plan_type,
+        #     stay_hour=stay_hour,
+        #     stay_hour_other=stay_hour_other,
+        #     total_stay_hour=total_stay_hour,
+        #     total_sales=total_sales,
+        #     total_tax_sales=total_tax_sales,
+        #     visit_time=visit_time,
+        #     leave_time=leave_time,
+        #     move_time=move_time,
+        #     account_date=account_date,
+        #     remarks=remarks,
+        # )
+
+        header.save()
+
+        edit_sales_detail = request.data['edit_sales_detail']
+        edit_sales_service_detail = request.data['edit_sales_service_detail']
+        edit_sales_appoint_detail = request.data['edit_sales_appoint_detail']
+
+        logger.debug('明細の削除')
+        logger.debug(edit_sales_detail)
+        logger.debug(edit_sales_service_detail)
+        logger.debug(edit_sales_appoint_detail)
+
+        for item in edit_sales_detail:
+            try:
+                salesDetail = SalesDetail.objects.get(id=item['id'])
+                salesDetail.delete()
+            except:
+                logger.error('salesDetail id => ' + item['id'])
+
+        for item in edit_sales_service_detail:
+            try:
+                salesServiceDetail = SalesServiceDetail.objects.get(id=item['id'])
+                salesServiceDetail.delete()
+            except:
+                logger.error('salesServiceDetail id => ' + item['id'])
+
+        for item in edit_sales_appoint_detail:
+            try:
+                salesAppointDetail = SalesAppointDetail.objects.get(id=item['id'])
+                salesAppointDetail.delete()
+            except:
+                logger.error('salesAppointDetail  id => ' + item['id'])
+
+        sales_service_detail_list = []
+        sales_appoint_detail_list = []
+        sales_detail_list = []
+
+        for data in request.data['sales_detail_service_list']:
+            logger.debug('★★')
+            logger.debug(data)
+            service = MService.objects.get(
+                basic_plan_type=data['basic_plan_type'],
+                large_category=data['large_category'],
+                middle_category=data['middle_category'],
+            )
+
+            # 基本料金なのでcastはNone
+            cast = None
+
+            sales_service_detail_list.append(
+                SalesServiceDetail(
+                    header=header,
+                    service=service,
+                    cast=cast,
+                    quantity=data['quantity'],
+                    fixed_price=data['fixed_price'],
+                    fixed_tax_price=data['fixed_tax_price'],
+                    total_price=data['total_price'],
+                    total_tax_price=data['total_tax_price'],
+                )
+            )
+
+        for data in request.data['sales_detail_appoint_list']:
+            logger.debug('★★★')
+            logger.debug(data)
+            service = MService.objects.get(
+                basic_plan_type=data['basic_plan_type'],
+                large_category=data['large_category'],
+                middle_category=data['middle_category'],
+            )
+
+            # 指名、同伴の場合キャストが紐づく
+            cast = None
+            if data['large_category'] == 1 or data['large_category'] == 2:
+                cast = MCast.objects.get(id=data['cast_id'])
+
+            sales_appoint_detail_list.append(
+                SalesAppointDetail(
+                    header=header,
+                    service=service,
+                    cast=cast,
+                    quantity=data['quantity'],
+                    fixed_price=data['fixed_price'],
+                    fixed_tax_price=data['fixed_tax_price'],
+                    total_price=data['total_price'],
+                    total_tax_price=data['total_tax_price'],
+                )
+            )
+
+
+
+        for data in request.data['sales_detail_list']:
+            logger.debug('★★★★')
+            logger.debug(data)
+            try:
+                product = MProduct.objects.get(id=data['product_id'])
+            except:
+                logger.error('商品が取得出来ません')
+
+            # これは誰が頼ませた商品か判別させるもの
+            cast = None
+            try:
+                cast = MCast.objects.get(id=data['cast_id'])
+            except:
+                logger.error('明細に紐づくキャストが取得出来ません')
+
+            # ボトル登録フラグ立ってたらボトル登録
             if data['bottle']:
                 pass
 
@@ -566,14 +872,8 @@ class SalesViewSet(BaseModelViewSet):
         if len(sales_detail_list) > 0:
             SalesDetail.objects.bulk_create(sales_detail_list)
 
-        customer.total_visit = customer.total_visit + 1
+        return Response(SalesSerializer(header).data, status=status.HTTP_200_OK)
 
-        if customer.first_visit == None:
-            customer.first_visit = account_date
-
-        customer.save()
-
-        return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
 
     @action(methods=['get'], detail=False)
     def get_day_sales_analytics(self, request):
@@ -1213,7 +1513,7 @@ class SalesViewSet(BaseModelViewSet):
 class BookingViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = BookingManagement.objects.all()
     serializer_class = BookingSerializer
 
@@ -1224,14 +1524,14 @@ class BookingViewSet(BaseModelViewSet):
 class AttendanceViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = AttendanceManagement.objects.all()
     serializer_class = AttendanceSerializer
 
 
 class TimeViewSet(viewsets.ViewSet):
 
-    permission_classes = (permissions.AllowAny,)
+    permission_classes = (permissions.IsAuthenticated,)
     queryset = MCustomer.objects.all()
     serializer_class = CustomerSerializer
 

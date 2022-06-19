@@ -88,16 +88,16 @@ class BottleManagement(AbstractBaseModel):
         _('廃棄フラグ'),
         default=False
     )
-    customer = models.OneToOneField(
+    customer = models.ForeignKey(
         'crm.MCustomer',
         on_delete=models.PROTECT,
-        related_name='bottle',
+        related_name='bottle_customer',
     )
     # リレーション大丈夫か
     product = models.ForeignKey(
         'crm.MProduct',
         on_delete=models.PROTECT,
-        related_name='product'
+        related_name='bottle_product'
     )
 
     def __str__(self):
@@ -278,6 +278,9 @@ class SalesServiceDetail(AbstractBaseModel):
         service = self.service.name
         return service
 
+    class Meta:
+        verbose_name_plural = '売上サービス明細'
+
 
 class SalesAppointDetail(AbstractBaseModel):
     """
@@ -333,7 +336,7 @@ class SalesAppointDetail(AbstractBaseModel):
         return '指名キャスト: ' + cast_name + ' ' + service.name
 
     class Meta:
-        verbose_name_plural = '売上明細'
+        verbose_name_plural = '売上指名明細'
 
 
 class SalesDetail(AbstractBaseModel):

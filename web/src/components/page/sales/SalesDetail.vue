@@ -245,9 +245,9 @@
                     <b-card class="sales_detail_area mt-3">
                         <b-container fluid>
                             <b-row>
-                                <b-card-text>
+                                <b-card-title>
                                     基本料金
-                                </b-card-text>
+                                </b-card-title>
                                 <b-table
                                     dark
                                     borderless
@@ -281,9 +281,9 @@
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">
                                 <!-- 指名情報のロジック考える -->
-                                <b-card-text>
+                                <b-card-title>
                                     指名情報
-                                </b-card-text>
+                                </b-card-title>
                                 <b-table
                                     dark
                                     borderless
@@ -324,9 +324,9 @@
                                 </b-col>
                             </b-row>
                             <b-row class="mt-3 pt-3 sales_detail_separate">
-                                <b-card-text>
+                                <b-card-title>
                                     明細情報
-                                </b-card-text>
+                                </b-card-title>
                                 <b-table
                                     dark
                                     borderless
@@ -504,6 +504,8 @@ export default {
     created () {
         // 検索から詳細きてうまくいかせるやり方わかったら、↓の様にstoreから取得する方法に切り替え
         this.salesData = this.sales.find(s => s.id == this.$route.params['id'])
+        this.$eventHub.$off('updateSalesDetail')
+        this.$eventHub.$on('updateSalesDetail', this.updateSalesDetail)
     },
     mounted () {
     },
@@ -514,6 +516,9 @@ export default {
         showDeleteSalesDetailDialog () {
             this.$refs.deleteSalesDetailDialog.open(this.salesData)
         },
+        updateSalesDetail (data) {
+            this.salesData = data
+        }
     },
     mixins: [
         utilsMixin

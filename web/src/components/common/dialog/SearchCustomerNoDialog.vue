@@ -1,13 +1,17 @@
 <template>
+    <div>
     <b-modal
         v-model="dialog"
-        title="顧客No検索"
+        title="会員No検索"
         @ok="search"
         centered
         ok-title="検索"
         cancel-title="閉じる"
     >
-        <b-form class="mt-3">
+        <b-form
+            class="mt-3"
+            @submit.prevent
+        >
             <b-form-group
                 class="search_customer_no"
             >
@@ -18,8 +22,12 @@
                     <b-form-input
                         v-model="customerNo"
                         type="number"
-                        placeholder="顧客No"
+                        placeholder="会員No"
+                        autofocus
                         required
+                        @keyup.enter="enterSearch"
+                        @keypress="setSearch"
+                        ref="focusInput"
                     ></b-form-input>
                 </b-input-group>
             </b-form-group>
@@ -72,11 +80,23 @@
             </v-container>
         </v-card>
     </v-dialog> -->
+
+    <b-modal
+        v-model="dialog2"
+        title="Error"
+        ok-only
+        centered
+    >
+        存在しない会員Noです。
+        正しい会員Noかチェックしてください。
+    </b-modal>
+
+</div>
 </template>
 
 <script>
 import _ from 'lodash'
-import { mapMutations } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
 
@@ -86,11 +106,24 @@ export default {
     },
     data: () => ({
         dialog: false,
+        dialog2: false,
         customerNo: '',
+        searchCustomerNoValue: false
     }),
     computed: {
+        ...mapGetters([
+            'customer',
+        ]),
+    },
+    beforeRouteUpdate (to, from, next) {
+        next();
+    },
+    mounted () {
     },
     methods: {
+        setSearch () {
+            this.searchCustomerNoValue = true
+        },
         open () {
             this.dialog = true
         },
@@ -98,21 +131,33 @@ export default {
             this.dialog = false
             this.customer_no = ''
         },
+        enterSearch () {
+            if (!this.searchCustomerNoValue) return
+            this.search()
+            this.searchCustomerNoValue = false
+        },
         search () {
-            if (this.customerNo != '') {
-                // 正しいcustoner_noであれば
+            let usernameRegex = /^\d+$/
+            if (usernameRegex.test(this.customerNo)) {
+                if (this.customer.find(c => c.customer_no == this.customerNo) == undefined) {
+                    this.dialog2 = true
+                    this.customerNo = ''
+                    return
+                }
                 this.$router.push({
                     name: 'CustomerDetail',
                     params: {
                         id: this.customerNo
                     }
                 })
+                this.customerNo = ''
                 // this.$router.go({
                 //     path: this.$router.currentRoute.path,
                 //     force: true
                 // })
+
+                this.close()
             }
-            this.close()
         }
     }
 }

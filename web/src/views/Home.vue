@@ -17,6 +17,9 @@
             <b-row class="content_wrap">
                 <Sidebar/>
                 <div class="content">
+                    <div align="right" style="color: white; position: absolute; top: 105px; right: 80px; font-size: 15px; float: right; width: 300px;">
+                        システム時刻: {{ currentTime }}
+                    </div>
                     <Top/>
                 </div>
             </b-row>
@@ -92,6 +95,7 @@ export default {
     computed: {
         ...mapGetters([
             'initStatus',
+            'currentTime',
         ])
     },
     methods: {

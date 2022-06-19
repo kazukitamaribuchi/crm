@@ -215,6 +215,8 @@
                             <b-col cols="3">
                                 <b-form-group
                                     class="mb-0"
+                                    label="名前検索"
+                                    style="color: white;"
                                 >
                                     <b-input-group size="sm">
                                         <b-form-input
@@ -626,18 +628,20 @@ export default {
                 labels: {
                     show: false,
                     formatter: function (val) {
-                        return val + "%";
+                        return val + "人";
                     }
                 },
             },
             tooltip: {
+                theme: 'dark',
+                followCursor: true
                 // 分かるまでfalseにしておく
-                enabled: false,
-                fillSeriesColor: true,
-                style: {
-                    colors: ["#000000"]
-                },
-                theme: false,
+                // enabled: false,
+                // fillSeriesColor: true,
+                // style: {
+                //     colors: ["#000000"]
+                // },
+                // theme: false,
             },
         },
         customerRankChartOptions: {
@@ -725,18 +729,20 @@ export default {
                 labels: {
                     show: false,
                     formatter: function (val) {
-                        return val + "%";
+                        return val + "人";
                     }
                 },
             },
             tooltip: {
+                theme: 'dark',
+                followCursor: true,
                 // 分かるまでfalseにしておく
-                enabled: false,
-                fillSeriesColor: true,
-                style: {
-                    colors: ["#000000"]
-                },
-                theme: false,
+                // enabled: false,
+                // fillSeriesColor: true,
+                // style: {
+                //     colors: ["#000000"]
+                // },
+                // theme: false,
             },
             // colors: ['#ffffff', '#dab300', '#bec1c3', '#F0F8FF', '#000000'],
         },
@@ -1033,12 +1039,11 @@ export default {
     },
     created () {
         this.getCustomerRank()
-
-    },
-    mounted () {
+        this.getCustomerAge()
         this.totalCustomer = this.customer.length
         this.totalRows = this.customer.length
-        this.getCustomerAge()
+    },
+    mounted () {
     },
     methods: {
         ...mapMutations([
@@ -1082,7 +1087,6 @@ export default {
                 url: '/api/customer/get_customer_age/',
             })
             .then(res => {
-                console.log(res)
                 this.customerAgeSeries[0].data = res.data.data
                 this.loadCustomerAge = false
             })
@@ -1097,7 +1101,6 @@ export default {
                 url: '/api/customer/get_customer_rank/',
             })
             .then(res => {
-                console.log(res)
                 this.customerRankSeries[0].data = res.data.data
                 this.loadCustomerRank = false
             })

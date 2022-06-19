@@ -146,6 +146,9 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     caution_flg = serializers.BooleanField(default=False)
     remarks = serializers.CharField(default='', allow_null=True)
 
+    # 2022/6/20 ボトル機能追加⇒create, update確認
+    bottle = serializers.SerializerMethodField(read_only=True, allow_null=True)
+
     rank_id = serializers.IntegerField(source='rank.rank_id', allow_null=True)
     rank_name = serializers.CharField(
         source='rank.rank_name',
@@ -181,6 +184,7 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             'updated_at',
             'delete_flg',
             'customer_no',
+            'bottle',
         ]
 
     def get_first_visit(self, obj):
@@ -217,6 +221,20 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
         if obj.company == None:
             return ''
         return obj.company
+
+    def get_bottle(self, obj):
+
+        return BottleSerializer(
+            obj.bottle_customer.filter(delete_flg=False),
+            fields=[
+                'id',
+                'product',
+                'open_date',
+                'end_flg',
+                'waste_flg',
+            ],
+            many=True,
+        ).data
 
     def create(self, validated_data):
         logger.debug('★Serializerのcreate')
@@ -330,8 +348,21 @@ class CustomerSubSerializer(DynamicFieldsModelSerializer):
 
 class CastSerializer(DynamicFieldsModelSerializer):
 
+
+    mail = serializers.EmailField(default='', allow_null=True)
+    phone = serializers.CharField(default='', allow_null=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
+    birthday = serializers.SerializerMethodField(allow_null=True)
+    birthday_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
+    start_working_date = serializers.SerializerMethodField(allow_null=True)
+    start_working_date_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
+    resign_date = serializers.SerializerMethodField(allow_null=True)
+    resign_date_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
+
+
+    delete_flg = serializers.BooleanField(default=False)
+    remarks = serializers.CharField(default='', allow_null=True)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -341,21 +372,136 @@ class CastSerializer(DynamicFieldsModelSerializer):
         fields = [
             'id',
             'name',
+            'name_kana',
             'age',
             'icon',
             'real_name',
+            'real_name_kana',
             'real_age',
             'birthday',
+            'birthday_str',
             'address',
             'start_working_date',
+            'start_working_date_str',
             'total_appoint',
             'resign_flg',
             'resign_date',
+            'resign_date_str',
             'salary',
             'created_at',
             'updated_at',
             'delete_flg',
+            'mail',
+            'phone',
+            'experienced',
+            'remarks',
         ]
+
+    def get_birthday(self, obj):
+        if obj.birthday == None:
+            return ''
+        return obj.birthday.strftime('%Y/%m/%d')
+
+    def get_start_working_date(self, obj):
+        if obj.start_working_date == None:
+            return ''
+        return obj.start_working_date.strftime('%Y/%m/%d')
+
+    def get_resign_date(self, obj):
+        if obj.resign_date == None:
+            return ''
+        return obj.resign_date.strftime('%Y/%m/%d')
+
+
+    def create(self, validated_data):
+        logger.debug('★Serializerのcreate')
+        logger.debug(validated_data)
+
+        name = get_val_in_validated_data('name', validated_data)
+        name_kana = get_val_in_validated_data('name_kana', validated_data)
+        real_name = get_val_in_validated_data('real_name', validated_data)
+        real_name_kana = get_val_in_validated_data('real_name_kana', validated_data)
+        age = get_val_in_validated_data('age', validated_data)
+        real_age = get_val_in_validated_data('real_age', validated_data)
+        birthday_str = get_val_in_validated_data('birthday_str', validated_data)
+        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != None else None
+        # icon = get_val_in_validated_data('birthday_str', validated_data)
+        experienced = get_val_in_validated_data('experienced', validated_data)
+        mail = get_val_in_validated_data('mail', validated_data)
+        phone = get_val_in_validated_data('phone', validated_data)
+        resign_flg = get_val_in_validated_data('resign_flg', validated_data)
+        resign_date_str = get_val_in_validated_data('resign_date_str', validated_data)
+        resign_date = datetime.strptime(resign_date_str, '%Y/%m/%d') if resign_date_str != None else None
+        start_working_date_str =  get_val_in_validated_data('start_working_date_str', validated_data)
+        start_working_date = datetime.strptime(start_working_date_str, '%Y/%m/%d') if start_working_date_str != None else None
+        address = get_val_in_validated_data('address', validated_data)
+        remarks = get_val_in_validated_data('remarks', validated_data)
+
+        cast = MCast.objects.create(
+            name=name,
+            name_kana=name_kana,
+            real_name=real_name,
+            real_name_kana=real_name_kana,
+            age=age,
+            real_age=real_age,
+            birthday=birthday,
+            # icon=icon,
+            experienced=experienced,
+            mail=mail,
+            phone=phone,
+            resign_flg=resign_flg,
+            resign_date=resign_date,
+            start_working_date=start_working_date,
+            remarks=remarks,
+            address=address,
+        )
+
+        return cast
+
+    def update(self, instance, validated_data):
+        logger.debug('★Serializerのupdate')
+        logger.debug(instance)
+        logger.debug(validated_data)
+
+        name = get_val_in_validated_data('name', validated_data)
+        name_kana = get_val_in_validated_data('name_kana', validated_data)
+        real_name = get_val_in_validated_data('real_name', validated_data)
+        real_name_kana = get_val_in_validated_data('real_name_kana', validated_data)
+        age = get_val_in_validated_data('age', validated_data)
+        real_age = get_val_in_validated_data('real_age', validated_data)
+        birthday_str = get_val_in_validated_data('birthday_str', validated_data)
+        birthday = datetime.strptime(birthday_str, '%Y/%m/%d') if birthday_str != None else None
+
+        experienced = get_val_in_validated_data('experienced', validated_data)
+        mail = get_val_in_validated_data('mail', validated_data)
+        phone = get_val_in_validated_data('phone', validated_data)
+        resign_flg = get_val_in_validated_data('resign_flg', validated_data)
+        resign_date_str = get_val_in_validated_data('resign_date_str', validated_data)
+        resign_date = datetime.strptime(resign_date_str, '%Y/%m/%d') if resign_date_str != None else None
+        start_working_date_str =  get_val_in_validated_data('start_working_date_str', validated_data)
+        start_working_date = datetime.strptime(start_working_date_str, '%Y/%m/%d') if start_working_date_str != None else None
+        address = get_val_in_validated_data('address', validated_data)
+        remarks = get_val_in_validated_data('remarks', validated_data)
+
+        instance.name = name
+        instance.name_kana = name_kana
+        instance.real_name = real_name
+        instance.real_name_kana = real_name_kana
+        instance.age = age
+        instance.real_age = real_age
+        instance.birthday = birthday
+        # instance.icon=icon,
+        instance.experienced = experienced
+        instance.mail = mail
+        instance.phone = phone
+        instance.resign_flg = resign_flg
+        instance.resign_date = resign_date
+        instance.start_working_date = start_working_date
+        instance.address = address
+        instance.remarks = remarks
+        instance.save()
+        return instance
+
 
 
 class CastSubSerializer(DynamicFieldsModelSerializer):
@@ -573,12 +719,12 @@ class BottleSerializer(DynamicFieldsModelSerializer):
     def get_deadline(self, obj):
         if obj.deadline == None:
             return ''
-        return utc_to_jst(obj.deadline).strftime('%Y年%m月%d日 %H時%M分')
+        return utc_to_jst(obj.deadline).strftime('%Y年%m月%d日')
 
     def get_open_date(self, obj):
         if obj.open_date == None:
             return ''
-        return utc_to_jst(obj.open_date).strftime('%Y年%m月%d日 %H時%M分')
+        return utc_to_jst(obj.open_date).strftime('%Y年%m月%d日')
 
 
 

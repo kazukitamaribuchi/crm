@@ -18,6 +18,8 @@
                             placeholder="username"
                             required
                             :state="nameState"
+                            @keyup.enter="checkLogin"
+                            @keypress="setlogin1"
                         ></b-form-input>
                         <b-form-invalid-feedback id="input-live-feedback">
                             {{ usernameError }}
@@ -38,6 +40,8 @@
                             placeholder="password"
                             :state="passState"
                             required
+                            @keyup.enter="checkLogin"
+                            @keypress="setlogin2"
                         ></b-form-input>
                         <b-form-invalid-feedback id="input-live-feedback">
                             {{ passwordError }}
@@ -67,6 +71,8 @@ export default {
         },
         usernameError: '',
         passwordError: '',
+        loginNameValue: false,
+        loginPassValue: false,
     }),
     created () {
     },
@@ -93,6 +99,18 @@ export default {
         }
     },
     methods: {
+        setlogin1 () {
+            this.loginNameValue = true
+        },
+        setlogin2 () {
+            this.loginPassValue = true
+        },
+        checkLogin () {
+            if (!this.loginNameValue || !this.loginPassValue) return
+            this.login()
+            this.loginNameValue = false
+            this.loginPassValue = false
+        },
         setNameErrorMsg (val) {
             switch (val) {
                 case 0:
@@ -117,7 +135,10 @@ export default {
         ]),
         login () {
             // バリデーション
-            if (!this.nameState || !this.passState) {
+            if (!this.nameState
+                || !this.passState
+                || !this.loginNameValue
+                || !this.loginPassValue) {
                 return
             }
             this.checkAuthToken(this.credentials)

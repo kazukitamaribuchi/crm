@@ -35,7 +35,7 @@ export default {
             this.dialog = false
             this.castDetail = {}
         },
-        deleteSalesDetail () {
+        deleteCastDetail () {
             this.deleteCastListAction(this.castDetail)
             this.dialog = false
             this.$router.push('/cast')

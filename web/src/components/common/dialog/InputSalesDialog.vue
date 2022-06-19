@@ -4,11 +4,12 @@
             v-model="dialog"
             size="xl"
             screenable
-            title="売上入力"
+            :title="inputSalesDialogTitle"
             header-bg-variant="primary"
             header-text-variant="light"
         >
             <b-form class="input_sales_form">
+
                 <b-card bg-variant="light" class="mt-3">
                     <b-form-group
                         label-cols-lg="3"
@@ -17,23 +18,34 @@
                         label-class="font-weight-bold pt-0"
                         class="mb-0"
                     >
+                    <!-- <b-card-sub-title align="right" v-if="editMode">
+                        伝票No {{ salesHeaderId }}
+                    </b-card-sub-title> -->
                         <b-row>
-                            <b-col cols="2">
+                            <b-col cols="3">
                                 <b-form-group
-                                    label="会員No"
+                                    label="会員No*"
+                                    :class="{'invalid': customerNoInvalid}"
                                 >
                                     <b-input-group>
                                         <b-form-input
                                             v-model="inputSalesData.customerNo"
                                             type="number"
                                             required
+                                            autofocus
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="customerNoError.length == 0">
+                                            {{ customerNoError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
-                            <b-col cols="2">
+                            <b-col cols="3">
+                            </b-col>
+                            <b-col cols="3">
                                 <b-form-group
-                                    label="来店人数"
+                                    label="来店人数*"
+                                    :class="{'invalid': totalVisitorsInvalid}"
                                 >
                                     <b-input-group>
                                         <b-form-input
@@ -41,11 +53,13 @@
                                             type="number"
                                             required
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="totalVisitorsError.length == 0">
+                                            {{ totalVisitorsError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
-                            <b-col cols="4"></b-col>
-                            <b-col cols="4">
+                            <b-col cols="3">
                                 <b-form-group
                                     class="input_sales_date"
                                     label="来店日"
@@ -56,6 +70,95 @@
                                     ></b-form-datepicker>
                                 </b-form-group>
                             </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="12">
+                                <b-card>
+                                    <label>
+                                        顧客情報
+                                    </label>
+                                    <b-container>
+                                        <b-row>
+                                            <b-col cols="5" class="mt-0 pt-0">
+                                                <div style="display: flex;">
+                                                    <div>
+                                                        <img
+                                                            src="@/assets/img/男性3.jpg"
+                                                            class="customer_detail_customer_icon"
+                                                        >
+                                                    </div>
+                                                    <div class="mt-2" style="margin-left: 15px;" v-if="customerInfo != null">
+                                                        <b-card-title style="font-size: 15px;">
+                                                            {{ customerInfo.name}}
+                                                        </b-card-title>
+                                                        <b-card-sub-title style="font-size: 12px;">
+                                                            {{ customerInfo.name_kana }}
+                                                        </b-card-sub-title>
+                                                    </div>
+                                                    <div class="mt-2" style="margin-left: 15px;" v-else>
+                                                        <b-card-title style="font-size: 15px;">
+                                                            -
+                                                        </b-card-title>
+                                                        <b-card-sub-title style="font-size: 12px;">
+                                                            -
+                                                        </b-card-sub-title>
+                                                    </div>
+                                                </div>
+                                            </b-col>
+                                            <b-col cols="2" class="mt-0 pt-0">
+                                                <b-card-sub-title>
+                                                    年齢
+                                                </b-card-sub-title>
+                                                <b-card-text v-if="customerInfo != null">
+                                                    {{ customerInfo.age }} 歳
+                                                </b-card-text>
+                                                <b-card-text v-else>
+                                                    -
+                                                </b-card-text>
+                                            </b-col>
+                                            <b-col cols="3" class="mt-0 pt-0">
+                                                <b-card-sub-title>
+                                                    誕生日
+                                                </b-card-sub-title>
+                                                <b-card-text v-if="customerInfo != null">
+                                                    {{ getStrInData(customerInfo.birthday) }}
+                                                </b-card-text>
+                                                <b-card-text v-else>
+                                                    -
+                                                </b-card-text>
+                                            </b-col>
+                                            <b-col cols="2" class="mt-0 pt-0">
+                                                <b-card-sub-title>
+                                                    ランク
+                                                </b-card-sub-title>
+                                                <b-card-text v-if="customerInfo != null">
+                                                    {{ getStrInData(customerInfo.rank_name) }}
+                                                </b-card-text>
+                                                <b-card-text v-else>
+                                                    -
+                                                </b-card-text>
+                                            </b-col>
+                                        </b-row>
+                                    </b-container>
+                                </b-card>
+                                <!-- <b-form-group
+                                    label="会員No*"
+                                    :class="{'invalid': customerNoInvalid}"
+                                >
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="inputSalesData.customerNo"
+                                            type="number"
+                                            required
+                                            autofocus
+                                        ></b-form-input>
+                                        <b-form-invalid-feedback :state="customerNoError.length == 0">
+                                            {{ customerNoError }}
+                                        </b-form-invalid-feedback>
+                                    </b-input-group>
+                                </b-form-group> -->
+                            </b-col>
+
                         </b-row>
                         <b-row>
                             <b-col cols="6">
@@ -119,7 +222,10 @@
                                             <b-col cols="6" class="input_sales_visit">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
-                                                        <b-card-sub-title class="input_sales_visit_time_title">入店時間</b-card-sub-title>
+                                                        <b-card-sub-title
+                                                            class="input_sales_visit_time_title"
+                                                            style="color: red !important;"
+                                                        >入店時間*</b-card-sub-title>
                                                         <b-row>
                                                             <b-form-group class="input_sales_visit_time_select_wrap">
                                                                 <b-form-group>
@@ -149,7 +255,10 @@
                                             <b-col cols="6" class="input_sales_leave">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
-                                                        <b-card-sub-title class="input_sales_visit_time_title">{{ moveSeatTimeText }}</b-card-sub-title>
+                                                        <b-card-sub-title
+                                                            class="input_sales_visit_time_title"
+                                                            style="color: red !important;"
+                                                        >{{ moveSeatTimeText }}*</b-card-sub-title>
                                                         <b-form-group class="input_sales_visit_time_select_wrap">
                                                             <b-form-group>
                                                                 <SelectForm
@@ -410,7 +519,10 @@
                                             <b-col cols="6" class="input_sales_visit">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
-                                                        <b-card-sub-title class="input_sales_visit_time_title">席移動時間</b-card-sub-title>
+                                                        <b-card-sub-title
+                                                            class="input_sales_visit_time_title"
+                                                            style="color: red !important;"
+                                                        >席移動時間*</b-card-sub-title>
                                                         <b-row>
                                                             <b-form-group class="input_sales_visit_time_select_wrap">
                                                                 <b-form-group>
@@ -432,7 +544,10 @@
                                             <b-col cols="6" class="input_sales_leave">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
-                                                        <b-card-sub-title class="input_sales_visit_time_title">退店時間</b-card-sub-title>
+                                                        <b-card-sub-title
+                                                            class="input_sales_visit_time_title"
+                                                            style="color: red !important;"
+                                                        >退店時間*</b-card-sub-title>
                                                         <b-form-group class="input_sales_visit_time_select_wrap">
                                                             <b-form-group>
                                                                 <SelectForm
@@ -582,10 +697,11 @@
                     <table>
                         <tr>
                             <th>商品名</th>
-                            <th>定価</th>
+                            <!-- <th>定価</th> -->
                             <th>実価格</th>
                             <th>数量</th>
-                            <th>課税対象</th>
+                            <th>ボトル</th>
+                            <!-- <th>課税</th> -->
                             <th>総計(税抜)</th>
                             <th>総計(税込)</th>
                             <th>備考</th>
@@ -614,10 +730,16 @@
                                 ></b-img>
                                 <span>{{ item.name }}</span>
                             </td>
-                            <td>{{ item.price }}</td>
+                            <!-- <td>{{ item.price }}</td> -->
                             <td>{{ item.actuallyPrice }}</td>
                             <td>{{ item.quantity }}</td>
-                            <td>{{ item.taxation }}</td>
+                            <td>
+                                <b-card-text v-if="item.bottle">登録</b-card-text>
+                                <b-card-text v-else>--</b-card-text>
+                            </td>
+                            <!-- <td>
+                                {{ item.taxation }}
+                            </td> -->
                             <td>{{ item.totalPrice }}</td>
                             <td>{{ item.totalTaxPrice }}</td>
                             <td>{{ item.remarks }}</td>
@@ -705,7 +827,7 @@
                             </b-button>
                             <b-button
                                 variant="primary"
-                                @click="register"
+                                @click="registerOrUpdate"
                                 :disabled=isDisabled
                             >
                                 登録
@@ -733,6 +855,8 @@
 </template>
 
 <script>
+
+import _ from 'lodash'
 import InputSalesDetailDialog from '@/components/common/dialog/InputSalesDetailDialog'
 import InputSalesAddDetailDialog from '@/components/common/dialog/InputSalesAddDetailDialog'
 import InputSalesAddCastDialog from '@/components/common/dialog/InputSalesAddCastDialog'
@@ -860,7 +984,15 @@ export default {
         charterOptions: [
             { text: '貸切', value: 1 }
         ],
-        errorMsg: []
+        errorMsg: [],
+        totalVisitorsError: '',
+        customerNoError: '',
+        editMode: false,
+        salesHeaderId: null,
+        edit_sales_detail: [],
+        edit_sales_service_detail: [],
+        edit_sales_appoint_detail: [],
+        customerInfo: null,
     }),
     created () {
         this.$eventHub.$off('addCast')
@@ -881,7 +1013,15 @@ export default {
     },
     computed: {
         ...mapGetters([
+            'customer',
         ]),
+        inputSalesDialogTitle () {
+            if (this.editMode) {
+                return '売上入力（編集） 伝票No.' + this.salesHeaderId
+            } else {
+                return '売上入力（新規作成）'
+            }
+        },
         totalPrice () {
             let totalPrice = 0
 
@@ -907,7 +1047,9 @@ export default {
         isDisabled () {
             // 席移動選択時には席移動のもののチェックも必要
             if (!this.isPositiveNumber(this.inputSalesData.customerNo)
-                || !this.isPositiveNumber(this.inputSalesData.totalVisitors)) {
+                || !this.isPositiveNumber(this.inputSalesData.totalVisitors)
+                || this.customerNoError.length != 0
+                || this.totalVisitorsError.length != 0) {
                     return true
                 }
             return false
@@ -1024,6 +1166,20 @@ export default {
             }
             return Con.BASIC_PRICE_VIP_SEAT
         },
+        totalVisitorsInvalid () {
+            if (this.totalVisitorsError.length != 0
+                || this.inputSalesData.totalVisitors == null) {
+                return true
+            }
+            return false
+        },
+        customerNoInvalid () {
+            if (this.customerNoError.length != 0
+                || this.inputSalesData.customerNo == null) {
+                return true
+            }
+            return false
+        }
     },
     watch: {
         'inputSalesData.visitTimeHour': function (val) {
@@ -1094,6 +1250,19 @@ export default {
             }
         },
         'inputSalesData.totalVisitors': function (val) {
+            if (val == null) return
+            if (val.length > 0) {
+                if (val <= 0) {
+                    this.totalVisitorsError = '正しい値を入力してください'
+                } else if (val > 30) {
+                    this.totalVisitorsError = '1 ~ 30の値を入力してください'
+                } else {
+                    this.totalVisitorsError = ''
+                }
+            } else {
+                this.totalVisitorsError= '来店人数を入力してください'
+            }
+
             if (this.inputSalesData.basicPlanType == 1) {
                 if (val != '' && val >= Con.CHARTER_TOTAL_NUM) {
                     this.inputSalesData.isChartered = [1]
@@ -1107,6 +1276,26 @@ export default {
                 }
             } else {
                 this.inputSalesData.isCharteredOther = []
+            }
+        },
+        'inputSalesData.customerNo': function (val) {
+            let reg = /^[0-9]+$/
+            if (val == null) return
+            if (val.length > 0) {
+                if (val <= 0 || !reg.test(val)) {
+                    this.customerNoError = '正しい値を入力してください'
+                    this.customerInfo = null
+                } else {
+                    this.customerInfo = _.cloneDeep(this.customer.find(c => c.customer_no == val))
+                    if (this.customerInfo == undefined) {
+                        this.customerNoError = '存在しない会員Noです。'
+                    } else {
+                        this.customerNoError = ''
+                    }
+                }
+            } else {
+                this.customerNoError= '会員Noを入力してください'
+                this.customerInfo = null
             }
         },
         'inputSalesData.isChartered': function (val) {
@@ -1249,9 +1438,14 @@ export default {
             'updateSalesList',
             'deleteSalesList',
         ]),
+        registerOrUpdate () {
+            if (!this.editMode) {
+                this.register()
+            } else {
+                this.update()
+            }
+        },
         register () {
-
-            this.validate()
 
             let sales_detail_service_list = []
             let sales_detail_appoint_list = []
@@ -1541,6 +1735,197 @@ export default {
             }
             return result
         },
+        update () {
+            let sales_detail_service_list = []
+            let sales_detail_appoint_list = []
+            let sales_detail_list = []
+
+            // この会計は同伴かをヘッダに持たせる
+            let douhanFlg = false
+
+
+            // キャスト指名情報の追加
+            for (const i in this.appointedCastDataList) {
+                let large_category = 1
+                let middle_category = 0
+                let appointType = this.appointedCastDataList[i].appointType
+                let isDouhan = this.appointedCastDataList[i].isDouhan
+                let cast_id = this.appointedCastDataList[i].cast.id
+                let quantity = this.appointedCastDataList[i].quantity
+                let appointPrice = this.appointedCastDataList[i].appointPrice
+
+                if (isDouhan) {
+                    // この会計は同伴かをヘッダに持たせる
+                    douhanFlg = true
+                    sales_detail_appoint_list.push(this.createDouhan(this.appointedCastDataList[i]))
+                }
+
+                if (!isDouhan) {
+                    switch (appointType) {
+                        case 0:
+                        break
+                        case 1:
+                        middle_category = 1
+                        break
+                        case 2:
+                        middle_category = 2
+                        break
+                        default:
+                        break
+                    }
+                }
+
+
+                let total = this.calcQuantityPrice(appointPrice, quantity)
+                let taxTotal = this.calcAddTaxPrice(total, Con.TAX_DEFAULT)
+
+                // 指名料を値引きなどする場合、こちらから動的に指定する必要あり。
+                const appointData = {
+                    basic_plan_type: this.inputSalesData.basicPlanType,
+                    large_category: large_category,
+                    middle_category: middle_category,
+                    cast_id: cast_id,
+                    quantity: quantity,
+                    fixed_price: appointPrice,
+                    fixed_tax_price: this.calcAddTaxPrice(appointPrice, Con.TAX_DEFAULT),
+                    total_price: total,
+                    total_tax_price: taxTotal,
+                }
+
+                sales_detail_appoint_list.push(appointData)
+
+            }
+
+            // 明細情報の追加
+            for (const i in this.inputSalesDetailData) {
+                const salesDetailItem = this.inputSalesDetailData[i]
+                const actually_price = salesDetailItem.actuallyPrice
+                const actually_tax_price = salesDetailItem.actuallyTaxPrice
+                const product_id = salesDetailItem.product.id
+                const quantity = salesDetailItem.quantity
+                const bottle = salesDetailItem.bottle
+                const totalPrice = salesDetailItem.totalPrice
+                const totalTaxPrice = salesDetailItem.totalTaxPrice
+                const taxRate = salesDetailItem.taxRate
+                const remarks = salesDetailItem.remarks
+                // 後に商品にキャストを紐づける用
+                const cast_id = null
+
+                const productData = {
+                    product_id: product_id,
+                    cast_id: cast_id,
+                    quantity: quantity,
+                    bottle: bottle,
+                    fixed_price: actually_price,
+                    fixed_tax_price: actually_tax_price,
+                    total_price: totalPrice,
+                    total_tax_price: totalTaxPrice,
+                    remarks: remarks,
+                    tax_rate: taxRate,
+                }
+
+                sales_detail_list.push(productData)
+            }
+
+
+
+            let diffDay = false
+            let moveDiffDay = false
+            let leaveDay = this.inputSalesData.accountDate
+            if (this.isDiffDayTime(this.inputSalesData.visitTimeHour, this.inputSalesData.leaveTimeHour)) {
+                leaveDay = dayjs(this.inputSalesData.accountDate).add(1, 'd').format('YYYY-MM-DD')
+            }
+
+            const visit_time = this.inputSalesData.accountDate + ' ' + this.modifyStrTime(this.inputSalesData.visitTimeHour, this.inputSalesData.visitTimeMinute)
+            let leave_time = leaveDay + ' ' + this.modifyStrTime(this.inputSalesData.leaveTimeHour, this.inputSalesData.leaveTimeMinute)
+            let move_time = this.calcMoveTime(leaveDay)
+
+            if (this.showDiffBasicPlan) {
+                let tmp_leave_time = leave_time
+                leave_time = move_time
+                move_time = tmp_leave_time
+            }
+
+            // サービス料金の追加
+            let basicPlanList = this.createBasicPlan()
+            for (const plan of basicPlanList) {
+                sales_detail_service_list.push(plan)
+            }
+
+
+            if (this.showDiffBasicPlan) {
+                let basicPlanOtherList = this.createBasicPlanOther()
+                for (const planOther of basicPlanOtherList) {
+                    sales_detail_service_list.push(planOther)
+                }
+            }
+            let stayHourOther = (this.showDiffBasicPlan) ? this.inputSalesData.stayHourOther : 0
+            let totalStayHour = (this.showDiffBasicPlan) ? this.inputSalesData.stayHour + this.inputSalesData.stayHourOther : this.inputSalesData.stayHour
+
+            let isCharted = false
+            if (this.showDiffBasicPlan) {
+                if (this.inputSalesData.isCharteredOther.length > 0) {
+                    isCharted = true
+                }
+            } else {
+                if (this.inputSalesData.isChartered.length > 0) {
+                    isCharted = true
+                }
+            }
+
+            const data = {
+                'id': this.salesHeaderId,
+                'customer_no': this.inputSalesData.customerNo,
+                'account_date': this.inputSalesData.accountDate,
+                'move_diff_seat': this.showDiffBasicPlan,
+                'visit_time': visit_time,
+                'leave_time': leave_time,
+                'move_time': move_time,
+                'payment_type': (this.inputSalesData.cardPayment) ? 1 : 0,
+                'appoint': this.appointedCastDataList.length != 0,
+                'douhan': douhanFlg,
+                'total_visitors': this.inputSalesData.totalVisitors,
+                'is_charterd': isCharted,
+                'tax_rate': this.inputSalesData.totalSalesTax,
+                // 後々↓
+                'booking': false,
+                'basic_plan_type': this.inputSalesData.basicPlanType,
+                'stay_hour': this.inputSalesData.stayHour,
+                'stay_hour_other': stayHourOther,
+                'total_stay_hour': totalStayHour,
+                'total_sales': this.totalPrice,
+                'total_tax_sales': this.totalTaxPrice,
+                'sales_detail_service_list': sales_detail_service_list,
+                'sales_detail_appoint_list': sales_detail_appoint_list,
+                'sales_detail_list': sales_detail_list,
+                'remarks': this.inputSalesData.remarks,
+
+                'edit_sales_detail': this.edit_sales_detail,
+                'edit_sales_service_detail': this.edit_sales_service_detail,
+                'edit_sales_appoint_detail': this.edit_sales_appoint_detail,
+            }
+
+            console.log('update', data)
+
+            //バリデーション・・・
+            // サーバーの方はトランザクションだからおかしかったら登録されないが・・・
+
+            this.$axios({
+                method: 'PUT',
+                url: '/api/sales/update_sales_data/',
+                data: data
+            })
+            .then(res => {
+                console.log(res)
+                this.updateSalesList(res.data)
+                this.$eventHub.$emit('updateSalesDetail', res.data)
+                this.init()
+                this.close()
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
         createDouhan (data) {
             // 将来的に可変
             return {
@@ -1570,7 +1955,7 @@ export default {
             this.inputSalesData = {
                 basicPlanType: 0, // 選択されている料金タイプの種類
                 customerNo: null,
-                totalVisitors: null,
+                totalVisitors: 1,
                 accountDate: now,
                 visitTimeHour: null, // 来店時間（時）
                 visitTimeMinute: null, // 来店時間（分）
@@ -1608,6 +1993,13 @@ export default {
             this.inputSalesDetailData = []
             this.appointedCastDataList = []
             this.errorMsg = []
+            this.customerNoError = ''
+            this.totalVisitorsError = ''
+            this.editMode = false
+            this.salesHeaderId = null
+            this.edit_sales_detail = []
+            this.edit_sales_service_detail = []
+            this.edit_sales_appoint_detail = []
         },
         test () {
             console.log('test')
@@ -1616,8 +2008,12 @@ export default {
             this.dialog = true
             if (data) {
                 this.convertData(data)
+                this.editMode = true
+                this.salesHeaderId = data.id
+                console.log('編集モード')
             } else {
-                console.log('dataなし')
+                this.editMode = false
+                console.log('新規作成モード')
             }
         },
         close () {
@@ -1665,29 +2061,16 @@ export default {
             if (h == 0) return  m + '分'
             return h + '時間' + m + '分'
         },
-        validate () {
-            // if (this.inputSalesData.customerNo == null
-            //     || !this.isPositiveNumber(this.inputSalesData.customerNo)) {
-            //         this.errorMsg.push({
-            //             'text': '会員Noを正しく入力してください'
-            //         })
-            //     }
-            // if (this.inputSalesData.totalVisitors == null
-            //     || !this.isPositiveNumber(this.inputSalesData.totalVisitors)) {
-            //         this.errorMsg.push({
-            //             'text': '来店人数を正しく入力してください'
-            //         })
-            // }
-            // if (this.errorMsg.length > 0) {
-            //     this.$refs.errorModal.open()
-            // }
-        },
         convertData (data) {
             // 編集用にデータを置き換える処理
             console.log('convertData', data)
+            this.edit_sales_detail = data.sales_detail
+            this.edit_sales_service_detail = data.sales_service_detail
+            this.edit_sales_appoint_detail = data.sales_appoint_detail
+
             this.inputSalesData.basicPlanType = data.basic_plan_type
-            this.inputSalesData.customerNo = data.customer.customer_no
-            this.inputSalesData.totalVisitors = Number(data.total_visitors)
+            this.inputSalesData.customerNo = String(data.customer.customer_no)
+            this.inputSalesData.totalVisitors = String(data.total_visitors)
             this.inputSalesData.accountDate = data.account_date.replaceAll('/', '-')
             this.inputSalesData.stayHour = data.stay_hour
             this.inputSalesData.stayHourOther = data.stay_hour_other
@@ -1759,20 +2142,57 @@ export default {
             }
 
 
+            let appoint_info_list = []
+            // {id: id, Obj: obj}
+            // まずはまとめる
 
             for (const i in data.sales_appoint_detail) {
-                // 同伴料のロジック考える
-
                 const salesAppointItem = data.sales_appoint_detail[i]
+                const index = appoint_info_list.findIndex(el => el.id == salesAppointItem.cast.id)
+
+                if (index != -1) {
+                    appoint_info_list[index].data.push(salesAppointItem)
+                } else {
+                    appoint_info_list.push({
+                        id: salesAppointItem.cast.id,
+                        data: [salesAppointItem]
+                    })
+                }
+
+            }
+
+            for (const i in appoint_info_list) {
+                const appointData = appoint_info_list[i]
+                let cast = null
+                let appointType = 0
+                let appointPrice = 0
+                let quantity = 0
+                let isDouhan = false
+                let douhanPrice = 0
+                for (const j in appointData.data) {
+                    const item = appointData.data[j]
+                    if (item.service.large_category == 2 && item.service.middle_category == 0) {
+                        isDouhan = true
+                        douhanPrice = item.total_price
+                    } else {
+                        appointType = item.service.middle_category
+                        appointPrice = item.fixed_price
+                        cast = item.cast
+                        quantity = item.quantity
+                    }
+                }
+
                 service_appoint_list.push({
-                    cast: salesAppointItem.cast,
-                    appointType: 0,
-                    appointPrice: 1000,
-                    isDouhan: false,
-                    douhanPrice: 0,
-                    quantity: Number(salesAppointItem.quantity),
+                    cast: cast,
+                    appointType: appointType,
+                    appointPrice: appointPrice,
+                    isDouhan: isDouhan,
+                    douhanPrice: douhanPrice,
+                    quantity: Number(quantity),
                 })
             }
+
+
             this.inputSalesDetailData = service_detail_list
             this.appointedCastDataList = service_appoint_list
         }
@@ -1939,4 +2359,14 @@ export default {
         }
     }
 
+    .invalid {
+        color: red;
+    }
+
+
+    .customer_detail_customer_icon {
+        border-radius: 50%;
+        width: 50px;
+        height: 50px;
+    }
 </style>

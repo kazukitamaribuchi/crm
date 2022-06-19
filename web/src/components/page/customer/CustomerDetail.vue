@@ -33,20 +33,28 @@
                                 </b-col>
                                 <b-col cols="2" style="padding-top: 70px;">
                                     <b-card-sub-title>
+                                        会員No
+                                    </b-card-sub-title>
+                                    <b-card-text style="font-size: 24px;">
+                                        {{ getStrInData(customerData.customer_no) }}
+                                    </b-card-text>
+                                </b-col>
+                                <b-col cols="2" style="padding-top: 70px;">
+                                    <b-card-sub-title>
                                         年齢
                                     </b-card-sub-title>
                                     <b-card-text style="font-size: 24px;">
                                         {{ getStrInData(customerData.age) }} 歳
                                     </b-card-text>
                                 </b-col>
-                                <b-col cols="2" style="padding-top: 70px;">
+                                <!-- <b-col cols="2" style="padding-top: 70px;">
                                     <b-card-sub-title>
                                         誕生日
                                     </b-card-sub-title>
                                     <b-card-text style="font-size: 24px;">
                                         {{ getStrInData(customerData.birthday) }}
                                     </b-card-text>
-                                </b-col>
+                                </b-col> -->
                                 <b-col cols="1" style="padding-top: 70px;">
                                     <b-card-sub-title>
                                         ランク
@@ -82,11 +90,12 @@
                                     <b-tab
                                         title="詳細情報"
                                     >
-                                        <!-- <b-card-text
-                                            style="border-bottom: 1px solid rgba(200, 200, 200, 0.1); margin-top: 10px; padding-bottom: 14px;"
+                                        <b-card-title
+                                            style="border-bottom: 1px solid rgba(200, 200, 200, 0.1); margin-top: 20px; padding-bottom: 14px;"
                                         >
-                                            個人情報
-                                        </b-card-text> -->
+                                            顧客情報
+                                        </b-card-title>
+
                                         <b-row>
                                             <b-col cols="7">
                                                 <b-card-sub-title class="mt-3" style="font-size: 15px;">
@@ -119,6 +128,12 @@
                                             </b-col>
                                             <b-col cols="5">
                                                 <b-card-sub-title class="mt-4" style="font-size: 15px;">
+                                                    誕生日
+                                                </b-card-sub-title>
+                                                <b-card-title style="font-size: 20px;">
+                                                    {{ getStrInData(customerData.birthday) }}
+                                                </b-card-title>
+                                                <b-card-sub-title class="mt-4" style="font-size: 15px;">
                                                     電話番号
                                                 </b-card-sub-title>
                                                 <b-card-title style="font-size: 20px;">
@@ -137,6 +152,119 @@
                                                     {{ getStrInData(customerData.first_visit) }}
                                                 </b-card-title>
                                             </b-col>
+                                        </b-row>
+                                        <b-card-title
+                                            style="border-bottom: 1px solid rgba(200, 200, 200, 0.1); margin-top: 20px; padding-bottom: 14px;"
+                                        >
+                                            ボトル情報
+                                        </b-card-title>
+                                        <b-row>
+                                            <b-col cols="12" style="min-height: 100px;">
+                                                <b-card-sub-title>
+                                                    現在保持中
+                                                </b-card-sub-title>
+                                                <b-row style="min-height: 100px;" v-if="customerData.bottle.length != 0">
+                                                    <b-col
+                                                        v-for="item in customerData.bottle"
+                                                        :key=item.id
+                                                        cols="4"
+                                                    >
+                                                        <b-card
+                                                            bg-variant="dark"
+                                                            text-variant="white"
+                                                            style="min-height: 180px;"
+                                                            class="bottle_card"
+                                                            @click="showBottleDetail(item)"
+                                                        >
+                                                        <div text-align="right" align="right">
+                                                            <b-button
+                                                                size="sm"
+                                                                style="position: relative; left: -10px;"
+                                                                @click="showEditCustomerDialog"
+                                                            >
+                                                                <b-icon
+                                                                    icon="check-circle"
+                                                                    aria-hidden="true"
+                                                                ></b-icon> 飲終
+                                                            </b-button>
+                                                            <b-button
+                                                                size="sm"
+                                                                @click="showDeleteCustomerDetailDialog"
+                                                            >
+                                                                <b-icon
+                                                                    icon="pencil"
+                                                                    aria-hidden="true"
+                                                                ></b-icon> 編集
+                                                            </b-button>
+                                                            <b-button
+                                                                size="sm"
+                                                                style="position: relative; left: 10px;"
+                                                                @click="showDeleteCustomerDetailDialog"
+                                                            >
+                                                                <b-icon
+                                                                    icon="trash"
+                                                                    aria-hidden="true"
+                                                                ></b-icon> 削除
+                                                            </b-button>
+                                                        </div>
+
+                                                            <b-container fluid class="mt-0 pt-0">
+                                                                <b-row>
+                                                                    <b-col cols="3">
+                                                                        <img
+                                                                            src="@/assets/img/酒2.png"
+                                                                            class="customer_detail_customer_icon"
+                                                                        >
+                                                                    </b-col>
+                                                                    <b-col cols="9">
+                                                                        <b-card-sub-title style="width: 60px;">
+                                                                            商品名
+                                                                        </b-card-sub-title>
+                                                                        <b-card-text>
+                                                                            {{ item.product.name }}
+                                                                        </b-card-text>
+                                                                        <b-card-sub-title>
+                                                                            開封日
+                                                                        </b-card-sub-title>
+                                                                        <b-card-text>
+                                                                            {{ item.open_date }}
+                                                                        </b-card-text>
+                                                                    </b-col>
+                                                                </b-row>
+                                                            </b-container>
+                                                        </b-card>
+                                                    </b-col>
+                                                </b-row>
+                                                <b-row style="min-height: 100px;" v-else>
+                                                    <b-col cols="4">
+                                                        <b-card-text>
+                                                            無し
+                                                        </b-card-text>
+                                                    </b-col>
+                                                </b-row>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <b-col cols="12" style="min-height: 100px;">
+                                                <b-card-sub-title>
+                                                    過去データ
+                                                </b-card-sub-title>
+                                                <b-row style="min-height: 100px;" v-if="true">
+                                                    <b-col cols="4">
+                                                        <b-card-text>
+                                                            無し
+                                                        </b-card-text>
+                                                    </b-col>
+                                                </b-row>
+                                                <b-row style="min-height: 100px;" v-else>
+                                                    <b-col cols="4">
+                                                        <b-card-text>
+                                                            無し
+                                                        </b-card-text>
+                                                    </b-col>
+                                                </b-row>
+                                            </b-col>
+
                                         </b-row>
                                     </b-tab>
                                     <b-tab
@@ -295,11 +423,6 @@
             @update="customerData = $event"
         />
 
-        <!-- <EditCustomerDialog
-            ref="editCustomer"
-            @update="customerData = $event"
-        /> -->
-
         <DeleteCustomerDetailDialog
             ref="deleteCustomerDetailDialog"
         />
@@ -308,7 +431,6 @@
 
 <script>
 import CreateCustomerDialog from '@/components/common/dialog/CreateCustomerDialog'
-import EditCustomerDialog from '@/components/common/dialog/EditCustomerDialog'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import utilsMixin from '@/mixins/utils'
@@ -328,7 +450,6 @@ export default {
     },
     components: {
         CreateCustomerDialog,
-        EditCustomerDialog,
         DeleteCustomerDetailDialog,
     },
     computed: {
@@ -399,7 +520,35 @@ export default {
         //     console.log(e)
         // })
         // 検索から詳細きてうまくいかせるやり方わかったら、↓の様にstoreから取得する方法に切り替え
-        this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == this.$route.params['id']))
+        if (this.customer.find(c => c.customer_no == this.$route.params['id']) == undefined) {
+            this.customerData = {}
+        }  else {
+            this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == this.$route.params['id']))
+        }
+    },
+    beforeRouteUpdate (to, from, next) {
+        if (from.name == 'CustomerDetail') {
+            // this.$axios({
+            //     method: 'GET',
+            //     url: `/api/customer/${this.$route.params['id']}`,
+            // })
+            // .then(res => {
+            //     console.log(res)
+            //     this.customerData = _.cloneDeep(res.data)
+            //     this.isDanger = this.customerData.caution_flg
+            // })
+            // .catch(e => {
+            //     console.log(e)
+            // })
+            // console.log('this.customer.find(c => c.customer_no == to.params.id)', this.customer.find(c => c.customer_no == to.params.id))
+            this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == to.params.id))
+            // console.log('this.customerData', this.customerData)
+        }
+        // console.log('CustomerDetail => beforeRouteUpdate')
+        // console.log(to)
+        // console.log(from)
+        // console.log(next)
+        next();
     },
     mounted () {
         // console.log(this.$router.referrer)
@@ -421,6 +570,9 @@ export default {
         showDeleteCustomerDetailDialog () {
             this.$refs.deleteCustomerDetailDialog.open(this.customerData)
         },
+        showBottleDetail (item) {
+            console.log('bottleDetail', item)
+        }
     },
     mixins: [
         utilsMixin
@@ -453,6 +605,10 @@ export default {
                 height: 100px;
             }
         }
+
+        // .bottle_card {
+        //     cursor: pointer;
+        // }
 
         // .customer_detail {
         //     background-color: $theme-color;

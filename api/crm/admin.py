@@ -20,6 +20,7 @@ from .sub_models import (
     SalesHeader,
     SalesDetail,
     SalesServiceDetail,
+    SalesAppointDetail,
     BookingManagement,
     AttendanceManagement,
 )
@@ -40,5 +41,6 @@ admin.site.register(BottleManagement)
 admin.site.register(SalesHeader)
 admin.site.register(SalesDetail)
 admin.site.register(SalesServiceDetail)
+admin.site.register(SalesAppointDetail)
 admin.site.register(BookingManagement)
 admin.site.register(AttendanceManagement)

@@ -11,4 +11,5 @@ export { default as CastList } from './page/cast/CastList'
 export { default as SalesList } from './page/sales/SalesList'
 
 export { default as CustomerDetail } from './page/customer/CustomerDetail'
+export { default as CastDetail } from './page/cast/CastDetail'
 export { default as SalesDetail } from './page/sales/SalesDetail'

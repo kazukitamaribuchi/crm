@@ -26,6 +26,7 @@
                                         type="text"
                                         placeholder="会員No"
                                         required
+                                        autofocus
                                     ></b-form-input>
                                     <b-form-invalid-feedback :state="customerNoError.length == 0">
                                         {{ customerNoError }}
@@ -190,13 +191,24 @@
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                        <b-row>
-                            <b-form-group
+                        <b-row class="mb-2 mt-3 pt-2">
+                            <!-- <b-form-group
                                 label="要注意人物"
                             >
                                 <b-form-checkbox
                                     v-model="createCustomerData.caution_flg"
                                 ></b-form-checkbox>
+                            </b-form-group> -->
+                            <!-- <b-card-sub-title>要注意人物</b-card-sub-title> -->
+                            <b-form-group
+                                label="要注意人物"
+                            >
+                                <b-form-checkbox-group
+                                    v-model="createCustomerData.caution_flg"
+                                    :options=cautionOptions
+                                    buttons
+                                    button-variant="outline-secondary"
+                                ></b-form-checkbox-group>
                             </b-form-group>
                         </b-row>
                         <b-row>
@@ -254,6 +266,9 @@ export default {
         dialog: false,
         customerNoError: '',
         mode: 0,
+        cautionOptions: [
+            { text: '要注意', value: 1 }
+        ],
     }),
     computed: {
         isDisabled () {
@@ -301,6 +316,9 @@ export default {
             if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
                 birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
             }
+
+            const cautionFlg = (this.createCustomerData.caution_flg.length != 0) ? true : false
+
             this.$axios({
                 method: 'POST',
                 url: '/api/customer/',
@@ -314,7 +332,7 @@ export default {
                     phone: data.phone,
                     company: data.company,
                     customer_no: data.customer_no,
-                    caution_flg: data.caution_flg,
+                    caution_flg: cautionFlg,
                     remarks: data.remarks,
                     // ランクは最初から上位で作る事も許容させるか? => マスタでやらせる。
                     rank_id: 1,
@@ -338,6 +356,8 @@ export default {
                 birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
             }
 
+            const cautionFlg = (this.createCustomerData.caution_flg.length != 0) ? true : false
+
             this.$axios({
                 url: `/api/customer/${this.$route.params['id']}/`,
                 method: 'PUT',
@@ -352,7 +372,7 @@ export default {
                     phone: data.phone,
                     company: data.company,
                     customer_no: data.customer_no,
-                    caution_flg: data.caution_flg,
+                    caution_flg: cautionFlg,
                     remarks: data.remarks,
                     // first_visit: data.first_visit,
                     rank_id: 1,
@@ -386,11 +406,34 @@ export default {
         open (data) {
             this.dialog = true
             if (data) {
-                this.createCustomerData = data
+                this.convertData(data)
                 this.mode = 1
             } else {
                 this.mode = 0
             }
+        },
+        convertData (data) {
+            let copyData = _.cloneDeep(data)
+            let caution_flg = []
+            if (copyData.caution_flg) {
+                caution_flg.push(1)
+            }
+
+            let birthday_year = ''
+            let birthday_month = ''
+            let birthday_day = ''
+            if (copyData.birthday != null || copyData.birthday == '') {
+                let birthday_split = copyData.birthday.split('/')
+                birthday_year = birthday_split[0]
+                birthday_month = birthday_split[1]
+                birthday_day = birthday_split[2]
+            } 
+
+            copyData.caution_flg = caution_flg
+            copyData.birthday_year = birthday_year
+            copyData.birthday_month = birthday_month
+            copyData.birthday_day = birthday_day
+            this.createCustomerData = copyData
         },
         checkCustomerNoDuplicate: _.debounce(function checkCustomerNoDuplicate (customerNo) {
             this.$axios({

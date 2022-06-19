@@ -242,7 +242,7 @@
                                 ></b-form-checkbox-group>
                             </b-form-group>
                         </b-col>
-                        <!-- <b-col align="center" class="add_sales_detail_footer_col">
+                        <b-col align="center" class="add_sales_detail_footer_col">
                             <b-card-sub-title>ボトル登録</b-card-sub-title>
                             <b-form-group>
                                 <b-form-checkbox-group
@@ -253,7 +253,7 @@
                                     bg-variant="success"
                                 ></b-form-checkbox-group>
                             </b-form-group>
-                        </b-col> -->
+                        </b-col>
                         <b-col align="center" class="add_sales_detail_footer_col">
                             <b-card-sub-title>まとめて追加</b-card-sub-title>
                             <b-icon

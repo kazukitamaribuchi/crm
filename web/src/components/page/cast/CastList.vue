@@ -37,28 +37,33 @@
                             </b-card>
                             <b-card class="cast_list_area" style="height: 48%; margin-top: 15px;">
                                 <b-container fluid>
-                                    <b-card-text class="mb-1">
-                                        平均年齢
-                                    </b-card-text>
-                                    <b-row>
-                                        <b-col cols="8">
-                                            <VueApexCharts
-                                                width="155"
-                                                height="155"
-                                                type="radialBar"
-                                                :options="castAverageAgeChartOptions"
-                                                :series="castAverageAgeSeries"
-                                            />
-                                        </b-col>
-                                        <b-col cols="4" align="right" class="pt-5">
-                                            <b-card-title>
-                                                24
-                                            </b-card-title>
-                                            <b-card-sub-title>
-                                                age
-                                            </b-card-sub-title>
-                                        </b-col>
-                                    </b-row>
+                                    <b-skeleton-img
+                                        v-if="loadCastAvgAge"
+                                    ></b-skeleton-img>
+                                    <div v-else>
+                                        <b-card-text class="mb-1">
+                                            平均年齢
+                                        </b-card-text>
+                                        <b-row>
+                                            <b-col cols="8">
+                                                <VueApexCharts
+                                                    width="155"
+                                                    height="155"
+                                                    type="radialBar"
+                                                    :options="castAverageAgeChartOptions"
+                                                    :series="castAverageAgeSeries"
+                                                />
+                                            </b-col>
+                                            <b-col cols="4" align="right" class="pt-5">
+                                                <b-card-title>
+                                                    {{ castAvgAge }}
+                                                </b-card-title>
+                                                <b-card-sub-title>
+                                                    age
+                                                </b-card-sub-title>
+                                            </b-col>
+                                        </b-row>
+                                    </div>
                                 </b-container>
                             </b-card>
                         </b-col>
@@ -125,15 +130,26 @@
                         <b-col cols="6">
                             <b-card class="cast_list_area">
                                 <b-container fluid>
-                                    <b-card-text class="mb-1 pt-3">
-                                        年齢分布
-                                    </b-card-text>
-                                    <VueApexCharts
+                                    <b-skeleton-img
+                                        v-if="loadCastAge"
+                                    ></b-skeleton-img>
+                                    <div v-else>
+                                        <b-card-text class="mb-1 pt-3">
+                                            年齢分布
+                                        </b-card-text>
+                                        <!-- <VueApexCharts
                                         height="250"
                                         type="bar"
                                         :options="castAgeChartOptions"
                                         :series="castAgeSeries"
-                                    />
+                                        /> -->
+                                        <VueApexCharts
+                                            height="250"
+                                            type="bar"
+                                            :options="castAgeChartOptions"
+                                            :series="castAgeSeries"
+                                        />
+                                    </div>
                                 </b-container>
                             </b-card>
                         </b-col>
@@ -159,42 +175,155 @@
                     :active=!topActive
                     @click="setCastTopActive(1)"
                 >
-                    <!-- <b-card class="cast_list_area"> -->
-
-                        <b-row>
-                            <b-col
-                                cols="3"
-                                v-for="item in filterdCast"
-                                :key=item.id
-                            >
-                                <b-card
-                                    @click="showCastDetail"
-                                    style="cursor: pointer;"
+                    <b-row class="mb-3">
+                        <b-col cols="10">
+                            <b-col cols="3">
+                                <b-form-group
+                                    class="mb-0"
+                                    label="名前検索"
+                                    style="color: white;"
                                 >
-                                <!-- bg-variant="dark"
-                                text-variant="white" -->
-                                    <b-row>
-                                        <b-col cols="6">
-                                            <img
-                                                src="@/assets/img/女性11.jpg"
-                                                class="cast_list_area_cast_icon"
-                                                top
-                                            >
-                                        </b-col>
-                                        <b-col cols="5" align="right">
-                                            <b-card-title class="mt-4">
-                                                {{ item.name }}
-                                            </b-card-title>
-                                            <b-card-sub-title>
-                                                {{ item.age }}
-                                            </b-card-sub-title>
-                                        </b-col>
-                                        <b-col></b-col>
-                                    </b-row>
-                                </b-card>
+                                    <b-input-group size="sm">
+                                        <b-form-input
+                                            id="filter-input"
+                                            v-model="filter"
+                                            type="search"
+                                            placeholder="Name"
+                                        ></b-form-input>
+                                        <b-input-group-append>
+                                            <b-button :disabled="!filter" @click="filter = ''">Clear</b-button>
+                                        </b-input-group-append>
+                                    </b-input-group>
+                                </b-form-group>
                             </b-col>
-                        </b-row>
-                    <!-- </b-card> -->
+                        </b-col>
+
+
+                    </b-row>
+                    <b-row>
+                        <b-table
+                            hover
+                            :items="cast"
+                            :fields="fields"
+                            :dark="true"
+                            caption-top
+                            selectable
+                            :per-page="perPage"
+                            :current-page="currentPage"
+                            :filter="filter"
+                            :filter-included-fields="filterOn"
+                            @row-selected="onRowSelected"
+                        >
+
+                            <template #cell(age)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }} 歳
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(real_age)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }} 歳
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(birthday)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }}
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(phone)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }}
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(start_working_date)="data">
+                                <b v-if="data.value != ''">
+                                    {{ data.value }}
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                            <template #cell(resign_flg)="data">
+                                <b v-if="data.value == true">
+                                    <b class="text-danger">退職済み</b>
+                                </b>
+                                <b v-else>
+                                    -
+                                </b>
+                            </template>
+
+                        </b-table>
+                    </b-row>
+                    <b-row>
+                        <b-col cols="5">
+                            <b-card-sub-title>
+                                Page {{ currentPage }} of {{ Math.floor(totalRows / perPage) + 1 }}
+                            </b-card-sub-title>
+                        </b-col>
+                        <b-col cols="2">
+                            <b-pagination
+                                v-model="currentPage"
+                                :total-rows="totalRows"
+                                :per-page="perPage"
+                                align="fill"
+                                size="sm"
+                                class="my-0"
+                            ></b-pagination>
+                        </b-col>
+                        <b-col cols="5">
+                        </b-col>
+                    </b-row>
+
+
+
+                    <!-- <b-row>
+                        <b-col
+                            cols="3"
+                            v-for="item in filterdCast"
+                            :key=item.id
+                        >
+                            <b-card
+                                @click="showCastDetail"
+                                style="cursor: pointer;"
+                            >
+                                <b-row>
+                                    <b-col cols="6">
+                                        <img
+                                            src="@/assets/img/女性11.jpg"
+                                            class="cast_list_area_cast_icon"
+                                            top
+                                        >
+                                    </b-col>
+                                    <b-col cols="5" align="right">
+                                        <b-card-title class="mt-4">
+                                            {{ item.name }}
+                                        </b-card-title>
+                                        <b-card-sub-title>
+                                            {{ item.age }}
+                                        </b-card-sub-title>
+                                    </b-col>
+                                    <b-col></b-col>
+                                </b-row>
+                            </b-card>
+                        </b-col>
+                    </b-row> -->
                 </b-tab>
             </b-tabs>
         </b-row>
@@ -374,7 +503,7 @@ export default {
             stroke: {
               lineCap: 'round'
             },
-            labels: ['active'],
+            labels: ['avg'],
         },
         currentPage: 1,
         totalRows: 1,
@@ -383,12 +512,15 @@ export default {
         filterOn: [],
         castAgeChartOptions: {
             chart: {
-                height: 350,
                 type: 'bar',
+                // ↓左上のdownloadとかやつ
+                toolbar: {
+                    show: false,
+                },
             },
             plotOptions: {
                 bar: {
-                    borderRadius: 10,
+                    borderRadius: 3,
                     dataLabels: {
                         position: 'top', // top, center, bottom
                     },
@@ -397,16 +529,23 @@ export default {
             dataLabels: {
                 enabled: true,
                 formatter: function (val) {
-                    return val + "%";
+                    return val + "人";
                 },
                 offsetY: -20,
                 style: {
-                    fontSize: '12px',
-                    colors: ["#304758"]
+                    fontSize: '10px',
+                    // colors: ["#304758"]
                 }
             },
+
             xaxis: {
-                categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                categories: ["10代", "20代前半", "20代後半", "30代前半", "30代後半", "40代以降"],
+                labels: {
+                    style: {
+                        colors: ["#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff", "#ffffff"],
+                        fontSize: '10px',
+                    },
+                },
                 position: 'top',
                 axisBorder: {
                     show: false
@@ -426,9 +565,6 @@ export default {
                         }
                     }
                 },
-                tooltip: {
-                    enabled: true,
-                }
             },
             yaxis: {
                 axisBorder: {
@@ -440,24 +576,26 @@ export default {
                 labels: {
                     show: false,
                     formatter: function (val) {
-                      return val + "%";
+                        return val + "人";
                     }
-                }
+                },
             },
-            title: {
-                text: 'Monthly Inflation in Argentina, 2002',
-                floating: true,
-                offsetY: 330,
-                align: 'center',
-                style: {
-                    color: '#444'
-                }
-            }
+            tooltip: {
+                theme: 'dark',
+                followCursor: true
+                // // 分かるまでfalseにしておく
+                // enabled: false,
+                // fillSeriesColor: true,
+                // style: {
+                //     colors: ["#000000"]
+                // },
+                // theme: false,
+            },
         },
         castAgeSeries: [
             {
-                name: 'Inflation',
-                data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6, 3.2, 2.3, 1.4, 0.8, 0.5, 0.2]
+                name: '年齢分布',
+                data: [2.3, 3.1, 4.0, 10.1, 4.0, 3.6]
             }
         ],
         castServiceYearChartOptions: {
@@ -482,30 +620,33 @@ export default {
                 colors: ['transparent']
             },
             xaxis: {
-              categories: ['愛理', '理沙', '美鈴', '絵美', '樹里亜'],
+                categories: ['愛理', '理沙', '美鈴', '絵美', '樹里亜'],
             },
             yaxis: {
-              title: {
-                text: '勤続年数(ヵ月)'
-              }
-            },
-            fill: {
-              opacity: 1
-            },
-            tooltip: {
-              y: {
-                formatter: function (val) {
-                  return val + " ヵ月"
+                title: {
+                    text: '勤続年数(ヵ月)'
                 }
-              }
-          },
-          legend: {
-              show: true,
-              showForSingleSeries: true,
-              customLegendItems: ['勤続年数'],
-              markers: {
-                fillColors: ['#00E396']
-              }
+            },
+                fill: {
+                    opacity: 1
+                },
+            tooltip: {
+
+                y: {
+                    formatter: function (val) {
+                        return val + " ヵ月"
+                    }
+                },
+                theme: 'dark',
+                followCursor: true
+            },
+            legend: {
+                show: true,
+                showForSingleSeries: true,
+                customLegendItems: ['勤続年数'],
+                markers: {
+                    fillColors: ['#00E396']
+                }
             }
         },
         castServiceYearSeries: [
@@ -523,9 +664,9 @@ export default {
             chart: {
               type: 'bar',
               events: {
-                click: function(chart, w, e) {
-                  console.log(chart, w, e)
-                }
+                // click: function(chart, w, e) {
+                //   console.log(chart, w, e)
+                // }
               }
             },
             plotOptions: {
@@ -543,12 +684,12 @@ export default {
             colors: ['#33b2df', '#546E7A', '#d4526e', '#13d8aa', '#A5978B', '#A5978B'],
             xaxis: {
               categories: [
-                ['愛理'],
-                ['理沙'],
-                ['美鈴'],
-                '絵美',
-                ['奈津美'],
-                ['里奈'],
+                ['test'],
+                ['test'],
+                ['test'],
+                'test',
+                ['test'],
+                ['test'],
               ],
               labels: {
                 style: {
@@ -560,31 +701,71 @@ export default {
         },
         castSalesRanking: [
             {
-                name: '愛理',
+                name: 'test',
                 total_sales: 99999999,
                 total_appoint: 240,
             },
             {
-                name: '愛理',
+                name: 'test',
                 total_sales: 99999999,
                 total_appoint: 240,
             },
             {
-                name: '愛理',
+                name: 'test',
                 total_sales: 99999999,
                 total_appoint: 240,
             },
             {
-                name: '愛理',
+                name: 'test',
                 total_sales: 99999999,
                 total_appoint: 240,
             },
             {
-                name: '愛理',
+                name: 'test',
                 total_sales: 99999999,
                 total_appoint: 240,
             },
-        ]
+        ],
+        loadCastAvgAge: true,
+        loadCastAge: true,
+        castAvgAge: 0,
+        fields: [
+            {
+                key: 'name',
+                sortable: true,
+                label: '名前',
+            },
+            {
+                key: 'real_name',
+                sortable: true,
+                label: '本名',
+            },
+            {
+                key: 'age',
+                sortable: true,
+                label: '年齢',
+            },
+            {
+                key: 'real_age',
+                sortable: true,
+                label: '実年齢',
+            },
+            {
+                key: 'birthday',
+                sortable: true,
+                label: '誕生日',
+            },
+            {
+                key: 'start_working_date',
+                sortable: true,
+                label: '勤務開始日',
+            },
+            {
+                key: 'resign_flg',
+                sortable: true,
+                label: '退職',
+            },
+        ],
     }),
     computed: {
         ...mapGetters([
@@ -598,23 +779,20 @@ export default {
             return false
         },
         totalCastSeries () {
-            return [5]
+            return [this.cast.length]
         },
         castAverageAgeSeries () {
-            return [6]
+            return [this.castAvgAge]
         },
     },
     created () {
-        this.getCastList()
-        .then(res => {
-            this.setCastList(res)
-            this.filterdCast = _.cloneDeep(res.data)
-        })
-    },
-    mounted () {
-        console.log('this.cast', this.cast)
+        this.filterdCast = _.cloneDeep(this.cast)
         this.totalCast = this.cast.length
         this.totalRows = this.cast.length
+        this.getCastAvgAge()
+        this.getCastAge()
+    },
+    mounted () {
     },
     methods: {
         ...mapMutations([
@@ -624,8 +802,45 @@ export default {
         ...mapActions([
             'getCastList',
         ]),
+        onFiltered(filteredItems) {
+            this.totalRows = filteredItems.length
+            this.currentPage = 1
+        },
         showCastDetail () {
-
+        },
+        onRowSelected (item) {
+            this.$router.push({
+                name: 'CastDetail',
+                params: {
+                    id: item[0].id
+                }
+            })
+        },
+        getCastAvgAge() {
+            this.$axios({
+                method: 'GET',
+                url: '/api/cast/get_cast_avg_age/',
+            })
+            .then(res => {
+                this.castAvgAge = res.data.data.avg
+                this.loadCastAvgAge = false
+            })
+            .catch(e => {
+                console.log(e)
+            })
+        },
+        getCastAge () {
+            this.$axios({
+                method: 'GET',
+                url: '/api/cast/get_cast_age/',
+            })
+            .then(res => {
+                this.castAgeSeries[0].data = res.data.data
+                this.loadCastAge = false
+            })
+            .catch(e => {
+                console.log(e)
+            })
         },
     }
 }
