@@ -153,6 +153,10 @@ class MCustomer(AbstractHumanModel):
         総売り上げ
         総来店回数
         所属
+
+        会員 ⇒ cardが紐づく
+        非会員 ⇒ cardは紐づかない
+
     """
     job = models.CharField(
         _('職業'),
@@ -178,10 +182,11 @@ class MCustomer(AbstractHumanModel):
         blank=True,
         max_length=100,
     )
-    total_visit = models.IntegerField(
-        _('来店回数'),
-        default=0,
-    )
+    # 2022/06/24 => ここで持つと更新が大変なため廃止。↓と同じくSalesHeaderから取得
+    # total_visit = models.IntegerField(
+    #     _('来店回数'),
+    #     default=0,
+    # )
     # 2022/06/06 => ここ持つと更新が大変なため廃止
     # total_sales = models.BigIntegerField(
     #     _('総売上'),
@@ -201,6 +206,8 @@ class MCustomer(AbstractHumanModel):
         'crm.CardManagement',
         on_delete=models.PROTECT,
         related_name='customer',
+        null=True,
+        blank=True,
     )
     caution_flg = models.BooleanField(
         _('要注意人物フラグ'),

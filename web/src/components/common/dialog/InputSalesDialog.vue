@@ -22,17 +22,65 @@
                         伝票No {{ salesHeaderId }}
                     </b-card-sub-title> -->
                         <b-row>
-                            <b-col cols="3">
+                            <b-col cols="4">
+                                <b-card-sub-title>会員タイプ</b-card-sub-title>
+                                <b-form-group style="min-height: 40px;">
+                                    <b-form-radio-group
+                                        v-model="inputSalesData.customer_type"
+                                        :options=customerTypeOptions
+                                        button-variant="outline-primary"
+                                        buttons
+                                        style="min-height: 40px;"
+                                    ></b-form-radio-group>
+                                </b-form-group>
+                            </b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col cols="3" v-if="inputSalesData.customer_type == 0">
                                 <b-form-group
-                                    label="会員No*"
-                                    :class="{'invalid': customerNoInvalid}"
                                 >
+                                <!-- :class="{'invalid': nonMemberNameInvalid}" -->
+                                    <label
+                                    >顧客名</label>
+                                    <b-input-group>
+                                        <b-form-input
+                                            v-model="inputSalesData.non_member_name"
+                                            type="text"
+                                            placeholder="顧客名(任意)"
+                                            autofocus
+                                        ></b-form-input>
+                                        <!-- <b-form-invalid-feedback :state="customerNoError.length == 0">
+                                            {{ customerNoError }}
+                                        </b-form-invalid-feedback> -->
+                                    </b-input-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="3" v-else>
+                                <b-form-group
+                                >
+                                    <label
+                                        :class="{'invalid': customerNoInvalid}"
+                                    >会員No</label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="customer_no_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="customer_no_info_icon"
+                                        title="会員の場合入力してください。"
+                                    ></b-tooltip>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="inputSalesData.customerNo"
                                             type="number"
                                             required
                                             autofocus
+                                            placeholder="会員No(必須)"
                                         ></b-form-input>
                                         <b-form-invalid-feedback :state="customerNoError.length == 0">
                                             {{ customerNoError }}
@@ -44,14 +92,29 @@
                             </b-col>
                             <b-col cols="3">
                                 <b-form-group
-                                    label="来店人数*"
-                                    :class="{'invalid': totalVisitorsInvalid}"
                                 >
+                                    <label
+                                        :class="{'invalid': totalVisitorsInvalid}"
+                                    >来店人数</label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="total_visitors_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="total_visitors_info_icon"
+                                        title="VIPで5人以上の場合、自動的に貸切に切り替わります。"
+                                    ></b-tooltip>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="inputSalesData.totalVisitors"
                                             type="number"
                                             required
+                                            placeholder="来店人数(必須)"
                                         ></b-form-input>
                                         <b-form-invalid-feedback :state="totalVisitorsError.length == 0">
                                             {{ totalVisitorsError }}
@@ -71,7 +134,7 @@
                                 </b-form-group>
                             </b-col>
                         </b-row>
-                        <b-row>
+                        <b-row  v-if="inputSalesData.customer_type == 1">
                             <b-col cols="12">
                                 <b-card>
                                     <label>
@@ -166,6 +229,19 @@
                                     <label>
                                         基本料金
                                     </label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="basic_price_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="basic_price_info_icon"
+                                        title="入店時間、退店時間を入力すると自動的に料金が設定されます。"
+                                    ></b-tooltip>
                                     <b-container>
                                         <b-row style="min-height: 80px;" align-h="between">
                                             <b-col cols="6">
@@ -381,6 +457,19 @@
                                     <label class="mt-1">
                                         指名情報
                                     </label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="appoint_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="appoint_info_icon"
+                                        title="指名の場合、キャストを追加してください。"
+                                    ></b-tooltip>
                                     <b-container fluid class="appoint_cast_area_wrap" style="min-height: 347px; max-height: 347px;">
                                         <b-row align-h="between">
                                             <b-col>
@@ -671,13 +760,28 @@
                 </b-card>
 
                 <b-card bg-variant="light" class="mt-3">
+                    <!-- label-cols-lg="3"
+                    label="明細"
+                    label-size="lg"
+                    label-class="font-weight-bold pt-0" -->
                     <b-form-group
-                        label-cols-lg="3"
-                        label="明細"
-                        label-size="lg"
-                        label-class="font-weight-bold pt-0"
                         class="mb-0"
                     >
+                        <label
+                        >明細</label>
+                        <span
+                            style="display: inline-block; margin-left: 0.4rem;"
+                        >
+                            <b-icon
+                                id="sales_detail_info_icon"
+                                icon="info-circle"
+                                variant="primary"
+                            ></b-icon>
+                        </span>
+                        <b-tooltip
+                            target="sales_detail_info_icon"
+                            title="明細情報を追加してください。"
+                        ></b-tooltip>
                         <b-row>
                             <b-col cols="4">
                                 <b-button
@@ -754,6 +858,22 @@
                             </td>
                         </tr>
                     </table>
+                </b-card>
+                <b-card bg-variant="light" class="mt-3" v-if="inputSalesData.customer_type == 1">
+                    <b-form-group
+                        label-cols-lg="3"
+                        label="ボトル情報"
+                        label-size="lg"
+                        label-class="font-weight-bold pt-0"
+                        class="mb-0"
+                    >
+                        <b-card-text v-if="inputSalesData.customerNo == '' || inputSalesData.customerNo == null">
+                            会員Noが入力されていません
+                        </b-card-text>
+                        <b-row v-else>
+                            bottle
+                        </b-row>
+                    </b-form-group>
                 </b-card>
                 <b-card bg-variant="light" class="mt-3">
                     <b-form-group
@@ -927,6 +1047,8 @@ export default {
             isAppointed: 0,
 
             remarks: '',
+
+            customer_type: 0,
         },
 
         showDiffBasicPlan: false, // 席移動入力状態。trueは席移動したと見なす
@@ -993,6 +1115,11 @@ export default {
         edit_sales_service_detail: [],
         edit_sales_appoint_detail: [],
         customerInfo: null,
+
+        customerTypeOptions: [
+            { text: '非会員', value: 0 },
+            { text: '会員', value: 1 },
+        ],
     }),
     created () {
         this.$eventHub.$off('addCast')
@@ -1014,6 +1141,7 @@ export default {
     computed: {
         ...mapGetters([
             'customer',
+            'bottle',
         ]),
         inputSalesDialogTitle () {
             if (this.editMode) {
@@ -1048,7 +1176,6 @@ export default {
             // 席移動選択時には席移動のもののチェックも必要
             if (!this.isPositiveNumber(this.inputSalesData.customerNo)
                 || !this.isPositiveNumber(this.inputSalesData.totalVisitors)
-                || this.customerNoError.length != 0
                 || this.totalVisitorsError.length != 0) {
                     return true
                 }
@@ -1174,10 +1301,7 @@ export default {
             return false
         },
         customerNoInvalid () {
-            if (this.customerNoError.length != 0
-                || this.inputSalesData.customerNo == null) {
-                return true
-            }
+            if (this.customerNoError != '') return true
             return false
         }
     },
@@ -1294,7 +1418,7 @@ export default {
                     }
                 }
             } else {
-                this.customerNoError= '会員Noを入力してください'
+                this.customerNoError= ''
                 this.customerInfo = null
             }
         },
@@ -1437,6 +1561,9 @@ export default {
             'addSalesList',
             'updateSalesList',
             'deleteSalesList',
+            'addBottleList',
+            'updateBottleList',
+            'deleteBottleList',
         ]),
         registerOrUpdate () {
             if (!this.editMode) {
@@ -1623,7 +1750,10 @@ export default {
             })
             .then(res => {
                 console.log(res)
-                this.addSalesList(res)
+                this.addSalesList(res.data.data)
+                if (res.data.bottle.length != 0) {
+                    this.addBottleList(res.data.bottle)
+                }
                 this.init()
                 this.close()
             })

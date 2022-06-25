@@ -70,6 +70,10 @@ class BottleManagement(AbstractBaseModel):
     ボトル管理マスタ
         商品名
         開栓日
+
+        会員の場合customer紐づく
+        非会員の場合customerは紐づかない
+
     """
 
     open_date = models.DateTimeField(
@@ -92,6 +96,14 @@ class BottleManagement(AbstractBaseModel):
         'crm.MCustomer',
         on_delete=models.PROTECT,
         related_name='bottle_customer',
+        null=True,
+        blank=True,
+    )
+    non_member_name = models.CharField(
+        _('非会員の名前'),
+        max_length=50,
+        null=True,
+        blank=True,
     )
     # リレーション大丈夫か
     product = models.ForeignKey(
@@ -114,6 +126,10 @@ class SalesHeader(AbstractBaseModel):
         総額
         顧客(1)
         担当(n)
+
+        2022/06/24
+            非会員の売上はcustomerが紐づかない
+            =>名前で入力しない前提で設計
     """
 
     # on_delete要検討
@@ -124,6 +140,7 @@ class SalesHeader(AbstractBaseModel):
         null=True,
         blank=True,
     )
+
 
     total_visitors = models.SmallIntegerField(
         _('来店人数'),
@@ -461,6 +478,15 @@ class BookingManagement(AbstractBaseModel):
     customer = models.ForeignKey(
         'crm.MCustomer',
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+    )
+
+    non_member_name = models.CharField(
+        _('非会員の名前'),
+        max_length=50,
+        null=True,
+        blank=True,
     )
 
     cast = models.ManyToManyField(
@@ -483,11 +509,6 @@ class BookingManagement(AbstractBaseModel):
     cancel_date = models.DateTimeField(
         null=True,
         blank=True,
-    )
-
-    penalty = models.BooleanField(
-        _('キャンセルによるペナルティ'),
-        default=False,
     )
 
     seat = models.ForeignKey(

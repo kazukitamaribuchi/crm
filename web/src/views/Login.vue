@@ -159,7 +159,7 @@ export default {
 <style lang="scss" scoped>
 #login_wrap {
     height: 100%;
-    padding-top: 15rem;
+    padding-top: 13rem;
     // font-family: Hiragino Kaku Gothic Pro,ヒラギノ角ゴ Pro,Yu Gothic Medium,游ゴシック Medium,YuGothic,游ゴシック体,メイリオ,sans-serif;
 
     // background-color: $theme-color;

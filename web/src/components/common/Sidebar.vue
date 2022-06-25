@@ -119,6 +119,13 @@ export default {
             // },
             {
                 icon: 'search',
+                link: 'BottleList',
+                type: 'Page',
+                text: 'ボトル管理',
+                active: 3,
+            },
+            {
+                icon: 'search',
                 ref: 'searchCustomerNo',
                 type: 'Dialog',
                 text: '顧客検索',

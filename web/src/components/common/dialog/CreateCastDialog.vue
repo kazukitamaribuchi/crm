@@ -386,7 +386,7 @@ export default {
         //     start_working_date: null
         // },
         createCastData: {
-            name: 'おっぱいまん',
+            name: 'aaaaaa',
             name_kana: null,
             real_name: null,
             real_name_kana: null,

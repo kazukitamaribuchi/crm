@@ -16,6 +16,36 @@ const bottleActions = {
                 reject(e)
             })
         })
+    },
+    endBottleListAction (ctx, kwargs) {
+        Vue.prototype.$axios({
+            url: '/api/bottle/end_bottle_data/',
+            method: 'PUT',
+            data: kwargs
+        })
+        .then(res => {
+            console.log(res)
+            // storeの飲終フラグを更新
+            this.commit('updateBottleList', res.data.data)
+        })
+        .catch(e => {
+            console.log(e)
+        })
+    },
+    deleteBottleListAction (ctx, kwargs) {
+        Vue.prototype.$axios({
+            url: '/api/bottle/delete_bottle_data/',
+            method: 'DELETE',
+            data: kwargs
+        })
+        .then(res => {
+            console.log(res)
+            // storeの削除フラグを更新
+            this.commit('updateBottleList', res.data.data)
+        })
+        .catch(e => {
+            console.log(e)
+        })
     }
 }
 

@@ -163,11 +163,11 @@
                                                 <b-card-sub-title>
                                                     現在保持中
                                                 </b-card-sub-title>
-                                                <b-row style="min-height: 100px;" v-if="customerData.bottle.length != 0">
+                                                <b-row style="min-height: 100px;" v-if="customerOwnBottleList.length != 0">
                                                     <b-col
-                                                        v-for="item in customerData.bottle"
+                                                        v-for="item in customerOwnBottleList"
                                                         :key=item.id
-                                                        cols="4"
+                                                        cols="6"
                                                     >
                                                         <b-card
                                                             bg-variant="dark"
@@ -445,6 +445,10 @@ export default {
         colorx: 'rgb(16, 16, 179)',
         editCustomerDialog: false,
         isDanger: false,
+        // 現在のボトルデータ
+        customerOwnBottleList: [],
+        // 過去のボトルデータ
+        customerBottleHistoryList: []
     }),
     props: {
     },
@@ -455,6 +459,7 @@ export default {
     computed: {
         ...mapGetters([
             'customer',
+            'bottle',
         ]),
         cardColor () {
             let cardColor = 'rgb(116, 116, 116)'
@@ -520,10 +525,32 @@ export default {
         //     console.log(e)
         // })
         // 検索から詳細きてうまくいかせるやり方わかったら、↓の様にstoreから取得する方法に切り替え
-        if (this.customer.find(c => c.customer_no == this.$route.params['id']) == undefined) {
+        const customer_no = this.$route.params['id']
+
+        if (this.customer.find(c => c.customer_no == customer_no) == undefined) {
             this.customerData = {}
         }  else {
-            this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == this.$route.params['id']))
+
+
+            this.customerData = _.cloneDeep(this.customer.find(c => c.customer_no == customer_no))
+
+            const customerOwnBottleList = this.bottle.filter(function(b) {
+                if (b.customer.customer_no == customer_no
+                    && (!b.end_flg && !b.waste_flg && !b.delete_flg)) {
+                    return true
+                }
+            })
+
+            const customerBottleHistoryList = this.bottle.filter(function(b) {
+                if (b.customer.customer_no == customer_no
+                    && (b.end_flg || b.waste_flg || b.delete_flg)) {
+                    return true
+                }
+            })
+
+            this.customerOwnBottleList = customerOwnBottleList
+            this.customerBottleHistoryList = customerBottleHistoryList
+
         }
     },
     beforeRouteUpdate (to, from, next) {

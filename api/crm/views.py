@@ -93,6 +93,7 @@ class AppInitView(generics.ListAPIView):
             cast = CastSerializer(MCast.objects.all(), many=True).data
             sales = SalesSerializer(SalesHeader.objects.all(), many=True).data
             question = QuestionSerializer(MQuestion.objects.all(), many=True).data
+            bottle = BottleSerializer(BottleManagement.objects.all(), many=True).data
 
             return Response({
                 'customers': customers,
@@ -102,6 +103,7 @@ class AppInitView(generics.ListAPIView):
                 'cast': cast,
                 'sales': sales,
                 'question': question,
+                'bottle': bottle,
             }, status=status.HTTP_200_OK)
 
         except Exception as e:

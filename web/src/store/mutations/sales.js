@@ -5,7 +5,13 @@ const salesMutations = {
         state.sales = payload
     },
     addSalesList (state, payload) {
-        state.sales.push(payload.data)
+        if (Array.isArray(payload)) {
+            for (const i in payload) {
+                state.sales.push(payload[i])
+            }
+        } else {
+            state.sales.push(payload)
+        }
     },
     updateSalesList (state, payload) {
         const index = state.sales.findIndex(s => s.id === payload.id)

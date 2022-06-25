@@ -443,10 +443,185 @@ class CardViewSet(BaseModelViewSet):
 class BottleViewSet(BaseModelViewSet):
     """
     """
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
+    permission_classes = (permissions.AllowAny,)
     queryset = BottleManagement.objects.all()
     serializer_class = BottleSerializer
 
+    # def update(self, request, pk=None):
+    #     logger.debug('★UPDATE')
+    #     logger.debug(request.data)
+    #     logger.debug(request.data['id'])
+    #
+    #     queryset = self.queryset.get(pk=pk)
+    #     instance = self.get_object()
+    #     serializer = self.get_serializer(instance, data=request.data)
+    #     logger.debug(serializer)
+    #     logger.debug(serializer.is_valid())
+
+
+    # def delete(self, request, *args, **kwargs):
+    #     instance = self.get_object()
+    #     instance.delete_flg = True
+    #     instance.save()
+    #     serializer = self.get_serializer(instance).data
+    #     return Response(serializer, status=status.HTTP_200_OK)
+
+    @transaction.atomic
+    @action(methods=['post'], detail=False)
+    def create_bottle_data(self, request):
+        logger.debug('★create_bottle_data')
+        logger.debug(request.data)
+
+        customer_type = request.data['customerType']
+        customer_no = request.data['customerNo']
+        non_member_name = request.data['nonMemberName']
+
+        # selected_bottle_list = request.data['selectedBottleList']
+        selected_bottle = request.data['selectedBottle']
+
+        # res = []
+        # for item in selected_bottle_list:
+        #     open_date_str = item['openDate']
+        #     open_date = datetime.strptime(open_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
+        #
+        #     try:
+        #         product = MProduct.objects.get(pk=item['id'])
+        #     except MProduct.DoesNotExist:
+        #         return Response(status.status.HTTP_400_BAD_REQUEST)
+        #
+        #     if customer_type == 0:
+        #         res.append(BottleManagement.objects.create(
+        #             non_member_name=non_member_name,
+        #             open_date=open_date,
+        #             product=product,
+        #         ))
+        #
+        #     elif customer_type == 1:
+        #         try:
+        #             customer = MCustomer.objects.get(card__customer_no=customer_no)
+        #         except MCustomer.DoesNotExist:
+        #             return Response(status.status.HTTP_400_BAD_REQUEST)
+        #
+        #         res.append(BottleManagement.objects.create(
+        #             customer=customer,
+        #             open_date=open_date,
+        #             product=product,
+        #         ))
+
+        open_date_str = request.data['openDate']
+        open_date = datetime.strptime(open_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
+        try:
+            product = MProduct.objects.get(pk=selected_bottle['id'])
+        except MProduct.DoesNotExist:
+            return Response(status.status.HTTP_400_BAD_REQUEST)
+
+
+        if customer_type == 0:
+            res = BottleManagement.objects.create(
+            non_member_name=non_member_name,
+            open_date=open_date,
+            product=product,
+        )
+
+        elif customer_type == 1:
+            try:
+                customer = MCustomer.objects.get(card__customer_no=customer_no)
+            except MCustomer.DoesNotExist:
+                return Response(status.status.HTTP_400_BAD_REQUEST)
+
+            res = BottleManagement.objects.create(
+                customer=customer,
+                open_date=open_date,
+                product=product,
+            )
+
+        # return Response({
+        #     'status': 'success',
+        #     'data': BottleSerializer(res, many=True).data
+        # }, status=status.HTTP_201_CREATED)
+
+        return Response({
+            'status': 'success',
+            'data': BottleSerializer(res).data
+        }, status=status.HTTP_201_CREATED)
+
+
+    @action(methods=['put'], detail=False)
+    def update_bottle_data(self, request):
+
+        logger.debug('update_bottle_data')
+        logger.debug(request.data)
+
+        customer_type = request.data['customerType']
+        customer_no = request.data['customerNo']
+        non_member_name = request.data['nonMemberName']
+
+        selected_bottle = request.data['selectedBottle']
+        id = request.data['id']
+        open_date_str = request.data['openDate']
+        open_date = datetime.strptime(open_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
+        try:
+            product = MProduct.objects.get(pk=selected_bottle['id'])
+        except MProduct.DoesNotExist:
+            return Response(status.status.HTTP_400_BAD_REQUEST)
+
+        try:
+            instance = BottleManagement.objects.get(id=id)
+        except BottleManagement.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        if customer_type == 0:
+            instance.customer=None
+            instance.non_member_name=non_member_name
+
+        elif customer_type == 1:
+            try:
+                customer = MCustomer.objects.get(card__customer_no=customer_no)
+            except MCustomer.DoesNotExist:
+                return Response(status.status.HTTP_400_BAD_REQUEST)
+            instance.non_member_name=None
+            instance.customer=customer
+
+        instance.open_date=open_date
+        instance.product=product
+        instance.save()
+
+        return Response({
+            'status': 'success',
+            'data': BottleSerializer(instance).data
+        },status=status.HTTP_200_OK)
+
+
+    @action(methods=['put'], detail=False)
+    def end_bottle_data(self, request):
+
+        id = request.data['id']
+        try:
+            instance = BottleManagement.objects.get(id=id)
+        except BottleManagement.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        instance.end_flg = not bool(instance.end_flg)
+        instance.save()
+        return Response({
+            'status': 'success',
+            'data': BottleSerializer(instance).data,
+        },status=status.HTTP_200_OK)
+
+    @action(methods=['delete'], detail=False)
+    def delete_bottle_data(self, request):
+
+        id = request.data['id']
+        try:
+            instance = BottleManagement.objects.get(id=id)
+        except BottleManagement.DoesNotExist:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        instance.delete_flg = not bool(instance.delete_flg)
+        instance.save()
+        return Response({
+            'status': 'success',
+            'data': BottleSerializer(instance).data,
+        },status=status.HTTP_200_OK)
 
 class SalesViewSet(BaseModelViewSet):
     """
@@ -464,11 +639,13 @@ class SalesViewSet(BaseModelViewSet):
         logger.debug(request.data)
 
         customer_no = request.data['customer_no']
-        try:
-            customer = MCustomer.objects.get(card__customer_no=customer_no)
-        except MCustomer.DoesNotExist:
-            logger.error('顧客情報が取得出来ません。')
-            return Response(status.status.HTTP_400_BAD_REQUEST)
+        customer = None
+        if customer_no != None and customer_no != '':
+            try:
+                customer = MCustomer.objects.get(card__customer_no=customer_no)
+            except MCustomer.DoesNotExist:
+                logger.error('顧客情報が取得出来ません。')
+                return Response(status.status.HTTP_400_BAD_REQUEST)
 
         account_date_str = request.data['account_date']
         account_date = datetime.strptime(account_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
@@ -585,7 +762,7 @@ class SalesViewSet(BaseModelViewSet):
                 )
             )
 
-
+        bottle = []
 
         for data in request.data['sales_detail_list']:
             logger.debug('★★★★')
@@ -604,13 +781,15 @@ class SalesViewSet(BaseModelViewSet):
 
             # ボトル登録フラグ立ってたらボトル登録
             # ★開封日は会計日で良いか？
-            if data['bottle']:
-                BottleManagement.objects.create(
+            # 2022/06/24 => 会員のみ売上登録からのボトル登録を許容する
+            if data['bottle'] and customer != None:
+                bottleInstance = BottleManagement.objects.create(
                     customer=customer,
                     product=product,
                     open_date=account_date
                 )
                 logger.debug('★ボトル登録 : ' + customer.name)
+                bottle.append(BottleSerializer(bottleInstance).data)
 
             logger.debug('＿＿＿＿＿＿＿＿＿＿＿＿＿＿＿')
 
@@ -637,7 +816,10 @@ class SalesViewSet(BaseModelViewSet):
         if len(sales_detail_list) > 0:
             SalesDetail.objects.bulk_create(sales_detail_list)
 
-        return Response(SalesSerializer(header).data, status=status.HTTP_201_CREATED)
+        return Response({
+            'data': SalesSerializer(header).data,
+            'bottle': bottle,
+        }, status=status.HTTP_201_CREATED)
 
     @transaction.atomic
     @action(methods=['put'], detail=False)
@@ -649,11 +831,13 @@ class SalesViewSet(BaseModelViewSet):
         sales_header_id = request.data['id']
 
         customer_no = request.data['customer_no']
-        try:
-            customer = MCustomer.objects.get(card__customer_no=customer_no)
-        except MCustomer.DoesNotExist:
-            logger.error('顧客情報が取得出来ません。')
-            return Response(status.status.HTTP_400_BAD_REQUEST)
+        customer = None
+        if customer_no != None and customer_no != '':
+            try:
+                customer = MCustomer.objects.get(card__customer_no=customer_no)
+            except MCustomer.DoesNotExist:
+                logger.error('顧客情報が取得出来ません。')
+                return Response(status.status.HTTP_400_BAD_REQUEST)
 
         account_date_str = request.data['account_date']
         account_date = datetime.strptime(account_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))

@@ -696,6 +696,10 @@ class BottleSerializer(DynamicFieldsModelSerializer):
     updated_at = serializers.SerializerMethodField()
     deadline = serializers.SerializerMethodField()
     open_date = serializers.SerializerMethodField()
+    customer_type = serializers.SerializerMethodField()
+
+    # b-tableで区分によって表示する方法分からんからここで渡す 2022/06/25
+    customer_name = serializers.SerializerMethodField()
     product = ProductSerializer()
 
     def __init__(self, *args, **kwargs):
@@ -714,6 +718,9 @@ class BottleSerializer(DynamicFieldsModelSerializer):
             'created_at',
             'updated_at',
             'delete_flg',
+            'non_member_name',
+            'customer_type',
+            'customer_name',
         ]
 
     def get_deadline(self, obj):
@@ -725,6 +732,16 @@ class BottleSerializer(DynamicFieldsModelSerializer):
         if obj.open_date == None:
             return ''
         return utc_to_jst(obj.open_date).strftime('%Y年%m月%d日')
+
+    def get_customer_type(self, obj):
+        if (obj.customer == None):
+            return 0
+        return 1
+
+    def get_customer_name(self, obj):
+        if (obj.customer == None):
+            return obj.non_member_name
+        return obj.customer.name
 
 
 

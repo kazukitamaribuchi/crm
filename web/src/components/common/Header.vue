@@ -13,6 +13,7 @@
                 <InputCast/>
                 <!-- <InputAttendance/> -->
                 <!-- <InputBooking/> -->
+                <InputBottle/>
                 <Settings/>
                 <Logout/>
             </b-nav>
@@ -22,12 +23,13 @@
 
 <script>
 import InputSales from '@/components/common/InputSales'
+import InputAttendance from '@/components/common/InputAttendance'
 import InputBooking from '@/components/common/InputBooking'
 import InputCustomer from '@/components/common/InputCustomer'
 import InputCast from '@/components/common/InputCast'
-import InputAttendance from '@/components/common/InputAttendance'
-import Logout from '@/components/common/Logout'
+import InputBottle from '@/components/common/InputBottle'
 import Settings from '@/components/common/Settings'
+import Logout from '@/components/common/Logout'
 
 export default {
     name: 'HeaderItem',
@@ -36,12 +38,13 @@ export default {
     }),
     components: {
         InputSales,
+        InputAttendance,
         InputBooking,
         InputCustomer,
         InputCast,
-        InputAttendance,
-        Logout,
+        InputBottle,
         Settings,
+        Logout,
     }
 }
 </script>

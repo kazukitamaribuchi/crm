@@ -372,6 +372,14 @@ class Const {
             ]
         },
     ]
+    ADD_BOTTLE_CATEGORY_SIDEBAR = [
+        {
+            text: '飲み物',
+            items: [
+                { text: 'アルコール', productType: 0 },
+            ]
+        },
+    ]
     INPUT_SALES_DETAIL_PRODUCT_ALCOHOL_HEADER = [
         { text: 'シャンパン', largeCategory: 1, middleCategory: 0, smallCategory: 0 },
         { text: 'ウイスキー', largeCategory: 1, middleCategory: 0, smallCategory: 1 },

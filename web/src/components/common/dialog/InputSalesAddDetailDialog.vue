@@ -161,219 +161,219 @@
         </b-row>
         <template #modal-footer>
             <b-container fluid>
-            <b-row>
-                <b-col cols="4" class="add_sales_detail_footer_col">
-                    <b-card-sub-title>選択商品</b-card-sub-title>
-                    <div class="selected_product_area">
-                        <b v-if="selectedProduct != null">
-                            <b-img
-                                v-if="selectedProduct.thumbnail != null"
-                                :src="apiPath + selectedProduct.thumbnail"
-                                alt="Selected Product"
-                                rounded
-                                height="50"
-                                width="50"
-                            ></b-img>
-                            <b-img
-                                v-else
-                                :src="defaultIcon"
-                                alt="Selected Product"
-                                rounded
-                                height="50"
-                                width="50"
-                            ></b-img>
-                        </b>
-                        <span v-if="selectedProduct != null">{{ selectedProduct.name }}</span>
-                        <span v-else> - </span>
-                    </div>
-                </b-col>
-                <b-col cols="8" class="add_sales_detail_footer_col">
-                    <b-row>
-                        <b-col cols="2" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>定価</b-card-sub-title>
-                            <div class="selected_product_area">
-                                <div v-if="selectedProduct != null">
-                                    ￥{{ selectedProduct.price }}
-                                </div>
-                                <div v-else> - </div>
-                            </div>
-                        </b-col>
-                        <b-col class="add_sales_detail_footer_col">
-                            <b-card-sub-title>数量</b-card-sub-title>
-                            <b-form-group>
-                                <b-form-group
-                                    class="add_sales_detail_quantity_wrap"
-                                >
-                                    <SelectForm
-                                        :optionType=99
-                                        v-model="quantity"
-                                    />
-                                </b-form-group>
-                            </b-form-group>
-                        </b-col>
-                        <b-col cols="2" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>実価格</b-card-sub-title>
-                            <b-form-input
-                                v-model="actuallyPrice"
-                                type="number"
-                                placeholder="実価格"
-                                required
-                            ></b-form-input>
-                        </b-col>
-                        <b-col align="center" class="add_sales_detail_footer_col">
-                            <!-- <b-card-sub-title>税率</b-card-sub-title>
-                            <b-form-group>
-                                <b-form-group
-                                    class="add_sales_detail_tax_wrap"
-                                >
-                                    <SelectForm
-                                        :optionType=3
-                                        v-model="tax"
-                                    />%
-                                </b-form-group>
-                            </b-form-group> -->
-                            <b-card-sub-title>税区分</b-card-sub-title>
-                            <b-form-group>
-                                <b-form-checkbox-group
-                                    v-model="taxation"
-                                    :options=taxationOptions
-                                    buttons
-                                    bg-variant="success"
-                                ></b-form-checkbox-group>
-                            </b-form-group>
-                        </b-col>
-                        <b-col align="center" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>ボトル登録</b-card-sub-title>
-                            <b-form-group>
-                                <b-form-checkbox-group
-                                    v-model="isBottle"
-                                    :options=bottleOptions
-                                    buttons
-                                    :disabled=!isDrink
-                                    bg-variant="success"
-                                ></b-form-checkbox-group>
-                            </b-form-group>
-                        </b-col>
-                        <b-col align="center" class="add_sales_detail_footer_col">
-                            <b-card-sub-title>まとめて追加</b-card-sub-title>
-                            <b-icon
-                                icon="plus-square"
-                                font-scale="1.5"
-                                variant="success"
-                                class="mt-2 add_sales_detail_add_product_btn"
-                                @click="addStack"
-                            ></b-icon>
-                        </b-col>
-                    </b-row>
-                </b-col>
-            </b-row>
-            <b-row class="pt-3">
-                <b-col cols="5" class="add_sales_detail_footer_col">
-                    <b-card-sub-title>備考</b-card-sub-title>
-                    <b-form-textarea
-                        rows="2"
-                        no-resize
-                        v-model="remarks"
-                    ></b-form-textarea>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-card v-if="selectedProductList.length > 0">
-                    <b-container fluid>
+                <b-row>
+                    <b-col cols="4" class="add_sales_detail_footer_col">
+                        <b-card-sub-title>選択商品</b-card-sub-title>
+                        <div class="selected_product_area">
+                            <b v-if="selectedProduct != null">
+                                <b-img
+                                    v-if="selectedProduct.thumbnail != null"
+                                    :src="apiPath + selectedProduct.thumbnail"
+                                    alt="Selected Product"
+                                    rounded
+                                    height="50"
+                                    width="50"
+                                ></b-img>
+                                <b-img
+                                    v-else
+                                    :src="defaultIcon"
+                                    alt="Selected Product"
+                                    rounded
+                                    height="50"
+                                    width="50"
+                                ></b-img>
+                            </b>
+                            <span v-if="selectedProduct != null">{{ selectedProduct.name }}</span>
+                            <span v-else> - </span>
+                        </div>
+                    </b-col>
+                    <b-col cols="8" class="add_sales_detail_footer_col">
                         <b-row>
-                            <b-card-title class="mb-4">
-                                選択商品一覧
-                            </b-card-title>
-                            <table>
-                                <tr>
-                                    <th>商品名</th>
-                                    <th>定価</th>
-                                    <th>数量</th>
-                                    <th>実価格</th>
-                                    <th>課税対象</th>
-                                    <th>ボトル</th>
-                                    <th>備考</th>
-                                    <th></th>
-                                </tr>
-                                <tr
-                                    v-for="(item, id) in selectedProductList"
-                                    :key=id
-                                >
-                                    <td>
-                                        <b-img
-                                            v-if="item.thumbnail != null"
-                                            :src="apiPath + item.thumbnail"
-                                            alt="Selected Product"
-                                            rounded
-                                            height="50"
-                                            width="50"
-                                        ></b-img>
-                                        <b-img
-                                            v-else
-                                            :src="defaultIcon"
-                                            alt="Selected Product"
-                                            rounded
-                                            height="50"
-                                            width="50"
-                                        ></b-img>
-                                        <span>{{ item.name }}</span>
-                                    </td>
-                                    <td>{{ item.price }}</td>
-                                    <td>{{ item.quantity }}</td>
-                                    <td>{{ item.actuallyPrice }}</td>
-                                    <td>{{ item.taxation }}</td>
-                                    <td>{{ item.bottle }}</td>
-                                    <td>{{ item.remarks }}</td>
-                                    <td>
-                                        <b-icon
-                                            icon="dash-square"
-                                            font-scale="1.5"
-                                            variant="danger"
-                                            class="mt-2 add_sales_detail_delete_product_btn"
-                                            @click="deleteProduct(id)"
-                                        ></b-icon>
-                                    </td>
-                                </tr>
-                            </table>
+                            <b-col cols="2" class="add_sales_detail_footer_col">
+                                <b-card-sub-title>定価</b-card-sub-title>
+                                <div class="selected_product_area">
+                                    <div v-if="selectedProduct != null">
+                                        ￥{{ selectedProduct.price }}
+                                    </div>
+                                    <div v-else> - </div>
+                                </div>
+                            </b-col>
+                            <b-col class="add_sales_detail_footer_col">
+                                <b-card-sub-title>数量</b-card-sub-title>
+                                <b-form-group>
+                                    <b-form-group
+                                        class="add_sales_detail_quantity_wrap"
+                                    >
+                                        <SelectForm
+                                            :optionType=99
+                                            v-model="quantity"
+                                        />
+                                    </b-form-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="2" class="add_sales_detail_footer_col">
+                                <b-card-sub-title>実価格</b-card-sub-title>
+                                <b-form-input
+                                    v-model="actuallyPrice"
+                                    type="number"
+                                    placeholder="実価格"
+                                    required
+                                ></b-form-input>
+                            </b-col>
+                            <b-col align="center" class="add_sales_detail_footer_col">
+                                <!-- <b-card-sub-title>税率</b-card-sub-title>
+                                <b-form-group>
+                                    <b-form-group
+                                        class="add_sales_detail_tax_wrap"
+                                    >
+                                        <SelectForm
+                                            :optionType=3
+                                            v-model="tax"
+                                        />%
+                                    </b-form-group>
+                                </b-form-group> -->
+                                <b-card-sub-title>税区分</b-card-sub-title>
+                                <b-form-group>
+                                    <b-form-checkbox-group
+                                        v-model="taxation"
+                                        :options=taxationOptions
+                                        buttons
+                                        bg-variant="success"
+                                    ></b-form-checkbox-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col align="center" class="add_sales_detail_footer_col">
+                                <b-card-sub-title>ボトル登録</b-card-sub-title>
+                                <b-form-group>
+                                    <b-form-checkbox-group
+                                        v-model="isBottle"
+                                        :options=bottleOptions
+                                        buttons
+                                        :disabled=!isDrink
+                                        bg-variant="success"
+                                    ></b-form-checkbox-group>
+                                </b-form-group>
+                            </b-col>
+                            <b-col align="center" class="add_sales_detail_footer_col">
+                                <b-card-sub-title>まとめて追加</b-card-sub-title>
+                                <b-icon
+                                    icon="plus-square"
+                                    font-scale="1.5"
+                                    variant="success"
+                                    class="mt-2 add_sales_detail_add_product_btn"
+                                    @click="addStack"
+                                ></b-icon>
+                            </b-col>
                         </b-row>
-                    </b-container>
-                </b-card>
-            </b-row>
-            <b-row class="add_cast_footer_bottom_area mt-5">
-                <b-col cols="2">
-                    <b-card-sub-title>
-                        総計(税抜)
-                    </b-card-sub-title>
-                    <b-card-title class="mb-0">
-                        ￥ {{ totalPrice }}
-                    </b-card-title>
-                </b-col>
-                <b-col cols="2">
-                    <b-card-sub-title>
-                        総計(税込)
-                    </b-card-sub-title>
-                    <b-card-title class="mb-0">
-                        ￥ {{ totalTaxPrice }}
-                    </b-card-title>
-                </b-col>
-                <b-col align="right" class="add_sales_detail_footer_col">
-                    <b-button
-                        variant="secondary"
-                        @click="close"
-                        class="btn_close add_sales_detail_footer_area4"
-                    >
-                        閉じる
-                    </b-button>
-                    <b-button
-                        variant="primary"
-                        @click="add"
-                        class="add_sales_detail_footer_area4"
-                        :disabled=isDisabled
-                    >
-                        追加
-                    </b-button>
-                </b-col>
-            </b-row>
+                    </b-col>
+                </b-row>
+                <b-row class="pt-3">
+                    <b-col cols="5" class="add_sales_detail_footer_col">
+                        <b-card-sub-title>備考</b-card-sub-title>
+                        <b-form-textarea
+                            rows="2"
+                            no-resize
+                            v-model="remarks"
+                        ></b-form-textarea>
+                    </b-col>
+                </b-row>
+                <b-row class="mt-3">
+                    <b-card v-if="selectedProductList.length > 0">
+                        <b-container fluid>
+                            <b-row>
+                                <b-card-title class="mb-4">
+                                    選択商品一覧
+                                </b-card-title>
+                                <table>
+                                    <tr>
+                                        <th>商品名</th>
+                                        <th>定価</th>
+                                        <th>数量</th>
+                                        <th>実価格</th>
+                                        <th>課税対象</th>
+                                        <th>ボトル</th>
+                                        <th>備考</th>
+                                        <th></th>
+                                    </tr>
+                                    <tr
+                                        v-for="(item, id) in selectedProductList"
+                                        :key=id
+                                    >
+                                        <td>
+                                            <b-img
+                                                v-if="item.thumbnail != null"
+                                                :src="apiPath + item.thumbnail"
+                                                alt="Selected Product"
+                                                rounded
+                                                height="50"
+                                                width="50"
+                                            ></b-img>
+                                            <b-img
+                                                v-else
+                                                :src="defaultIcon"
+                                                alt="Selected Product"
+                                                rounded
+                                                height="50"
+                                                width="50"
+                                            ></b-img>
+                                            <span>{{ item.name }}</span>
+                                        </td>
+                                        <td>{{ item.price }}</td>
+                                        <td>{{ item.quantity }}</td>
+                                        <td>{{ item.actuallyPrice }}</td>
+                                        <td>{{ item.taxation }}</td>
+                                        <td>{{ item.bottle }}</td>
+                                        <td>{{ item.remarks }}</td>
+                                        <td>
+                                            <b-icon
+                                                icon="dash-square"
+                                                font-scale="1.5"
+                                                variant="danger"
+                                                class="mt-2 add_sales_detail_delete_product_btn"
+                                                @click="deleteProduct(id)"
+                                            ></b-icon>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </b-row>
+                        </b-container>
+                    </b-card>
+                </b-row>
+                <b-row class="add_cast_footer_bottom_area mt-5">
+                    <b-col cols="2">
+                        <b-card-sub-title>
+                            総計(税抜)
+                        </b-card-sub-title>
+                        <b-card-title class="mb-0">
+                            ￥ {{ totalPrice }}
+                        </b-card-title>
+                    </b-col>
+                    <b-col cols="2">
+                        <b-card-sub-title>
+                            総計(税込)
+                        </b-card-sub-title>
+                        <b-card-title class="mb-0">
+                            ￥ {{ totalTaxPrice }}
+                        </b-card-title>
+                    </b-col>
+                    <b-col align="right" class="add_sales_detail_footer_col">
+                        <b-button
+                            variant="secondary"
+                            @click="close"
+                            class="btn_close add_sales_detail_footer_area4"
+                        >
+                            閉じる
+                        </b-button>
+                        <b-button
+                            variant="primary"
+                            @click="add"
+                            class="add_sales_detail_footer_area4"
+                            :disabled=isDisabled
+                        >
+                            追加
+                        </b-button>
+                    </b-col>
+                </b-row>
             </b-container>
         </template>
     </b-modal>
@@ -621,11 +621,13 @@ export default {
             }
         },
         filterProductCategory (data) {
+            console.log('filterProductCategory', data)
             const large = data.largeCategory
             const middle = data.middleCategory
             const small = data.smallCategory
             const res = this.productByCategory[large][middle][small]
             this.productByCategoryList = _.cloneDeep(res)
+            // this.productByCategoryList = res
         },
         showTopPopularProduct () {
             this.selectedProductType = null

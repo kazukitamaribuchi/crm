@@ -731,6 +731,11 @@ export default {
         castAvgAge: 0,
         fields: [
             {
+                key: 'id',
+                sortable: true,
+                label: 'id',
+            },
+            {
                 key: 'name',
                 sortable: true,
                 label: '名前',

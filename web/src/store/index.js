@@ -175,6 +175,7 @@ export default new Vuex.Store({
                     this.commit('setCastList', res.data.cast)
                     this.commit('setSalesList', res.data.sales)
                     this.commit('setQuestionList', res.data.question)
+                    this.commit('setBottleList', res.data.bottle)
 
 					resolve(res)
 	        	})
