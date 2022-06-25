@@ -571,6 +571,9 @@ class BottleViewSet(BaseModelViewSet):
         except BottleManagement.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
 
+        if instance.end_flg and instance.end_date < instance.open_date:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
         if customer_type == 0:
             instance.customer=None
             instance.non_member_name=non_member_name
@@ -601,6 +604,15 @@ class BottleViewSet(BaseModelViewSet):
             instance = BottleManagement.objects.get(id=id)
         except BottleManagement.DoesNotExist:
             return Response(status=status.HTTP_400_BAD_REQUEST)
+        if instance.end_flg:
+            # 空き状態から基に戻す
+            instance.end_date = None
+        else:
+            # 空き状態に更新
+            end_date_str = request.data['endDate']
+            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').astimezone(timezone('Asia/Tokyo'))
+            instance.end_date = end_date
+
         instance.end_flg = not bool(instance.end_flg)
         instance.save()
         return Response({

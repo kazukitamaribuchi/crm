@@ -118,6 +118,7 @@
                 </b-card-title> -->
                 <InputSalesAddDetailDialogHeader
                     :productType=selectedProductType
+                    @update="productByCategoryList = $event"
                 />
                 <b-row>
                     <b-col
@@ -518,8 +519,8 @@ export default {
         }
     },
     created () {
-        this.$eventHub.$off('filterProductCategory')
-        this.$eventHub.$on('filterProductCategory', this.filterProductCategory)
+        // this.$eventHub.$off('filterProductCategory')
+        // this.$eventHub.$on('filterProductCategory', this.filterProductCategory)
     },
     mounted () {
     },
@@ -620,15 +621,15 @@ export default {
                 this.isBottle = []
             }
         },
-        filterProductCategory (data) {
-            console.log('filterProductCategory', data)
-            const large = data.largeCategory
-            const middle = data.middleCategory
-            const small = data.smallCategory
-            const res = this.productByCategory[large][middle][small]
-            this.productByCategoryList = _.cloneDeep(res)
-            // this.productByCategoryList = res
-        },
+        // filterProductCategory (data) {
+        //     console.log('filterProductCategory', data)
+        //     const large = data.largeCategory
+        //     const middle = data.middleCategory
+        //     const small = data.smallCategory
+        //     const res = this.productByCategory[large][middle][small]
+        //     this.productByCategoryList = _.cloneDeep(res)
+        //     // this.productByCategoryList = res
+        // },
         showTopPopularProduct () {
             this.selectedProductType = null
         },

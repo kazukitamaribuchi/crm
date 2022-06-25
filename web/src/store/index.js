@@ -20,6 +20,8 @@ import salesActions from './actions/sales'
 import attendanceActions from './actions/attendance'
 import productActions from './actions/product'
 
+import router from '@/router'
+
 Vue.use(Vuex)
 
 const initialState = {
@@ -156,6 +158,10 @@ export default new Vuex.Store({
                 })
                 .catch(e => {
                     console.log(e)
+                    if (e.response.status == 401) {
+                        this.commit('initAuthToken')
+                        router.push('/')
+                    }
                     reject(e)
                 })
             })

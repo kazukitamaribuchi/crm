@@ -24,7 +24,7 @@ export default {
     computed: {
         confirmText () {
             if (this.bottleDetail.delete_flg) {
-                return 'ボトルの削除状態を更新しますか？'
+                return 'ボトルの削除状態を元の状態へ更新しますか？'
             } else {
                 return 'ボトルデータを削除しますか？'
             }

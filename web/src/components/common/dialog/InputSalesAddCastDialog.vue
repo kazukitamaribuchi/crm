@@ -40,10 +40,10 @@
                 <b-card
                     class="addCastCard"
                     @click="select(item)"
-                    @dblclick="add"
+                    @dblclick="addOrUpdate"
                     :class="{'isAppointed': isAppointed(item)}"
                 >
-                    <b-card-img
+                    <!-- <b-card-img
                         :src="apiPath + item.icon"
                         alt="castImage"
                         top
@@ -58,7 +58,14 @@
                         height="100px"
                         :class="{'isAppointed': isAppointed(item)}"
                         v-else
-                    ></b-card-img>
+                    ></b-card-img> -->
+                    <div style="text-align: center;">
+                        <img
+                            src="@/assets/img/女性11.jpg"
+                            class="cast_icon"
+                            top
+                        >
+                    </div>
                     <b-card-text>
                         {{ item.name }} ({{ item.age }})
                         <!-- <span><small>{{ getIsAppointedStr(item) }}</small></span> -->
@@ -72,8 +79,13 @@
                 <b-col cols="3" class="add_cast_footer_col">
                     <b-card-sub-title>選択キャスト</b-card-sub-title>
                     <div class="selected_cast_area">
-                        <b-avatar :src="apiPath + selected.icon" v-if="selected.icon != null"></b-avatar>
-                        <b-avatar :src="defaultIcon" v-else></b-avatar>
+                        <img
+                            src="@/assets/img/女性11.jpg"
+                            class="selected_cast_icon"
+                            top
+                        >
+                        <!-- <b-avatar :src="apiPath + selected.icon" v-if="selected.icon != null"></b-avatar>
+                        <b-avatar :src="defaultIcon" v-else></b-avatar> -->
                         <span v-if="Object.keys(selected).length">{{ selected.name }}</span>
                         <span v-else> - </span>
                     </div>
@@ -128,7 +140,7 @@
                     </b-button>
                     <b-button
                         variant="primary"
-                        @click="add"
+                        @click="addOrUpdate"
                         class="add_cast_footer_area4"
                         :disabled=isDisabled
                     >
@@ -179,6 +191,8 @@ export default {
         defaultIcon: 'http://localhost:8000/media/upload/女性1111.png',
         apiPath: 'http://localhost:8000',
         quantity: 1,
+        mode: 0,
+        editIdx: 0,
     }),
     computed: {
         ...mapGetters([
@@ -187,7 +201,7 @@ export default {
         isDisabled () {
             if (this.isEmptyObject(this.selected)) return true
             return false
-        }
+        },
     },
     watch: {
         searchWord: function (val) {
@@ -204,7 +218,7 @@ export default {
         // this.filterdCast = _.cloneDeep(this.cast)
     },
     methods: {
-        open () {
+        open (data, idx) {
             this.dialog = true
             this.filterdCast = _.cloneDeep(this.cast)
             this.appointedCastId = new Set()
@@ -212,13 +226,28 @@ export default {
                 const item = this.appointed[i]
                 this.appointedCastId.add(item.cast.id)
             }
+            if (data) {
+                this.convertData(data)
+                this.mode = 1
+                this.editIdx = idx
+            } else {
+                this.mode = 0
+            }
         },
         close () {
             this.dialog = false
             this.init()
         },
 
+        addOrUpdate () {
+            if (this.mode == 0) {
+                this.add()
+            } else if (this.mode == 1) {
+                this.update()
+            }
+        },
         // 指名料の税を可変にする場合ここで考慮する必要あり
+
         add () {
             let douhan = this.isDouhan.length !== 0
             let douhanPrice = (douhan) ? Con.DOUHAN_PRICE : 0
@@ -230,7 +259,23 @@ export default {
                 douhanPrice: douhanPrice,
                 quantity: this.quantity,
             }
-            this.$eventHub.$emit('addCast', castData)
+            // this.$eventHub.$emit('addCast', castData)
+            this.$emit('add', castData)
+            this.close()
+        },
+        update () {
+            let douhan = this.isDouhan.length !== 0
+            let douhanPrice = (douhan) ? Con.DOUHAN_PRICE : 0
+            const castData = {
+                cast: this.selected,
+                appointType: this.appointType,
+                isDouhan: douhan,
+                appointPrice: Con.APPOINT_PRICE,
+                douhanPrice: douhanPrice,
+                quantity: this.quantity,
+            }
+            // this.$eventHub.$emit('addCast', castData)
+            this.$emit('update', castData, this.editIdx)
             this.close()
         },
         init () {
@@ -242,6 +287,8 @@ export default {
             this.appointedCastId = new Set()
             this.errorMsg = []
             this.quantity = 1
+            this.editIdx = 0
+            this.mode = 0
         },
         select (item) {
             if (this.isAppointed(item)) return
@@ -273,6 +320,9 @@ export default {
             if (this.isDouhan.length != 0) {
                 this.appointType = 1
             }
+        },
+        convertData (data) {
+            console.log('convertData', data)
         }
     },
 }
@@ -332,5 +382,16 @@ export default {
 .isAppointed {
     background-color: rgba(255, 255, 255, 1);
     filter: opacity(30%);
+}
+
+.cast_icon {
+    width: 120px;
+    height: 120px;
+}
+
+.selected_cast_icon {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
 }
 </style>

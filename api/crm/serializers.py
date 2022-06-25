@@ -45,6 +45,8 @@ from django.db import (
     models
 )
 
+from django.db.models.functions import Coalesce
+
 
 import logging
 import pytz
@@ -139,8 +141,10 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
     company = serializers.CharField(default='', allow_null=True)
     created_at = serializers.SerializerMethodField()
     updated_at = serializers.SerializerMethodField()
-    total_visit = serializers.IntegerField(default=0, allow_null=True)
-    total_sales = serializers.IntegerField(default=0, allow_null=True)
+    # total_visit = serializers.IntegerField(default=0, allow_null=True)
+    # total_sales = serializers.IntegerField(default=0, allow_null=True)
+    total_visit = serializers.SerializerMethodField(allow_null=True)
+    total_sales = serializers.SerializerMethodField(allow_null=True)
     customer_no = serializers.IntegerField(source='card.customer_no', allow_null=True)
     delete_flg = serializers.BooleanField(default=False)
     caution_flg = serializers.BooleanField(default=False)
@@ -188,9 +192,18 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
         ]
 
     def get_first_visit(self, obj):
-        if obj.first_visit == None:
-            return ''
-        return obj.first_visit.strftime('%Y/%m/%d')
+        # if obj.first_visit == None:
+        #     return ''
+        # return obj.first_visit.strftime('%Y/%m/%d')
+        sales_data = SalesHeader.objects.filter(
+            customer__isnull=False,
+            customer=obj,
+            delete_flg=False
+        )
+        if len(sales_data) != 0:
+            return sales_data.order_by('account_date').first().account_date.strftime('%Y/%m/%d')
+        else:
+            return '-'
 
     def get_birthday(self, obj):
         if obj.birthday == None:
@@ -235,6 +248,20 @@ class CustomerSerializer(DynamicFieldsModelSerializer):
             ],
             many=True,
         ).data
+
+    def get_total_visit(self, obj):
+        return SalesHeader.objects.filter(
+            customer__isnull=False,
+            customer=obj,
+            delete_flg=False
+        ).count()
+
+    def get_total_sales(self, obj):
+        return SalesHeader.objects.filter(
+            customer__isnull=False,
+            customer=obj,
+            delete_flg=False
+        ).aggregate(total=Coalesce(models.Sum('total_tax_sales'), 0))['total']
 
     def create(self, validated_data):
         logger.debug('★Serializerのcreate')
@@ -359,7 +386,11 @@ class CastSerializer(DynamicFieldsModelSerializer):
     start_working_date_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
     resign_date = serializers.SerializerMethodField(allow_null=True)
     resign_date_str = serializers.CharField(write_only=True, allow_blank=True, allow_null=True)
-
+    age = serializers.IntegerField(allow_null=True)
+    real_age = serializers.IntegerField(allow_null=True)
+    mail = serializers.EmailField(allow_null=True)
+    phone = serializers.IntegerField(allow_null=True)
+    remarks = serializers.CharField(allow_null=True, allow_blank=True)
 
     delete_flg = serializers.BooleanField(default=False)
     remarks = serializers.CharField(default='', allow_null=True)
@@ -696,6 +727,7 @@ class BottleSerializer(DynamicFieldsModelSerializer):
     updated_at = serializers.SerializerMethodField()
     deadline = serializers.SerializerMethodField()
     open_date = serializers.SerializerMethodField()
+    end_date = serializers.SerializerMethodField()
     customer_type = serializers.SerializerMethodField()
 
     # b-tableで区分によって表示する方法分からんからここで渡す 2022/06/25
@@ -713,6 +745,7 @@ class BottleSerializer(DynamicFieldsModelSerializer):
             'customer',
             'deadline',
             'open_date',
+            'end_date',
             'end_flg',
             'waste_flg',
             'created_at',
@@ -732,6 +765,11 @@ class BottleSerializer(DynamicFieldsModelSerializer):
         if obj.open_date == None:
             return ''
         return utc_to_jst(obj.open_date).strftime('%Y年%m月%d日')
+
+    def get_end_date(self, obj):
+        if obj.end_date == None:
+            return ''
+        return utc_to_jst(obj.end_date).strftime('%Y年%m月%d日')
 
     def get_customer_type(self, obj):
         if (obj.customer == None):

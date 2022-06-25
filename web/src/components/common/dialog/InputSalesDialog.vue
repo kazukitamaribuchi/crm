@@ -10,7 +10,7 @@
         >
             <b-form class="input_sales_form">
 
-                <b-card bg-variant="light" class="mt-3">
+                <b-card bg-variant="light" class="mt-3" style="min-height: 50px;">
                     <b-form-group
                         label-cols-lg="3"
                         label="基本料金"
@@ -21,9 +21,27 @@
                     <!-- <b-card-sub-title align="right" v-if="editMode">
                         伝票No {{ salesHeaderId }}
                     </b-card-sub-title> -->
+                        <b-card-sub-title align="right">
+                            <span style="color: red;">*</span> : 必須項目
+                        </b-card-sub-title>
                         <b-row>
                             <b-col cols="4">
-                                <b-card-sub-title>会員タイプ</b-card-sub-title>
+                                <b-card-sub-title>
+                                    会員タイプ
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="customer_type_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="customer_type_info_icon"
+                                        title="会員区分を選択してください。"
+                                    ></b-tooltip>
+                                </b-card-sub-title>
                                 <b-form-group style="min-height: 40px;">
                                     <b-form-radio-group
                                         v-model="inputSalesData.customer_type"
@@ -39,19 +57,32 @@
                             <b-col cols="3" v-if="inputSalesData.customer_type == 0">
                                 <b-form-group
                                 >
-                                <!-- :class="{'invalid': nonMemberNameInvalid}" -->
                                     <label
+                                        :class="{'invalid': nonMemberNameInvalid}"
                                     >顧客名</label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="non_member_name_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="non_member_name_info_icon"
+                                        title="任意で顧客名を入力してください。"
+                                    ></b-tooltip>
                                     <b-input-group>
                                         <b-form-input
-                                            v-model="inputSalesData.non_member_name"
+                                            v-model="inputSalesData.nonMemberName"
                                             type="text"
                                             placeholder="顧客名(任意)"
                                             autofocus
                                         ></b-form-input>
-                                        <!-- <b-form-invalid-feedback :state="customerNoError.length == 0">
-                                            {{ customerNoError }}
-                                        </b-form-invalid-feedback> -->
+                                        <b-form-invalid-feedback :state="nonMemberNameError.length == 0">
+                                            {{ nonMemberNameError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -60,24 +91,24 @@
                                 >
                                     <label
                                         :class="{'invalid': customerNoInvalid}"
+                                        class="form_required"
                                     >会員No</label>
                                     <span
                                         style="display: inline-block; margin-left: 0.4rem;"
                                     >
                                         <b-icon
-                                            id="customer_no_info_icon"
+                                            id="non_customer_name_info_icon"
                                             icon="info-circle"
                                             variant="primary"
                                         ></b-icon>
                                     </span>
                                     <b-tooltip
                                         target="customer_no_info_icon"
-                                        title="会員の場合入力してください。"
+                                        title="会員Noを入力してください。"
                                     ></b-tooltip>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="inputSalesData.customerNo"
-                                            type="number"
                                             required
                                             autofocus
                                             placeholder="会員No(必須)"
@@ -95,6 +126,7 @@
                                 >
                                     <label
                                         :class="{'invalid': totalVisitorsInvalid}"
+                                        class="form_required"
                                     >来店人数</label>
                                     <span
                                         style="display: inline-block; margin-left: 0.4rem;"
@@ -112,7 +144,6 @@
                                     <b-input-group>
                                         <b-form-input
                                             v-model="inputSalesData.totalVisitors"
-                                            type="number"
                                             required
                                             placeholder="来店人数(必須)"
                                         ></b-form-input>
@@ -125,8 +156,23 @@
                             <b-col cols="3">
                                 <b-form-group
                                     class="input_sales_date"
-                                    label="来店日"
                                 >
+                                    <label>
+                                        来店日
+                                        <span
+                                            style="display: inline-block; margin-left: 0.4rem;"
+                                        >
+                                            <b-icon
+                                                id="account_date_info_icon"
+                                                icon="info-circle"
+                                                variant="primary"
+                                            ></b-icon>
+                                        </span>
+                                        <b-tooltip
+                                            target="account_date_info_icon"
+                                            title="来店した日付を選択してください。"
+                                        ></b-tooltip>
+                                    </label>
                                     <b-form-datepicker
                                         v-model="inputSalesData.accountDate"
                                         placeholder="来店日を入力してください"
@@ -224,8 +270,8 @@
 
                         </b-row>
                         <b-row>
-                            <b-col cols="6">
-                                <b-card style="min-height: 475px;">
+                            <b-col :cols=basicPlanAreaCol>
+                                <b-card style="min-height: 540px;">
                                     <label>
                                         基本料金
                                     </label>
@@ -243,7 +289,7 @@
                                         title="入店時間、退店時間を入力すると自動的に料金が設定されます。"
                                     ></b-tooltip>
                                     <b-container>
-                                        <b-row style="min-height: 80px;" align-h="between">
+                                        <b-row style="min-height: 80px;">
                                             <b-col cols="6">
                                                 <b-card-sub-title>料金タイプ</b-card-sub-title>
                                                 <b-form-group style="min-height: 40px;">
@@ -276,8 +322,18 @@
                                                     ></b-form-checkbox-group>
                                                 </b-form-group>
                                             </b-col>
-                                            <b-col style="text-align: right;">
-                                                <b-button
+                                            <b-col>
+                                                <b-card-sub-title>
+                                                    席移動
+                                                </b-card-sub-title>
+                                                <!-- style="margin-top: 14px;" -->
+                                                <b-form-checkbox-group
+                                                    :options=moveDiffSeatOptions
+                                                    buttons
+                                                    button-variant="success"
+                                                    @change="showDiffBasicPlan = !showDiffBasicPlan"
+                                                ></b-form-checkbox-group>
+                                                <!-- <b-button
                                                     size="sm"
                                                     @click="showDiffBasicPlan = !showDiffBasicPlan"
                                                     class="mt-3"
@@ -288,20 +344,19 @@
                                                         icon="arrow-left-right"
                                                         aria-hidden="true"
                                                     ></b-icon> 席移動
-                                                </b-button>
+                                                </b-button> -->
                                             </b-col>
                                             <!-- <b-col>
                                                 <b-button id="button-1" variant="outline-success">Live chat</b-button>
                                             </b-col> -->
                                         </b-row>
-                                        <b-row>
-                                            <b-col cols="6" class="input_sales_visit">
+                                        <b-row class="pb-0">
+                                            <b-col cols="6" class="input_sales_visit pb-0">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
                                                         <b-card-sub-title
-                                                            class="input_sales_visit_time_title"
-                                                            style="color: red !important;"
-                                                        >入店時間*</b-card-sub-title>
+                                                            class="input_sales_visit_time_title form_required"
+                                                        >入店時間</b-card-sub-title>
                                                         <b-row>
                                                             <b-form-group class="input_sales_visit_time_select_wrap">
                                                                 <b-form-group>
@@ -328,13 +383,12 @@
                                                     </div>
                                                 </div>
                                             </b-col>
-                                            <b-col cols="6" class="input_sales_leave">
+                                            <b-col cols="6" class="input_sales_leave pb-0">
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
                                                         <b-card-sub-title
-                                                            class="input_sales_visit_time_title"
-                                                            style="color: red !important;"
-                                                        >{{ moveSeatTimeText }}*</b-card-sub-title>
+                                                            class="input_sales_visit_time_title form_required"
+                                                        >{{ moveSeatTimeText }}</b-card-sub-title>
                                                         <b-form-group class="input_sales_visit_time_select_wrap">
                                                             <b-form-group>
                                                                 <SelectForm
@@ -342,14 +396,27 @@
                                                                     v-model="inputSalesData.leaveTimeHour"
                                                                 />
                                                                 ：
-                                                                <SelectForm
-                                                                    :optionType=2
-                                                                    v-model="inputSalesData.leaveTimeMinute"
-                                                                />
+                                                                <b v-if="inputSalesData.leaveTimeHour != 20">
+                                                                    <SelectForm
+                                                                        :optionType=2
+                                                                        v-model="inputSalesData.leaveTimeMinute"
+                                                                    />
+                                                                </b>
+                                                                <b v-else>
+                                                                    <SelectForm
+                                                                        :optionType=6
+                                                                        v-model="inputSalesData.leaveTimeMinute"
+                                                                    />
+                                                                </b>
                                                             </b-form-group>
                                                         </b-form-group>
                                                     </div>
                                                 </div>
+                                            </b-col>
+                                            <b-col cols="12" class="pt-0">
+                                                <b-form-invalid-feedback :state="visitTimeError.length == 0">
+                                                    {{ visitTimeError }}
+                                                </b-form-invalid-feedback>
                                             </b-col>
                                             <b-col>
                                                 <label>
@@ -378,7 +445,9 @@
                                                             v-model="inputSalesData.selectedBasicPlan"
                                                         />
                                                     </td>
-                                                    <td class="width20">{{ basicPlanPrice }}</td>
+                                                    <td class="width20">
+                                                        {{ basicPlanPrice }}
+                                                    </td>
                                                     <td class="width30">
                                                         <b-form-spinbutton
                                                             v-model="inputSalesData.selectedBasicPlanNum"
@@ -452,126 +521,28 @@
                                     </b-container>
                                 </b-card>
                             </b-col>
-                            <b-col cols="6">
-                                <b-card style="min-height: 475px;">
-                                    <label class="mt-1">
-                                        指名情報
-                                    </label>
-                                    <span
-                                        style="display: inline-block; margin-left: 0.4rem;"
-                                    >
-                                        <b-icon
-                                            id="appoint_info_icon"
-                                            icon="info-circle"
-                                            variant="primary"
-                                        ></b-icon>
-                                    </span>
-                                    <b-tooltip
-                                        target="appoint_info_icon"
-                                        title="指名の場合、キャストを追加してください。"
-                                    ></b-tooltip>
-                                    <b-container fluid class="appoint_cast_area_wrap" style="min-height: 347px; max-height: 347px;">
-                                        <b-row align-h="between">
-                                            <b-col>
-                                                <b-card-sub-title>指名有無</b-card-sub-title>
-                                                <b-form-group>
-                                                    <b-form-radio-group
-                                                        v-model="inputSalesData.isAppointed"
-                                                        :options=appointOptions
-                                                        button-variant="outline-primary"
-                                                        buttons
-                                                    ></b-form-radio-group>
-                                                </b-form-group>
-                                            </b-col>
 
-                                            <b-col cols="4">
-                                                <b-button
-                                                    v-if="inputSalesData.isAppointed == 1"
-                                                    size="sm"
-                                                    @click="showAddCastDialog"
-                                                    class="mt-3"
-                                                    pill
-                                                    variant="outline-success"
-                                                >
-                                                    <b-icon
-                                                        icon="person-plus"
-                                                        aria-hidden="true"
-                                                    ></b-icon> キャスト追加
-                                                </b-button>
-                                            </b-col>
-                                        </b-row>
-                                        <b-row>
-                                            <table
-                                                v-if="appointedCastDataList.length > 0 && inputSalesData.isAppointed == 1"
-                                                class="appointed_cast_area"
-                                            >
-                                                <tr>
-                                                    <th
-                                                        v-for="(castHeader, id) in appointedCastHeader"
-                                                        :key=id
-                                                    >{{ castHeader.text }}</th>
-                                                </tr>
-                                                <tr
-                                                    v-for="(castData, idx) in appointedCastDataList"
-                                                    :key=idx
-                                                >
-                                                    <td>
-                                                        <b-avatar
-                                                            :src="apiPath + castData.cast.icon"
-                                                            class="cast_icon"
-                                                            v-if="castData.cast.icon != null"
-                                                        ></b-avatar>
-                                                        <b-avatar
-                                                            :src="defaultCastIcon"
-                                                            class="cast_icon"
-                                                            v-else
-                                                        ></b-avatar>
-                                                    </td>
-                                                    <td>{{ castData.cast.name }}</td>
-                                                    <td>{{ getAppointStr(castData.appointType) }}</td>
-                                                    <td>{{ castData.appointPrice }}</td>
-                                                    <td>{{ getDouhanStr(castData.isDouhan) }}</td>
-                                                    <td class="ml-0 pl-0">
-                                                        <b-form-group
-                                                        >
-                                                            <!-- <SelectForm
-                                                                :optionType=99
-                                                                v-model="appointedCastDataList[idx].num"
-                                                            /> -->
-                                                            <b-form-select
-                                                                v-model="appointedCastDataList[idx].quantity"
-                                                                :options="numOptions"
-                                                                value-field="value"
-                                                                text-field="text"
-                                                                class="input_sales_basic_price_select"
-                                                            ></b-form-select>
-                                                        </b-form-group>
-                                                    </td>
-
-                                                    <td>
-                                                        <b-icon
-                                                            icon="dash-square"
-                                                            aria-hidden="true"
-                                                            @click="deleteCast(castData, idx)"
-                                                            variant="danger"
-                                                            class="trash_icon"
-                                                        ></b-icon>
-                                                    </td>
-                                                </tr>
-                                            </table>
-                                        </b-row>
-                                    </b-container>
-                                </b-card>
-                            </b-col>
-
-                            <b-col v-if="showDiffBasicPlan">
-                                <b-card class="moveSeatCard">
+                            <b-col cols="6" v-if="showDiffBasicPlan">
+                                <b-card class="moveSeatCard" style="min-height: 540px;">
                                     <label>
                                         基本料金（席移動後）
+                                        <span
+                                            style="display: inline-block; margin-left: 0.4rem;"
+                                        >
+                                            <b-icon
+                                                id="after_move_basic_plan_type_info_icon"
+                                                icon="info-circle"
+                                                variant="primary"
+                                            ></b-icon>
+                                        </span>
+                                        <b-tooltip
+                                            target="after_move_basic_plan_type_info_icon"
+                                            title="席移動後の基本料金をそれぞれ入力してください。"
+                                        ></b-tooltip>
                                     </label>
                                     <b-container>
-                                        <b-row style="min-height: 80px;">
-                                            <b-col cols="3">
+                                        <b-row style="min-height: 80px;" align-h="between">
+                                            <b-col cols="6">
                                                 <b-card-sub-title>料金タイプ</b-card-sub-title>
                                                 <b-form-group style="min-height: 40px;">
                                                     <b-form-radio-group
@@ -591,7 +562,7 @@
                                                     ></b-icon>
                                                 </b-form-group>
                                             </b-col>
-                                            <b-col cols="3">
+                                            <b-col>
                                                 <b-form-group>
                                                     <b-form-checkbox-group
                                                         v-if="inputSalesData.basicPlanTypeOther == 1"
@@ -609,9 +580,8 @@
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
                                                         <b-card-sub-title
-                                                            class="input_sales_visit_time_title"
-                                                            style="color: red !important;"
-                                                        >席移動時間*</b-card-sub-title>
+                                                            class="input_sales_visit_time_title form_required"
+                                                        >席移動時間</b-card-sub-title>
                                                         <b-row>
                                                             <b-form-group class="input_sales_visit_time_select_wrap">
                                                                 <b-form-group>
@@ -620,10 +590,18 @@
                                                                         v-model="inputSalesData.leaveTimeHour"
                                                                     />
                                                                     ：
-                                                                    <SelectForm
-                                                                        :optionType=2
-                                                                        v-model="inputSalesData.leaveTimeMinute"
-                                                                    />
+                                                                    <b v-if="inputSalesData.leaveTimeHour != 20">
+                                                                        <SelectForm
+                                                                            :optionType=2
+                                                                            v-model="inputSalesData.leaveTimeMinute"
+                                                                        />
+                                                                    </b>
+                                                                    <b v-else>
+                                                                        <SelectForm
+                                                                            :optionType=6
+                                                                            v-model="inputSalesData.leaveTimeMinute"
+                                                                        />
+                                                                    </b>
                                                                 </b-form-group>
                                                             </b-form-group>
                                                         </b-row>
@@ -634,9 +612,8 @@
                                                 <div class="input_sales_visit_time_wrap">
                                                     <div class="input_sales_visit_time">
                                                         <b-card-sub-title
-                                                            class="input_sales_visit_time_title"
-                                                            style="color: red !important;"
-                                                        >退店時間*</b-card-sub-title>
+                                                            class="input_sales_visit_time_title form_required"
+                                                        >退店時間</b-card-sub-title>
                                                         <b-form-group class="input_sales_visit_time_select_wrap">
                                                             <b-form-group>
                                                                 <SelectForm
@@ -644,14 +621,27 @@
                                                                     v-model="inputSalesData.leaveTimeHourAfterMove"
                                                                 />
                                                                 ：
-                                                                <SelectForm
-                                                                    :optionType=2
-                                                                    v-model="inputSalesData.leaveTimeMinuteAfterMove"
-                                                                />
+                                                                <b v-if="inputSalesData.leaveTimeHourAfterMove != 20">
+                                                                    <SelectForm
+                                                                        :optionType=2
+                                                                        v-model="inputSalesData.leaveTimeMinuteAfterMove"
+                                                                    />
+                                                                </b>
+                                                                <b v-else>
+                                                                    <SelectForm
+                                                                        :optionType=6
+                                                                        v-model="inputSalesData.leaveTimeMinuteAfterMove"
+                                                                    />
+                                                                </b>
                                                             </b-form-group>
                                                         </b-form-group>
                                                     </div>
                                                 </div>
+                                            </b-col>
+                                            <b-col cols="12" class="pt-0">
+                                                <b-form-invalid-feedback :state="visitTimeOtherError.length == 0">
+                                                    {{ visitTimeOtherError }}
+                                                </b-form-invalid-feedback>
                                             </b-col>
                                             <b-col>
                                                 <label>
@@ -747,6 +737,164 @@
                                                             min=0
                                                             size="sm"
                                                         ></b-form-spinbutton> -->
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </b-row>
+                                    </b-container>
+                                </b-card>
+                            </b-col>
+                            <b-col cols="12">
+                                <b-card>
+                                    <label class="mt-1">
+                                        指名情報
+                                    </label>
+                                    <span
+                                        style="display: inline-block; margin-left: 0.4rem;"
+                                    >
+                                        <b-icon
+                                            id="appoint_info_icon"
+                                            icon="info-circle"
+                                            variant="primary"
+                                        ></b-icon>
+                                    </span>
+                                    <b-tooltip
+                                        target="appoint_info_icon"
+                                        title="指名の場合、キャストを追加してください。"
+                                    ></b-tooltip>
+                                    <b-container fluid class="appoint_cast_area_wrap" style="min-height: 100px; max-height: 347px;">
+                                        <b-row>
+                                            <b-col cols="3">
+                                                <b-card-sub-title>指名有無</b-card-sub-title>
+                                                <b-form-group>
+                                                    <b-form-radio-group
+                                                        v-model="inputSalesData.isAppointed"
+                                                        :options=appointOptions
+                                                        button-variant="outline-primary"
+                                                        buttons
+                                                    ></b-form-radio-group>
+                                                </b-form-group>
+                                            </b-col>
+
+                                            <b-col>
+                                                <b-button
+                                                    v-if="inputSalesData.isAppointed == 1"
+                                                    size="sm"
+                                                    @click="showAddCastDialog"
+                                                    class="mt-3"
+                                                    pill
+                                                    variant="outline-success"
+                                                >
+                                                    <b-icon
+                                                        icon="person-plus"
+                                                        aria-hidden="true"
+                                                    ></b-icon> キャスト追加
+                                                </b-button>
+                                            </b-col>
+                                        </b-row>
+                                        <b-row>
+                                            <table
+                                                v-if="appointedCastDataList.length > 0 && inputSalesData.isAppointed == 1"
+                                                class="appointed_cast_area"
+
+                                            >
+                                                <tr>
+                                                    <th
+                                                        v-for="(castHeader, id) in appointedCastHeader"
+                                                        :key=id
+                                                    >{{ castHeader.text }}</th>
+                                                </tr>
+                                                <tr
+                                                    v-for="(castData, idx) in appointedCastDataList"
+                                                    :key=idx
+                                                >
+                                                    <!-- <td>
+                                                        <div>
+                                                            <img
+                                                                src="@/assets/img/女性11.jpg"
+                                                                class="cast_icon"
+                                                                top
+                                                            >
+                                                        </div>
+                                                        <b-avatar
+                                                            :src="apiPath + castData.cast.icon"
+                                                            class="cast_icon"
+                                                            v-if="castData.cast.icon != null"
+                                                        ></b-avatar>
+                                                        <b-avatar
+                                                            :src="defaultCastIcon"
+                                                            class="cast_icon"
+                                                            v-else
+                                                        ></b-avatar>
+                                                    </td> -->
+                                                    <td style="display: flex;">
+                                                        <div>
+                                                            <img
+                                                                src="@/assets/img/女性11.jpg"
+                                                                class="cast_icon"
+                                                                top
+                                                            >
+                                                        </div>
+                                                        <div class="mt-2" style="margin-left: 15px;">
+                                                            <b-card-title style="font-size: 15px;">
+                                                                {{ castData.cast.name }}
+                                                            </b-card-title>
+                                                            <b-card-sub-title style="font-size: 12px;">
+                                                                {{ castData.cast.age }} 歳
+                                                            </b-card-sub-title>
+                                                        </div>
+                                                    <td>{{ getAppointStr(castData.appointType) }}</td>
+                                                    <td>{{ castData.appointPrice }}</td>
+                                                    <td>{{ getDouhanStr(castData.isDouhan) }}</td>
+                                                    <td class="ml-0 pl-0">
+                                                        <b-form-group
+                                                        >
+                                                            <SelectForm
+                                                                :optionType=99
+                                                                v-model="appointedCastDataList[idx].quantity"
+                                                            />
+                                                            <!-- <b-form-select
+                                                                v-model="appointedCastDataList[idx].quantity"
+                                                                :options="numOptions"
+                                                                value-field="value"
+                                                                text-field="text"
+                                                                class="input_sales_basic_price_select"
+                                                            ></b-form-select> -->
+                                                        </b-form-group>
+                                                    </td>
+
+                                                    <td>
+                                                        <!-- <b-icon
+                                                            icon="dash-square"
+                                                            aria-hidden="true"
+                                                            @click="deleteCast(castData, idx)"
+                                                            variant="danger"
+                                                            class="trash_icon"
+                                                        ></b-icon> -->
+                                                        <b-button
+                                                            size="sm"
+                                                            style="margin-right: 5px !important;"
+                                                            @click="showEditAddCastDialog(castData, idx)"
+                                                            variant="outline-primary"
+                                                        >
+                                                            <b-icon
+                                                                icon="pencil"
+                                                                aria-hidden="true"
+                                                                class="mr-1"
+                                                            ></b-icon>
+                                                        </b-button>
+                                                        <b-button
+                                                            size="sm"
+                                                            @click="deleteCast(castData, idx)"
+                                                            variant="outline-danger"
+                                                        >
+                                                            <b-icon
+                                                                icon="trash"
+                                                                aria-hidden="true"
+                                                                variant="danger"
+                                                                class="trash_icon"
+                                                            ></b-icon>
+                                                        </b-button>
                                                     </td>
                                                 </tr>
                                             </table>
@@ -965,6 +1113,8 @@
         <InputSalesAddCastDialog
             ref="inputSalesAddcastDialog"
             :appointed="appointedCastDataList"
+            @add="addCastData"
+            @update="updateCastData"
         />
 
         <ErrorModal
@@ -976,6 +1126,7 @@
 
 <script>
 
+import Vue from 'vue'
 import _ from 'lodash'
 import InputSalesDetailDialog from '@/components/common/dialog/InputSalesDetailDialog'
 import InputSalesAddDetailDialog from '@/components/common/dialog/InputSalesAddDetailDialog'
@@ -996,6 +1147,7 @@ import Decimal from 'decimal.js'
 const now = dayjs().format('YYYY-MM-DD')
 const Con = new Const()
 import utilsMixin from '@/mixins/utils'
+import validateMixin from '@/mixins/validate'
 
 export default {
     name: 'InputSalesDialogItem',
@@ -1072,13 +1224,13 @@ export default {
         defaultCastIcon: 'http://localhost:8000/media/upload/女性1111.png',
         defaultIcon: Con.DEFAULT_ALCOHOL_ICON, // デフォで酒の画像出しているが・・・
         appointedCastHeader: [
-            { text: '' },
+            // { text: '' },
             { text: '名前' },
             { text: '指名' },
             { text: '指名料' },
             { text: '同伴' },
             { text: '数量' },
-            { text: '' },
+            { text: '更新' },
         ],
         basicPriceMenu: [
             { text: 'SET料金', class: 'width50' },
@@ -1106,9 +1258,18 @@ export default {
         charterOptions: [
             { text: '貸切', value: 1 }
         ],
+        moveDiffSeatOptions: [
+            { text: '移動', value: 1 }
+        ],
         errorMsg: [],
         totalVisitorsError: '',
         customerNoError: '',
+        nonMemberNameError: '',
+        visitTimeError: '',
+        visitTimeOtherError: '',
+        leaveTimeError: '',
+        leaveAfterTimeError: '',
+        moveTimeError: '',
         editMode: false,
         salesHeaderId: null,
         edit_sales_detail: [],
@@ -1294,15 +1455,29 @@ export default {
             return Con.BASIC_PRICE_VIP_SEAT
         },
         totalVisitorsInvalid () {
-            if (this.totalVisitorsError.length != 0
-                || this.inputSalesData.totalVisitors == null) {
+            if (this.totalVisitorsError.length != 0) {
                 return true
             }
             return false
         },
         customerNoInvalid () {
-            if (this.customerNoError != '') return true
+            if (this.customerNoError != '') {
+                return true
+            }
             return false
+        },
+        nonMemberNameInvalid () {
+            if (this.nonMemberNameError != '') {
+                return true
+            }
+            return false
+        },
+        basicPlanAreaCol () {
+            if (this.showDiffBasicPlan) {
+                return '6'
+            } else {
+                return '12'
+            }
         }
     },
     watch: {
@@ -1374,9 +1549,13 @@ export default {
             }
         },
         'inputSalesData.totalVisitors': function (val) {
-            if (val == null) return
+            const reg = /^[0-9]+$/
+            if (val == null) {
+                this.totalVisitorsError = ''
+                return
+            }
             if (val.length > 0) {
-                if (val <= 0) {
+                if (val <= 0 || !reg.test(val)) {
                     this.totalVisitorsError = '正しい値を入力してください'
                 } else if (val > 30) {
                     this.totalVisitorsError = '1 ~ 30の値を入力してください'
@@ -1403,8 +1582,11 @@ export default {
             }
         },
         'inputSalesData.customerNo': function (val) {
-            let reg = /^[0-9]+$/
-            if (val == null) return
+            const reg = /^[0-9]+$/
+            if (val == null) {
+                this.customerNoError = ''
+                return
+            }
             if (val.length > 0) {
                 if (val <= 0 || !reg.test(val)) {
                     this.customerNoError = '正しい値を入力してください'
@@ -1418,9 +1600,13 @@ export default {
                     }
                 }
             } else {
-                this.customerNoError= ''
+                // this.customerNoError= ''
+                this.customerNoError= '会員Noを入力してください'
                 this.customerInfo = null
             }
+        },
+        'inputSalesData.nonMemberName': function (val) {
+            this.nonMemberNameError = this.validateName(val, false)
         },
         'inputSalesData.isChartered': function (val) {
             this.calcBasicPlan()
@@ -1448,7 +1634,6 @@ export default {
 
             const isCharted = this.inputSalesData.isChartered.length > 0
             const vipSeatTypeMinute = (isCharted) ? 120 : 60
-            this.inputSalesData.vipSeatNum = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
                 // 延長料金が発生しているパターン
@@ -1458,41 +1643,34 @@ export default {
                 this.inputSalesData.extentionNum = 0
             }
 
-            // プランAの判別（20:30~21:30）
-            if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
-                    && visitTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
-                if (visitTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlan = null
-                    this.inputSalesData.extentionNum = 0
-                    this.inputSalesData.stayHour = 0
-                } else {
+            if (visitTime.isSameOrAfter(leaveTime)) {
+                this.inputSalesData.selectedBasicPlan = 0
+                this.inputSalesData.extentionNum = 0
+                this.inputSalesData.stayHour = 0
+                this.inputSalesData.vipSeatNum = 0
+                this.visitTimeError = '入店時間が退店時間より早い時間となるように入力してください。'
+            } else {
+                this.inputSalesData.vipSeatNum = Math.ceil(diff/vipSeatTypeMinute)
+                this.visitTimeError = ''
+                // プランAの判別（20:30~21:30）
+                if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
+                        && visitTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
                     this.inputSalesData.selectedBasicPlan = 0
                     this.inputSalesData.stayHour = diff
-                }
 
-            // プランBの判別（21:30~22:30）
-            } else if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
-                    && visitTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
-                if (visitTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlan = null
-                    this.inputSalesData.extentionNum = 0
-                    this.inputSalesData.stayHour = 0
-                } else {
+                // プランBの判別（21:30~22:30）
+                } else if (visitTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
+                        && visitTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
                     this.inputSalesData.selectedBasicPlan = 1
                     this.inputSalesData.stayHour = diff
-                }
-
-            // プランCの判別（22:30~LAST）
-            } else {
-                if (visitTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlan = null
-                    this.inputSalesData.extentionNum = 0
-                    this.inputSalesData.stayHour = 0
+                // プランCの判別（22:30~LAST）
                 } else {
                     this.inputSalesData.selectedBasicPlan = 2
                     this.inputSalesData.stayHour = diff
+
                 }
             }
+
         },
         calcBasicPlanOther () {
             const MOVE_TIME_FOR_DIFF = (this.inputSalesData.leaveTimeHour >= 20) ? Con.BASIC_PLAN_TIME_FOR_DIFF_A : Con.BASIC_PLAN_TIME_FOR_DIFF_B
@@ -1511,7 +1689,6 @@ export default {
 
             const isCharted = this.inputSalesData.isCharteredOther.length > 0
             const vipSeatTypeMinute = (isCharted) ? 120 : 60
-            this.inputSalesData.vipSeatNumOther = Math.ceil(diff/vipSeatTypeMinute)
 
             if (diff_minute > 0) {
                 // 延長料金が発生しているパターン
@@ -1521,36 +1698,27 @@ export default {
                 this.inputSalesData.extentionOtherNum = 0
             }
 
-            // プランAの判別（20:30~21:30）
-            if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
-                    && moveTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
-                if (moveTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlanOther = null
-                    this.inputSalesData.selectedBasicPlanOtherNum = 0
-                    this.inputSalesData.stayHourOther = 0
-                } else {
+            if (moveTime.isSameOrAfter(leaveTime)) {
+                this.inputSalesData.selectedBasicPlanOther = 0
+                this.inputSalesData.selectedBasicPlanOtherNum = 0
+                this.inputSalesData.stayHourOther = 0
+                this.inputSalesData.vipSeatNumOther = 0
+                this.visitTimeOtherError = '入店時間が退店時間より早い時間となるように入力してください。'
+            } else {
+                this.visitTimeOtherError = ''
+                this.inputSalesData.vipSeatNumOther = Math.ceil(diff/vipSeatTypeMinute)
+                // プランAの判別（20:30~21:30）
+                if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_A_TIME))
+                        && moveTime.isBefore(dayjs(Con.BASIC_PLAN_B_TIME))) {
                     this.inputSalesData.selectedBasicPlanOther = 0
                     this.inputSalesData.stayHourOther = diff
-                }
 
-            // プランBの判別（21:30~22:30）
-            } else if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
-                    && moveTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
-                if (moveTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlanOther = null
-                    this.inputSalesData.extentionOtherNum = 0
-                    this.inputSalesData.stayHourOther = 0
-                } else {
+                // プランBの判別（21:30~22:30）
+                } else if (moveTime.isSameOrAfter(dayjs(Con.BASIC_PLAN_B_TIME))
+                        && moveTime.isBefore(dayjs(Con.BASIC_PLAN_C_TIME))) {
                     this.inputSalesData.selectedBasicPlanOther = 1
                     this.inputSalesData.stayHourOther = diff
-                }
-
-            // プランCの判別（22:30~LAST）
-            } else {
-                if (moveTime.isSameOrAfter(leaveTime)) {
-                    this.inputSalesData.selectedBasicPlanOtherNum = null
-                    this.inputSalesData.extentionOtherNum = 0
-                    this.inputSalesData.stayHourOther = 0
+                // プランCの判別（22:30~LAST）
                 } else {
                     this.inputSalesData.selectedBasicPlanOtherNum = 1
                     this.inputSalesData.stayHourOther = diff
@@ -2156,8 +2324,8 @@ export default {
             this.$refs.inputSalesAddDetailDialog.open()
         },
         addCast (data) {
-            console.log('addCast', data)
-            this.appointedCastDataList.push(data)
+            // console.log('addCast', data)
+            // this.appointedCastDataList.push(data)
         },
         getAppointStr (type) {
             if (type === 0) return '指名'
@@ -2325,10 +2493,23 @@ export default {
 
             this.inputSalesDetailData = service_detail_list
             this.appointedCastDataList = service_appoint_list
+        },
+        showEditAddCastDialog (data, idx) {
+            console.log('showEditAddCastDialog')
+            this.$refs.inputSalesAddcastDialog.open(data, idx)
+        },
+        addCastData (data) {
+            console.log('addCastData', data)
+            this.appointedCastDataList.push(data)
+        },
+        updateCastData (data, idx) {
+            console.log('updateCastData', data, idx)
+            Vue.set(this.appointedCastDataList, idx, data)
         }
     },
     mixins: [
-        utilsMixin
+        utilsMixin,
+        validateMixin
     ]
 }
 
@@ -2401,6 +2582,7 @@ export default {
 
             .appointed_cast_area {
                 margin-top: 1rem;
+                margin-bottom: 2rem;
                 width: 100%;
                 // th:nth-child(1), td:nth-child(1) {
                 //     width: 8%;
@@ -2493,6 +2675,16 @@ export default {
         color: red;
     }
 
+    .form_required:after{
+        content: '*';
+        color: red;
+    }
+
+    .cast_icon {
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+    }
 
     .customer_detail_customer_icon {
         border-radius: 50%;

@@ -87,7 +87,7 @@
                         size="sm"
                         style="margin-right: 5px !important;"
                         @click="showEditBottleDialog(row)"
-                        variant="primary"
+                        :variant="isEndOrDelete(row.item)"
                     >
                         <b-icon
                             icon="pencil"
@@ -215,6 +215,11 @@ export default {
                 sortable: true,
                 label: '空',
             },
+            {
+                key: 'end_date',
+                sortable: true,
+                label: '飲終日付',
+            },
             // {
             //     key: 'waste_flg',
             //     sortable: true,
@@ -227,7 +232,7 @@ export default {
             },
             {
                 key: 'actions',
-                label: 'Actions'
+                label: '更新'
             }
         ],
     }),
@@ -251,13 +256,20 @@ export default {
         ]),
         isDanger (flg) {
             if (flg) {
-                return
+                return 'primary'
             } else {
                 return 'danger'
             }
         },
         isEnd (flg) {
             if (flg) {
+                return 'primary'
+            } else {
+                return 'success'
+            }
+        },
+        isEndOrDelete (item) {
+            if (item.delete_flg || item.end_flg) {
                 return
             } else {
                 return 'primary'
@@ -270,6 +282,7 @@ export default {
         },
         showEditBottleDialog (row) {
             console.log('row', row)
+            if (row.item.delete_flg || row.item.end_flg) return
             this.$refs.editBottleDialog.open(row.item)
         },
         showDeleteBottleDetailDialog (row) {

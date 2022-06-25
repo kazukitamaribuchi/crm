@@ -511,9 +511,9 @@ export default {
         createCustomerDialog: false,
         fields: [
             {
-                key: 'customer_no',
+                key: 'id',
                 sortable: true,
-                label: '会員No',
+                label: 'ID',
             },
             {
                 key: 'name',
@@ -521,15 +521,20 @@ export default {
                 label: '名前',
             },
             {
+                key: 'customer_no',
+                sortable: true,
+                label: '会員No',
+            },
+            {
                 key: 'name_kana',
                 sortable: true,
                 label: '名前(カナ)',
             },
-            {
-                key: 'rank_id',
-                sortable: true,
-                label: '会員ランク',
-            },
+            // {
+            //     key: 'rank_id',
+            //     sortable: true,
+            //     label: '会員ランク',
+            // },
             {
                 key: 'age',
                 sortable: true,
@@ -1184,7 +1189,7 @@ export default {
             this.$router.push({
                 name: 'CustomerDetail',
                 params: {
-                    id: item[0].customer_no
+                    id: item[0].id
                 }
             })
         },

@@ -477,6 +477,48 @@ class Const {
     TAX_DEFAULT = 35
     BIRTHDAY_BOTTOM_LIMIT = 80
     BIRTHDAY_TOP_LIMIT = 18
+
+    COMMON_ERROR_MSG = [
+        '{}を入力してください',
+        '正しい値を入力してください'
+    ]
+
+    ERROR_MSG = {
+        Name: {
+            NoInput: this.COMMON_ERROR_MSG[0],
+            Incorrect: this.COMMON_ERROR_MSG[1],
+        },
+        NameKana: {
+            NoInput: this.COMMON_ERROR_MSG[0],
+            Incorrect: '「ひらがな」か「カタカナ」で入力してください。',
+        },
+        RealName: {
+            NoInput: this.COMMON_ERROR_MSG[0],
+            Incorrect: this.COMMON_ERROR_MSG[1],
+            Illegal: '本名を入力してください',
+        },
+        RealNameKana: {
+            NoInput: this.COMMON_ERROR_MSG[0],
+            Incorrect: '「ひらがな」か「カタカナ」で入力してください。',
+            Illegal: '本名を入力してください',
+        },
+        Num: {
+            NoInput: this.COMMON_ERROR_MSG[1],
+            Incorrect: this.COMMON_ERROR_MSG[1],
+        },
+        Age: {
+            NoInput: this.COMMON_ERROR_MSG[1],
+            Incorrect: this.COMMON_ERROR_MSG[1],
+        },
+        Phone: {
+            NoInput: this.COMMON_ERROR_MSG[1],
+            Incorrect: 'ハイフン無しで10～11文字で入力してください。',
+        },
+        Mail: {
+            NoInput: this.COMMON_ERROR_MSG[1],
+            Incorrect: this.COMMON_ERROR_MSG[1],
+        }
+    }
 }
 
 export { Const }

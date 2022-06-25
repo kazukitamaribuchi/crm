@@ -19,6 +19,19 @@
                     <b-card bg-variant="light">
                         <b-card-title>
                             顧客情報
+                            <span
+                                style="display: inline-block; margin-left: 0.4rem;"
+                            >
+                                <b-icon
+                                    id="create_bottle_customer_info_icon"
+                                    icon="info-circle"
+                                    variant="primary"
+                                ></b-icon>
+                                <b-tooltip
+                                target="create_bottle_customer_info_icon"
+                                title="ボトルと紐づける顧客情報を入力してください。"
+                                ></b-tooltip>
+                            </span>
                         </b-card-title>
 
                         <b-row>
@@ -34,6 +47,13 @@
                                     ></b-form-radio-group>
                                 </b-form-group>
                             </b-col>
+                            <b-col cols="3">
+                            </b-col>
+                            <b-col cols="3">
+                                <b-card-sub-title align="right">
+                                    <span style="color: red;">*</span> : 必須項目
+                                </b-card-sub-title>
+                            </b-col>
                         </b-row>
                         <b-row v-if="createBottleData.customerType == 0">
                             <b-col cols="4">
@@ -41,7 +61,8 @@
                                 >
                                     <label
                                         :class="{'invalid': nonMemberNameInvalid}"
-                                    >顧客名*</label>
+                                        class="form_required"
+                                    >顧客名</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createBottleData.nonMemberName"
@@ -60,9 +81,11 @@
                         <b-row v-else>
                             <b-col cols="4">
                                 <b-form-group
-                                    label="会員No*"
-                                    :class="{'invalid': customerNoInvalid}"
                                 >
+                                    <label
+                                        :class="{'invalid': customerNoInvalid}"
+                                        class="form_required"
+                                    >会員No</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createBottleData.customerNo"
@@ -159,6 +182,19 @@
                     <b-card class="mt-4" bg-variant="light">
                         <b-card-title>
                             ボトル情報
+                            <span
+                                style="display: inline-block; margin-left: 0.4rem;"
+                            >
+                                <b-icon
+                                    id="create_bottle_bottle_info_icon"
+                                    icon="info-circle"
+                                    variant="primary"
+                                ></b-icon>
+                                <b-tooltip
+                                target="create_bottle_bottle_info_icon"
+                                title="紐づけるボトルを選択してください。"
+                                ></b-tooltip>
+                            </span>
                         </b-card-title>
                         <b-row v-if="selectedBottle == null">
                             <b-col cols="4">
@@ -174,13 +210,20 @@
                                     ></b-icon> ボトルを選択
                                 </b-button>
                             </b-col>
+                            <b-col cols="5">
+                            </b-col>
+                            <b-col cols="3">
+                            </b-col>
                         </b-row>
                         <b-row>
+                            <b-card-sub-title align="right">
+                                <span style="color: red;">*</span> : 必須項目
+                            </b-card-sub-title>
                             <b-col cols="12">
                                 <b-card>
-                                    <label>
-                                        商品情報
-                                    </label>
+                                    <label
+                                        class="form_required"
+                                    >商品情報</label>
                                     <b-container>
                                         <b-row>
                                             <b-col cols="7">
@@ -236,7 +279,7 @@
                                                         class="edit_icon"
                                                     ></b-icon>
                                                 </b-button>
-                                                <b-button
+                                                <!-- <b-button
                                                     size="sm"
                                                     style="position: relative; left: 10px;"
                                                     variant="outline-danger"
@@ -244,6 +287,19 @@
                                                 >
                                                     <b-icon
                                                         icon="dash-square"
+                                                        aria-hidden="true"
+                                                        variant="danger"
+                                                        class="trash_icon"
+                                                    ></b-icon>
+                                                </b-button> -->
+                                                <b-button
+                                                    size="sm"
+                                                    style="position: relative; left: 10px;"
+                                                    variant="outline-danger"
+                                                    @click="deleteSelectedProduct"
+                                                >
+                                                    <b-icon
+                                                        icon="trash"
                                                         aria-hidden="true"
                                                         variant="danger"
                                                         class="trash_icon"
@@ -454,7 +510,7 @@ export default {
             customerNo: '',
             customerType: 0,
             nonMemberName: '',
-            openDate: '',
+            openDate: now,
         },
         year: Con.SELECT_BIRTHDAY_YEAR,
         dialog: false,
@@ -716,6 +772,11 @@ export default {
     }
 
     .invalid {
+        color: red;
+    }
+
+    .form_required:after{
+        content: '*';
         color: red;
     }
 

@@ -22,6 +22,7 @@
 import { Const } from '@/assets/js/const'
 import _ from 'lodash'
 const Con = new Const()
+import { mapGetters } from 'vuex'
 
 export default {
     name: 'ListViewItem',
@@ -46,6 +47,9 @@ export default {
         categoryTitleList: Con.INPUT_SALES_DETAIL_PRODUCT_CATEGORY_LIST,
     }),
     computed: {
+        ...mapGetters([
+            'productByCategory',
+        ]),
         categoryTitle () {
             return this.categoryTitleList[this.productType]
         },
@@ -74,7 +78,13 @@ export default {
     },
     methods: {
         filterProductCategory (item) {
-            this.$eventHub.$emit('filterProductCategory', item)
+            // this.$eventHub.$emit('filterProductCategory', item)
+            const large = item.largeCategory
+            const middle = item.middleCategory
+            const small = item.smallCategory
+            const res = this.productByCategory[large][middle][small]
+            // this.productByCategoryList = _.cloneDeep(res)
+            this.$emit('update', _.cloneDeep(res))
         }
     }
 }

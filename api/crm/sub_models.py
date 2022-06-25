@@ -79,6 +79,11 @@ class BottleManagement(AbstractBaseModel):
     open_date = models.DateTimeField(
         _('開封日'),
     )
+    end_date = models.DateTimeField(
+        _('飲み終えた日付'),
+        null=True,
+        blank=True,
+    )
     deadline = models.DateTimeField(
         _('賞味期限'),
         null=True,

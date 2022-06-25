@@ -39,6 +39,7 @@ export default {
 				var requestData = (res.config.data !== undefined) ? JSON.parse(res.config.data) : null
 				res.requestData = requestData
 			} catch (e) {
+                console.log('えらー')
 				console.log(e)
 			}
 			return res

@@ -145,7 +145,7 @@
                                                 <b-card-title  style="font-size: 20px;" v-if="castData.resign_flg">
                                                     退職済 {{ castData.resign_date }}
                                                 </b-card-title>
-                                                <b-card-title  style="font-size: 20px;" v-else-if="castData.resign_date != null">
+                                                <b-card-title  style="font-size: 20px;" v-else-if="castData.resign_date != null && castData.resign_date != ''">
                                                     退職予定 {{ castData.resign_date }}
                                                 </b-card-title>
                                                 <b-card-title  style="font-size: 20px;" v-else>

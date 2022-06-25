@@ -51,7 +51,6 @@ export default {
             const middle = item.middleCategory
             const small = item.smallCategory
             const res = this.productByCategory[large][middle][small]
-            console.log('filterBottleCategory', res)
             this.$emit('update', res)
         }
     }

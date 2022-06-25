@@ -18,21 +18,58 @@
                     <b-card class="mt-4" bg-variant="light">
                         <b-card-title>
                             キャスト情報
+                            <span
+                                style="display: inline-block; margin-left: 0.4rem;"
+                                v-if="mode == 0"
+                            >
+                                <b-icon
+                                    id="create_cast_info_icon"
+                                    icon="info-circle"
+                                    variant="primary"
+                                ></b-icon>
+                                <b-tooltip
+                                target="create_cast_info_icon"
+                                title="新規でキャスト情報を作成します。"
+                                ></b-tooltip>
+                            </span>
+                            <span
+                                style="display: inline-block; margin-left: 0.4rem;"
+                                v-else
+                            >
+                                <b-icon
+                                    id="edit_cast_info_icon"
+                                    icon="info-circle"
+                                    variant="primary"
+                                ></b-icon>
+                                <b-tooltip
+                                target="edit_cast_info_icon"
+                                title="キャスト情報を更新します。"
+                                ></b-tooltip>
+                            </span>
                         </b-card-title>
 
                         <b-row class="mb-0 pb-0 mt-0 pt-0">
+                            <b-card-sub-title align="right">
+                                <span style="color: red;">*</span> : 必須項目
+                            </b-card-sub-title>
                             <b-col cols="12" class="mb-1 pb-0">
                                 <b-form-group
-                                    label="源氏名"
                                 >
+                                    <label
+                                        :class="{'invalid': castNameInvalid}"
+                                        class="form_required"
+                                    >源氏名</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.name"
                                             type="text"
-                                            placeholder="源氏名"
+                                            placeholder="源氏名(必須)"
                                             required
                                             autofocus
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castNameError.length == 0">
+                                            {{ castNameError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -44,8 +81,11 @@
                                         <b-form-input
                                             v-model="createCastData.name_kana"
                                             type="text"
-                                            placeholder="源氏名(カナ)"
+                                            placeholder="カナ(任意)"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castNameKanaError.length == 0">
+                                            {{ castNameKanaError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -54,14 +94,18 @@
                         <b-row>
                             <b-col cols="4">
                                 <b-form-group
-                                    label="年齢"
                                 >
+                                    <label
+                                        :class="{'invalid': castAgeInvalid}"
+                                    >年齢</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.age"
-                                            type="number"
-                                            placeholder="年齢"
+                                            placeholder="年齢(任意)"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castAgeError.length == 0">
+                                            {{ castAgeError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -70,8 +114,10 @@
                         <b-row class="mb-0 pb-0">
                             <b-col cols="12" class="mb-1 pb-0">
                                 <b-form-group
-                                    label="本名"
                                 >
+                                    <label
+                                        :class="{'invalid': castRealNameInvalid}"
+                                    >本名</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.real_name"
@@ -79,6 +125,9 @@
                                             placeholder="本名"
                                             required
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castRealNameError.length == 0">
+                                            {{ castRealNameError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -92,6 +141,9 @@
                                             type="text"
                                             placeholder="本名(カナ)"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castRealNameKanaError.length == 0">
+                                            {{ castRealNameKanaError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -104,7 +156,6 @@
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.real_age"
-                                            type="number"
                                             placeholder="実年齢"
                                         ></b-form-input>
                                     </b-input-group>
@@ -121,6 +172,13 @@
                                         placeholder="勤務開始日を選択してください"
                                     ></b-form-datepicker>
                                 </b-form-group>
+                            </b-col>
+                            <b-col cols="2">
+                                <b-button
+                                    style="margin-top: 31px;"
+                                    @click="createCastData.start_working_date = null"
+                                    variant="outline-secondary"
+                                >Clear</b-button>
                             </b-col>
                         </b-row>
                         <b-row class="mb-2 mt-3 pt-2">
@@ -142,6 +200,10 @@
                                 >
                                     <b-input-group>
                                         <b-form-input
+                                            v-model="createCastData.birthday"
+                                            type="date"
+                                        ></b-form-input>
+                                        <!-- <b-form-input
                                             v-model="createCastData.birthday_year"
                                             type="text"
                                             placeholder="YYYY"
@@ -155,7 +217,7 @@
                                             v-model="createCastData.birthday_day"
                                             type="text"
                                             placeholder="DD"
-                                        ></b-form-input>
+                                        ></b-form-input> -->
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -181,14 +243,20 @@
                         <b-row>
                             <b-col cols="5">
                                 <b-form-group
-                                    label="電話番号"
                                 >
+                                    <label
+                                        :class="{'invalid': castPhoneInvalid}"
+                                    >電話番号</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.phone"
                                             type="tel"
                                             placeholder="電話番号"
+                                            @blur="checkPhoneNumber"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castPhoneError.length == 0">
+                                            {{ castPhoneError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -196,14 +264,20 @@
                         <b-row>
                             <b-col cols="8">
                                 <b-form-group
-                                    label="メールアドレス"
                                 >
+                                    <label
+                                        :class="{'invalid': castMailInvalid}"
+                                    >メールアドレス</label>
                                     <b-input-group>
                                         <b-form-input
                                             v-model="createCastData.mail"
                                             type="text"
                                             placeholder="メールアドレス"
+                                            @blur="checkMailAddress"
                                         ></b-form-input>
+                                        <b-form-invalid-feedback :state="castMailError.length == 0">
+                                            {{ castMailError }}
+                                        </b-form-invalid-feedback>
                                     </b-input-group>
                                 </b-form-group>
                             </b-col>
@@ -240,12 +314,19 @@
                                 <b-form-group
                                     label="退職日"
                                 >
-                                <b-form-datepicker
-                                    v-model="createCastData.resign_date"
-                                    placeholder="退職日を選択してください"
-                                ></b-form-datepicker>
-                            </b-form-group>
-                        </b-col>
+                                    <b-form-datepicker
+                                        v-model="createCastData.resign_date"
+                                        placeholder="退職日を選択してください"
+                                    ></b-form-datepicker>
+                                </b-form-group>
+                            </b-col>
+                            <b-col cols="2">
+                                <b-button
+                                    style="margin-top: 31px;"
+                                    @click="createCastData.resign_date = null"
+                                    variant="outline-secondary"
+                                >Clear</b-button>
+                            </b-col>
                         </b-row>
                         <!-- <b-row>
                             <b-col>
@@ -342,6 +423,13 @@
                                     ></b-form-textarea>
                                 </b-form-group>
                             </b-col>
+                            <b-col cols="3">
+                                <b-button
+                                    style="margin-top: 25px;"
+                                    @click="init"
+                                    variant="outline-secondary"
+                                >フォーム初期化</b-button>
+                            </b-col>
                         </b-row>
                     </b-card>
                 </b-container>
@@ -355,6 +443,8 @@ import _ from 'lodash'
 import { mapGetters, mapMutations } from 'vuex'
 import { Const } from '@/assets/js/const'
 const Con = new Const()
+import utilsMixin from '@/mixins/utils'
+import validateMixin from '@/mixins/validate'
 
 const reader = new FileReader()
 
@@ -386,20 +476,21 @@ export default {
         //     start_working_date: null
         // },
         createCastData: {
-            name: 'aaaaaa',
-            name_kana: null,
-            real_name: null,
-            real_name_kana: null,
-            age: 25,
+            name: '',
+            name_kana: '',
+            real_name: '',
+            real_name_kana: '',
+            age: null,
             real_age: null,
             experienced: [],
             resign_flg: [],
             resign_date: null,
             mail: null,
-            address: null,
+            address: '',
             phone: null,
             remarks: null,
-            start_working_date: null
+            start_working_date: null,
+            birthday: null,
         },
         year: Con.SELECT_BIRTHDAY_YEAR,
         dialog: false,
@@ -413,18 +504,95 @@ export default {
         showImage: false,
         file: null,
         previewSrc: '',
+        castNameError: '',
+        castNameKanaError: '',
+        castAgeError: '',
+        castRealNameError: '',
+        castRealNameKanaError: '',
+        castRealAgeError: '',
+        castPhoneError: '',
+        castMailError: '',
     }),
     computed: {
         ...mapGetters([
             'question',
         ]),
         isDisabled () {
-
-            return false
+            if (this.errorCheck() || this.requiredCheck()) {
+                return true
+            } else {
+                return false
+            }
         },
         // 質問内容の絞り込み（後で
         qanda () {
             return this.question
+        },
+        castNameInvalid () {
+            if (this.castNameError != ''
+                || this.castNameKanaError != '') {
+                return true
+            }
+            return false
+        },
+        castAgeInvalid () {
+            if (this.castAgeError != '') {
+                return true
+            }
+            return false
+        },
+        castRealNameInvalid () {
+            if (this.castRealNameError != ''
+                || this.castRealNameKanaError != '') {
+                return true
+            }
+            return false
+        },
+        castRealAgeInvalid () {
+            if (this.castRealAgeError != '') {
+                return true
+            }
+            return false
+        },
+        castPhoneInvalid () {
+            if (this.castPhoneError != '') {
+                return true
+            }
+            return false
+        },
+        castMailInvalid () {
+            if (this.castMailError != '') {
+                return true
+            }
+            return false
+        },
+    },
+    watch: {
+        "createCastData.name": function (val) {
+            this.castNameError = this.validateName(val, true)
+        },
+        "createCastData.name_kana": function (val) {
+            this.castNameKanaError = this.validateNameKana(val)
+        },
+        "createCastData.age": function (val) {
+            this.castAgeError = this.validateAge(val)
+        },
+        "createCastData.real_name": function (val) {
+            this.castRealNameError = this.validateRealName(val, this.createCastData.real_name_kana)
+            if (this.castRealNameError == ''
+                && this.castRealNameKanaError == Con.ERROR_MSG.RealNameKana.Illegal) {
+                this.castRealNameKanaError = ''
+            }
+        },
+        "createCastData.real_name_kana": function (val) {
+            this.castRealNameKanaError = this.validateRealNameKana(val, this.createCastData.real_name)
+            if (this.castRealNameKanaError == ''
+                && this.castRealNameError == Con.ERROR_MSG.RealName.Illegal) {
+                this.castRealNameError = ''
+            }
+        },
+        "createCastData.real_age": function (val) {
+            this.castRealAgeError = this.validateAge(val)
         },
     },
     created () {
@@ -445,13 +613,18 @@ export default {
             // console.log('register', this.createCastData)
             const data = this.createCastData
 
+            console.log('register', data)
+
             let birthday = ''
             let start_working_date_str = ''
             let resign_date_str = ''
 
             // 誕生日は後々セレクトに置き換える
-            if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
-                birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            // if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
+            //     birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            // }
+            if (data.birthday != '' && data.birthday != null) {
+                birthday = data.birthday.replaceAll('-', '/')
             }
 
             if (data.start_working_date != null) {
@@ -531,11 +704,18 @@ export default {
             let start_working_date_str = ''
             let resign_date_str = ''
 
+            console.log('update', data)
+
 
             // 誕生日は後々セレクトに置き換える
-            if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
-                birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            // if (data.birthday_year != null && data.birthday_month != null && data.birthday_day != null) {
+            //     birthday = [data.birthday_year, data.birthday_month, data.birthday_day].join('/')
+            // }
+
+            if (data.birthday != '' && data.birthday != null) {
+                birthday = data.birthday.replaceAll('-', '/')
             }
+
             if (data.start_working_date != null) {
                 start_working_date_str = data.start_working_date.replaceAll('-', '/')
             }
@@ -590,10 +770,21 @@ export default {
         },
         init () {
             this.createCastData = {
-                question_one: null,
-                question_two: null,
-                question_three: null,
-                resign_flg: []
+                name: null,
+                name_kana: '',
+                real_name: '',
+                real_name_kana: '',
+                age: null,
+                real_age: null,
+                experienced: [],
+                resign_flg: [],
+                resign_date: null,
+                mail: null,
+                address: '',
+                phone: null,
+                remarks: null,
+                start_working_date: null,
+                birthday: null,
             }
         },
         close () {
@@ -630,20 +821,23 @@ export default {
                 start_working_date = copyData.start_working_date.replaceAll('/', '-')
             }
 
-            let birthday_year = ''
-            let birthday_month = ''
-            let birthday_day = ''
-            if (copyData.birthday != null || copyData.birthday == '') {
-                let birthday_split = copyData.birthday.split('/')
-                birthday_year = birthday_split[0]
-                birthday_month = birthday_split[1]
-                birthday_day = birthday_split[2]
+            // let birthday_year = ''
+            // let birthday_month = ''
+            // let birthday_day = ''
+            // if (copyData.birthday != null || copyData.birthday == '') {
+            //     let birthday_split = copyData.birthday.split('/')
+            //     birthday_year = birthday_split[0]
+            //     birthday_month = birthday_split[1]
+            //     birthday_day = birthday_split[2]
+            // }
+
+            if (copyData.birthday != '') {
+                copyData.birthday = copyData.birthday.replaceAll('/', '-')
             }
 
-
-            copyData.birthday_year = birthday_year
-            copyData.birthday_month = birthday_month
-            copyData.birthday_day = birthday_day
+            // copyData.birthday_year = birthday_year
+            // copyData.birthday_month = birthday_month
+            // copyData.birthday_day = birthday_day
 
             copyData.resign_flg = resign_flg
             copyData.experienced = experienced
@@ -651,6 +845,33 @@ export default {
             copyData.start_working_date = start_working_date
             this.createCastData = copyData
         },
+        checkPhoneNumber () {
+            this.castPhoneError = this.validatePhone(this.createCastData.phone)
+        },
+        checkMailAddress () {
+            this.castMailError = this.validateMail(this.createCastData.mail)
+        },
+        errorCheck () {
+            if (this.castNameError != ''
+                || this.castNameKanaError != ''
+                || this.castAgeError != ''
+                || this.castRealNameError != ''
+                || this.castRealNameKanaError != ''
+                || this.castRealAgeError != ''
+                || this.castPhoneError != ''
+                || this.castMailError != '') {
+                return true
+            } else {
+                return false
+            }
+        },
+        requiredCheck () {
+            if (this.createCastData.name == '') {
+                return true
+            } else {
+                return false
+            }
+        }
         // inputFile (e) {
         //     reader.onload = e => {
         //         this.previewSrc = e.target.result
@@ -666,7 +887,11 @@ export default {
         //     this.$refs.input.lazyValue = ''
         //     this.showImage = false
         // },
-    }
+    },
+    mixins: [
+        utilsMixin,
+        validateMixin
+    ]
 }
 
 </script>
@@ -697,6 +922,15 @@ export default {
         right: -315px;
         top: -18px;
         width: 0;
+    }
+
+    .invalid {
+        color: red;
+    }
+
+    .form_required:after{
+        content: '*';
+        color: red;
     }
 
     // きかない・・・
